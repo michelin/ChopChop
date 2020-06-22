@@ -220,7 +220,7 @@ plugins:
         match:
           - "Resources Browser"
         remediation: Put authentication on this form
-        description: Check access to a Wiziwig fckeditor
+        description: Check access to a wysiwyg fckeditor
         severity: "High"
   - uri: "/.idea/workspace.xml"
     checks:
