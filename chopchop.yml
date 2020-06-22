@@ -65,7 +65,7 @@ plugins:
           - "drupal"
           - '"sites/'
           - '"core/'
-        remediation: Check that the version is the last one available on the seller's website
+        remediation: Check that the version is the last one available on the vendor's website
         description: Get the Drupal version of the site
         severity: "Low"
       - name: Status Code 500
