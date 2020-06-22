@@ -1,0 +1,362 @@
+insecure: false
+plugins:
+  - uri: "/"
+    checks:
+      - name: Jenkins
+        match:
+          - "hudson"
+        remediation: Monitor access to jenkins only to trusted people, be sure that only connected people can run commands and that passwords are robust
+        description: Verifies that the domain is not a Jenkins instance
+        severity: "Informational"
+        headers:
+          - "Cache-Control:no-cache,no-store,must-revalidate"
+      - name : BigIPServer
+        remediation: Encrypt sticky cookie to avoid leaking internal IPs
+        description: Detects the presence of unencrypted sticky cookies that allow to retrieve internal Ips
+        severity: "Medium"
+        headers:
+          - "Set-Cookie:BIGipServer"
+      - name: TakeOver
+        match:
+          - "There is no app configured at that hostname"
+          - "NoSuchBucket"
+          - "No Such Account"
+          - "You're Almost There"
+          - "a GitHub Pages site here"
+          - "this shop is currently unavailable"
+          - "There's nothing here"
+          - "The site you were looking for couldn't be found"
+          - "The request could not be satisfied"
+          - "project not found"
+          - "Your CNAME settings"
+          - "The resource that you are attempting to access does not exist or you don't have the necessary permissions to view it."
+          - "Domain mapping upgrade for this domain not found"
+          - "The feed has not been found"
+          - "This UserVoice subdomain is currently available!"
+        remediation: Delete the DNS record as soon as possible
+        description: Detects the possibility of DNS Takeover
+        severity: High
+      - name: AsmxWebservices
+        match:
+          - ".asmx"
+        remediation: Monitor access to jenkins only to trusted people, be sure that only connected people can run commands and that passwords are robust
+        description: Verifies that the domain is not a Jenkins instance
+        severity: "Informational"
+      - name: Azure
+        match:
+          - "catalina.base"
+        remediation: Check that the application has been deployed and delete the default pages
+        description: Detects the presence of Azure installation by default
+        severity: "Informational"
+      - name: Gitlab instance
+        match:
+          - "GitLab</title>"
+        remediation: Make sure that access to Gitlab is properly monitored
+        description: Checks if a Gitlab instance exists
+        severity: "Low"
+      - name: Apache2 Ubuntu Default Page
+        match:
+          - "Apache2 Ubuntu Default Page"
+        remediation: Remove the symbolic link from the Apache default configuration
+        description: Detects the presence of a default Apache page
+        severity: "Informational"
+      - name: Drupal CMS
+        match:
+          - "drupal"
+          - '"sites/'
+          - '"core/'
+        remediation: Check that the version is the last one available on the seller's website
+        description: Get the Drupal version of the site
+        severity: "Low"
+      - name: Status Code 500
+        status_code: 500
+        remediation: Check that the server has not completely fallen into error
+        description: Check return code 500
+        severity: "Low"
+      - name: Iis
+        headers:
+          - "Server:Microsoft-IIS/6.0"
+        remediation: Patch the server as soon as possible
+        description: Verifies that the server is an IIS 6.0
+        severity: "Informational"
+      - name: Indexof
+        match:
+          - "Index of"
+        remediation: Implementing rules at the application server level to prevent directory listing
+        description: Checks that the domain root does not return a file/folder list
+        severity: "Low"
+      - name: IndexOf2
+        match:
+          - "&lt;dir&gt;"
+        remediation: Implementing rules at the application server level to prevent directory listing
+        description: Checks that the domain root does not return a file/folder list (simple encoding)
+        severity: "Low"
+      - name: MySQLError
+        match:
+          - 'You have an error in your SQL syntax'
+        remediation: Do not display MySQL errors on web pages
+        description: Checks that MySQL errors are not displayed
+        severity: "Medium"
+      - name: NginxDefaultPage
+        match:
+          - 'Welcome to nginx!'
+        remediation: Delete symbolic link from Nginx default configuration
+        description: Verifies that the default Nginx site is not accessible
+        severity: "Low"
+      - name: Osticket
+        match:
+          - 'Helpdesk software - powered by osTicket'
+        remediation: Check that the passwords used are robust
+        description: Verifies that the domain is not an OS Ticket instance
+        severity: "Informational"
+      - name: PHP open code
+        match:
+          - '<?php'
+        remediation: Delete unused code and check that PHP is correctly configured
+        description: Checks for the presence of code not interpreted by PHP
+        status_code: 200
+        severity: "Medium"
+      - name: PHP fopen function error
+        match:
+          - 'failed to open stream'
+        remediation: Check that the application is running correctly and understand why the application is not running correctly
+        description: Detects the presence of php errors via the fopen call
+        severity: "Low"
+  - uri: "/.git/config"
+    checks:
+      - name: Git exposed
+        match:
+          - "["
+        remediation: Do not deploy .git folder on production servers
+        description: Verifies that the GIT repository is accessible from the site
+        severity: "High"
+  - uri: "/crossdomain.xml"
+    checks:
+      - name: wildcard
+        match:
+          - 'domain="*" />'
+        remediation: Delete wildcards from xml files
+        description: Checks for the presence of a crossdomain.xml file with a wildcard for the domain
+        severity: "High"
+  - uri: "/manager/html"
+    checks:
+      - name: tomcat manager
+        status_code: 401
+        remediation: Disable this interface in production
+        description: Verifies that under /manager/html the Tomcat administration interface is not accessible
+        severity: "Medium"
+  - uri: "/.htpasswd"
+    checks:
+      - name: .htpasswd not interpreted
+        match:
+          - ":"
+        remediation: Delete file and reset leaky passwords
+        description: Checks for the presence of an .htpasswd file at the root of the domain
+        severity: "Medium"
+        status_code: 200
+        no_match:
+          - "<a"
+          - "</"
+  - uri: "/.htaccess"
+    checks:
+      - name: .htaccess not interpreted
+        match:
+          - "RewriteRule"
+        remediation: Check that no sensitive information is present on the .htaccess
+        description: Verifies the presence of an .htaccess file at the root of the domain
+        status_code: 200
+        severity: "Low"
+  - uri: "/idontexist"
+    checks:
+      - name: detailed 404 page
+        match:
+          - "Detailed Error Information"
+        status_code: 404
+        remediation: Delete the verbose mode on the whole application
+        description: Detects the presence of the verbose mode when in error
+        severity: "Low"
+  - uri: "/cgi-bin/test/test.cgi"
+    checks:
+      - name: standard test.cgi page
+        match:
+          - "HTTP_ACCEPT"
+        remediation: Delete the basic files of a Tomcat installation
+        description: Checks for the presence of a test.cgi file
+        severity: "Low"
+        status_code: 200
+  - uri: "/adminer.php"
+    checks:
+      - name: Adminer php file
+        match:
+          - "Authentification - Adminer"
+        remediation: Check that only a person with a strong password can use this file
+        description: Discovery of a PHP file to administer the database
+        severity: "Low"
+  - uri: "/login"
+    checks:
+      - name: Login Page Apostrophe
+        match:
+          - '<form action="/login" method="post">'
+        remediation: Check that the administration interfaces are well protected
+        description: Detects the presence of a login page using the Apostrophe Framework (from Digital Factory)
+        severity: "Informational"
+      - name: Grafana
+        match:
+          - "isGrafanaAdmin"
+        remediation: Check that the passwords used are robust
+        description: Check access to Grafana administration
+        severity: "Informational"
+  - uri: "/user/login"
+    checks:
+      - name: eZ Publish Admin Panel
+        match:
+          - "Log in to the Administration Interface of eZ Publish"
+        remediation: Check that the passwords used are robust
+        description: Check access to the eZ Publish administration
+        severity: "Low"
+  - uri: "/fckeditor/editor/filemanager/browser/default/browser.html"
+    checks:
+      - name: FckEditor
+        match:
+          - "Resources Browser"
+        remediation: Put authentication on this form
+        description: Check access to a Wiziwig fckeditor
+        severity: "High"
+  - uri: "/.idea/workspace.xml"
+    checks:
+      - name: Idea WorkSpace
+        match:
+          - "<project"
+        remediation: Delete file
+        description: Checks the access of some developer's settings
+        severity: "High"
+  - uri: "/install.php"
+    checks:
+      - name: Install Script PHP
+        match:
+          - "To start over"
+        remediation: Delete install.php file
+        description: Verifies the presence of a PHP installation script
+        severity: "Low"
+  - uri: "/administrator"
+    checks:
+      - name: Joomla admin interface
+        match:
+          - 'action="/administrator/index.php"'
+        remediation: Check that the passwords used are robust
+        description: Check access to Joomla's administration interface
+        severity: "Informational"
+  - uri: "/https://example.com//"
+    checks:
+      - name: OpenRedirect
+        match:
+          - 'Example Domain'
+        remediation: Patch open redirect vulnerability
+        description: Detects the presence of Open Redirect type vulnerabilities
+        severity: "Low"
+  - uri: "/phpinfo.php"
+    checks:
+      - name: PHPInfo
+        match:
+          - 'phpinfo()'
+        remediation: Disable phpinfo() in PHP.ini
+        description: Verifies that the phpinfo() function is accessible
+        severity: "Low"
+  - uri: "/phpMyAdmin"
+    checks:
+      - name: PHPMyAdmin
+        match:
+          - '<title>phpMyAdmin'
+        remediation: Make sure that PHPMyAdmin access is monitored
+        description: Verifies that under /phpmyadmin a PHPMyAdmin instance is not accessible
+        status_code: 200
+        severity: "Low"
+  - uri: "/server-status"
+    checks:
+      - name: Server Status
+        match:
+          - 'Waiting for Connection'
+        remediation: Disable this feature in Apache
+        description: Verifies that under /server-status of Apache information is accessible
+        severity: "Low"
+  - uri: "/examples/jsp/snp/snoop.jsp"
+    checks:
+      - name: Snoop
+        match:
+          - 'Request Information'
+        remediation: Delete basic files of a Tomcat installation
+        description: Detects the presence of snoop.jsp files (default files in a Tomcat install)
+        severity: "Informational"
+  - uri: "/actuator/health"
+    checks:
+      - name: SPringbootActuator
+        match:
+          - '{"status"'
+        headers:
+          - "Content-Type:application/json"
+        remediation: Disable this feature or protect access
+        description: Verifies that under /actuator/health information is not disclosed by Springboot
+        severity: "Low"
+        status_code: 200
+  - uri: "/health"
+    checks:
+      - name: SpringbootActuator
+        match:
+          - '{"status"'
+        headers:
+          - "Content-Type:application/json"
+        remediation: Disable this feature or protect access
+        description: Verifies that under /health information is not disclosed by Springboot
+        severity: "Low"
+        status_code: 200
+  - uri: "/.svn/wc.db"
+    checks:
+      - name: SVN db
+        headers:
+          - 'Content-Type:application/octet-stream'
+        remediation: Do not deploy .svn on production servers
+        description: Checks if an SVN database is publicly accessible
+        status_code : 200
+        severity: "High"
+  - uri: "/.svn/entries"
+    checks:
+      - name: SVN db
+        headers:
+          - 'Content-Type:application/octet-stream'
+        remediation: Do not deploy .svn on production servers
+        description: Checks if an SVN database is publicly accessible
+        status_code: 200
+        severity: "High"
+  - uri: "/web.config"
+    checks:
+      - name: Web Config
+        match:
+          - '<configuration>'
+        remediation: Check that no sensitive information is present in the web.config
+        description: Verifies that the web.config configuration file of the ASP.net server is not accessible
+        severity: "Low"
+  - uri: "/wp-login.php"
+    checks:
+      - name: Wordpress Login Page
+        all_match:
+          - 'wp-login.php" method="post"'
+          - '<body class="login login-action-login wp-core-ui'
+        remediation: Set up an.htaccess to avoid exposing the admin interface unnecessarily
+        description: Verifies that under /wp-login the Worpress connection interface is not accessible
+        severity: "Informational"
+  - uri: "/wp-links-opml.php"
+    checks:
+      - name:  WpLinksOpml
+        match:
+          - 'generator="WordPress'
+        remediation: Be sure the wordpress uses the latest version
+        description: Retrieves the Wordpress version of the site
+        severity: "Informational"
+  - uri: "/jmx-console/"
+    checks:
+      - name: JMX Console
+        match:
+        - "service=MainDeployer"
+        remediation : Alter configurations to deny external access - Change the default configuration to require authentication for ALL HTTP requests
+        description : JMX Console displays an index with all available services. Authentication can be bypassed by intruder.
+        severity: "Medium"
