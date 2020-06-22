@@ -46,7 +46,7 @@ $ ./gochopchop scan --url https://foobar.com
 
 ## What's next
 
-The Golang rewrite took place couple of months ago but there's so much to do, still. Here are some features we are planning to integrate :
+The Golang rewrite took place a couple of months ago but there's so much to do, still. Here are some features we are planning to integrate :
 * Threading for better performance
 * Colors and better formatting
 * Ability to filter checks/signatures to search for
@@ -69,7 +69,7 @@ You can find the available flags here :
 
 ## Advanced usage
 
-Here is a list of advanced usage that you mgiht be interested in.
+Here is a list of advanced usage that you might be interested in.
 Note: Redirectors like `>` for post processing can be used.
 
 - Ability to scan and disable SSL verification
@@ -96,7 +96,7 @@ $ ./gochopchop plugins --severity High
 $ ./gochopchop scan --url https://foobar.com --insecure --block Medium
 ```
 
-- Ability to list all the plguins
+- Ability to list all the plugins
 
 ```bash
 $ ./gochopchop plugins
