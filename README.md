@@ -2,7 +2,7 @@
 
 **ChopChop** is a command-line tool for dynamic application security testing on web applications, initially written by the Michelin CERT.
 
-<p align="center"><img src="/img/chopchop_logo.png"/></p>
+<p align="center"><img src="/img/chopchop_logo.png" style="width: 20%"/></p>
 
 Its goal is to scan several endpoints and identify exposition of services/files/folders through the webroot.
 Checks/Signatures are declared in a config file (by default: `chopchop.yml`), fully configurable, and especially by developers.
