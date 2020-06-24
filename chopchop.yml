@@ -42,12 +42,6 @@ plugins:
         remediation: Monitor access to jenkins only to trusted people, be sure that only connected people can run commands and that passwords are robust
         description: Verifies that the domain is not a Jenkins instance
         severity: "Informational"
-      - name: Azure
-        match:
-          - "catalina.base"
-        remediation: Check that the application has been deployed and delete the default pages
-        description: Detects the presence of Azure installation by default
-        severity: "Informational"
       - name: Gitlab instance
         match:
           - "GitLab</title>"
