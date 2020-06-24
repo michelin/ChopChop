@@ -21,9 +21,12 @@ type SeverityType string
 const (
 	// Informational will be the default severityType
 	Informational SeverityType = "Informational"
-	Low                        = "Low"
-	Medium                     = "Medium"
-	High                       = "High"
+	// Low severity
+	Low = "Low"
+	// Medium severity
+	Medium = "Medium"
+	// High severity (highest rating)
+	High = "High"
 )
 
 // Config struct to load the configuration from the YAML file
