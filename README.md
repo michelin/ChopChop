@@ -1,5 +1,8 @@
 <p align="center"><img src="/img/chopchop_logo.png" width="180" height="110"/></p>
 
+[![License](https://img.shields.io/badge/license-Apache-green.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Go Report Card](https://goreportcard.com/badge/github.com/michelin/ChopChop)](https://goreportcard.com/report/github.com/michelin/ChopChop)
+
 # ChopChop
 
 **ChopChop** is a command-line tool for dynamic application security testing on web applications, initially written by the Michelin CERT.
