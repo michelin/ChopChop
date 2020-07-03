@@ -119,6 +119,7 @@ plugins:
   - uri: "/.git/config"
     checks:
       - name: Git exposed
+        status_code: 200
         match:
           - "["
         remediation: Do not deploy .git folder on production servers
