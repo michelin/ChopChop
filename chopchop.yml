@@ -122,6 +122,9 @@ plugins:
         status_code: 200
         match:
           - "[branch"
+          - "[remote"
+          - "[core]"
+          - "[user]"
         remediation: Do not deploy .git folder on production servers
         description: Verifies that the GIT repository is accessible from the site
         severity: "High"
