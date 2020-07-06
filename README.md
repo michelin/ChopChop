@@ -34,7 +34,7 @@ We tried to make the build process painless and hopefully, it should be as easy 
 
 
 ```bash
-$ go mod install
+$ go mod download
 $ go build .
 ```
 
