@@ -354,3 +354,18 @@ plugins:
         remediation : Alter configurations to deny external access - Change the default configuration to require authentication for ALL HTTP requests
         description : JMX Console displays an index with all available services. Authentication can be bypassed by intruder.
         severity: "Medium"
+  - uri: "/tmui/login.jsp/..;/tmui/system/user/authproperties.jsp"
+    checks:
+      - name : F5 BIG-IP - CVE-2020-5902
+        remediation: Apply patch - F5 K52145254
+        description: Remote Code Execution on Administration Web interface TMUI.
+        status_code: 200
+        severity: "High"
+  - uri: "/tmui/login.jsp"
+    checks:
+      - name: F5 BIG-IP - TMUI
+        match:
+          - "<title>BIG-IP"
+        remediation: Make sure that F5 BIG-IP - TMUI access is monitored
+        description: Verifies that under /tmui a F5 BIG-IP TMUI is not accessible
+        severity: "Low"
