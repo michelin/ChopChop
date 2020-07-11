@@ -148,7 +148,7 @@ Each check needs those fields:
 | description | string | A small description for the check| No |  Ensure .git repository is not accessible from the webroot |
 | remediation | string | Give a remediation for this specific "issue" | No | Do not deploy .git folder on production servers |
 | severity | Enum("High", "Medium", "Low", "Informational") | Rate the criticity if it triggers in your environment| No | High |
-| status_code | integer | The HTTP status code that should be returned |
+| status_code | integer | The HTTP status code that should be returned | Yes | 200 |
 | headers | List of string | List of headers there should be in the HTTP response | Yes | N/A |
 | match | List of string| List the strings there should be in the HTTP response  | Yes |  "[branch" |
 | no_match | List of string | List the strings there should NOT be in the HTTP response | Yes | N/A |
