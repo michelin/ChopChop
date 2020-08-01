@@ -380,7 +380,7 @@ plugins:
       - name : Possible Trickbot Trojan Payload hosting imgpaper.png on Apache
         headers:
           - 'Content-Type:image/png'
-        remediation: Make sure your system is'nt compromised
+        remediation: Make sure your system isn't compromised
         description: Possible Trickbot Trojan Payload hosting in /images/imgpaper.png
         status_code: 200
         severity: "High"
@@ -389,7 +389,7 @@ plugins:
       - name : Trickbot Trojan Payload hosting imgpaper.png on Nginx
         headers:
           - 'Content-Type:application/octet-stream'
-        remediation: Make sure your system is'nt compromised
+        remediation: Make sure your system isn't compromised
         description: Possible Trickbot Trojan Payload hosting in /images/imgpaper.png
         status_code: 200
         severity: "High"
@@ -398,7 +398,7 @@ plugins:
       - name: Possible Trickbot Trojan Payload hosting cursor.png on Apache
         headers:
           - 'Content-Type:image/png'
-        remediation: Make sure your system is'nt compromised
+        remediation: Make sure your system isn't compromised
         description: Possible Trickbot Trojan Payload hosting in /images/cursor.png
         status_code: 200
         severity: "High"
@@ -407,7 +407,7 @@ plugins:
       - name: Trickbot Trojan Payload hosting cursor.png on Nginx
         headers:
           - 'Content-Type:application/octet-stream'
-        remediation: Make sure your system is'nt compromised
+        remediation: Make sure your system isn't compromised
         description: Possible Trickbot Trojan Payload hosting in /images/cursor.png
         status_code: 200
         severity: "High"
@@ -416,7 +416,7 @@ plugins:
       - name : Possible Trickbot Trojan Payload hosting redcar.png on Apache
         headers:
           - 'Content-Type:image/png'
-        remediation: Make sure your system is'nt compromised
+        remediation: Make sure your system isn't compromised
         description: Possible Trickbot Trojan Payload hosting in /images/redcar.png
         status_code: 200
         severity: "High"
@@ -425,7 +425,7 @@ plugins:
       - name : Trickbot Trojan Payload hosting redcar.png on Nginx
         headers:
           - 'Content-Type:application/octet-stream'
-        remediation: Make sure your system is'nt compromised
+        remediation: Make sure your system isn't compromised
         description: Possible Trickbot Trojan Payload hosting in /images/redcar.png
         status_code: 200
         severity: "High"
@@ -434,7 +434,8 @@ plugins:
       - name : Possible Trickbot Trojan Payload hosting VidT6cErs
         no_match:
           - '<!DOCTYPE html>'
-        remediation: Make sure your system is'nt compromised
+          - '<head>'
+        remediation: Make sure your system isn't compromised
         description: Possible Trickbot Trojan Payload hosting in /ico/VidT6cErs
         status_code: 200
         severity: "High"
