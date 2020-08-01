@@ -358,9 +358,11 @@ plugins:
         remediation : Alter configurations to deny external access - Change the default configuration to require authentication for ALL HTTP requests
         description : JMX Console displays an index with all available services. Authentication can be bypassed by intruder.
         severity: "Medium"
-  - uri: "/tmui/login.jsp/..;/tmui/system/user/authproperties.jsp"
+  - uri: "/tmui/login.jsp/..;/tmui/locallb/workspace/fileRead.jsp?fileName=/config/bigip.license"
     checks:
-      - name : F5 BIG-IP - CVE-2020-5902
+      - name: F5 BIG-IP - CVE-2020-5902
+        match:
+          - '{"output":'
         remediation: Apply patch - F5 K52145254
         description: Remote Code Execution on Administration Web interface TMUI.
         status_code: 200
@@ -375,21 +377,54 @@ plugins:
         severity: "Low"
   - uri: "/images/imgpaper.png"
     checks:
-      - name : Possible Trickbot Trojan Payload hosting imgpaper.png
+      - name : Possible Trickbot Trojan Payload hosting imgpaper.png on Apache
+        headers:
+          - 'Content-Type:image/png'
+        remediation: Make sure your system is'nt compromised
+        description: Possible Trickbot Trojan Payload hosting in /images/imgpaper.png
+        status_code: 200
+        severity: "High"
+  - uri: "/images/imgpaper.png"
+    checks:
+      - name : Trickbot Trojan Payload hosting imgpaper.png on Nginx
+        headers:
+          - 'Content-Type:application/octet-stream'
         remediation: Make sure your system is'nt compromised
         description: Possible Trickbot Trojan Payload hosting in /images/imgpaper.png
         status_code: 200
         severity: "High"
   - uri: "/images/cursor.png"
     checks:
-      - name : Possible Trickbot Trojan Payload hosting cursor.png
+      - name: Possible Trickbot Trojan Payload hosting cursor.png on Apache
+        headers:
+          - 'Content-Type:image/png'
+        remediation: Make sure your system is'nt compromised
+        description: Possible Trickbot Trojan Payload hosting in /images/cursor.png
+        status_code: 200
+        severity: "High"
+  - uri: "/images/cursor.png"
+    checks:
+      - name: Trickbot Trojan Payload hosting cursor.png on Nginx
+        headers:
+          - 'Content-Type:application/octet-stream'
         remediation: Make sure your system is'nt compromised
         description: Possible Trickbot Trojan Payload hosting in /images/cursor.png
         status_code: 200
         severity: "High"
   - uri: "/images/redcar.png"
     checks:
-      - name : Possible Trickbot Trojan Payload hosting redcar.png
+      - name : Possible Trickbot Trojan Payload hosting redcar.png on Apache
+        headers:
+          - 'Content-Type:image/png'
+        remediation: Make sure your system is'nt compromised
+        description: Possible Trickbot Trojan Payload hosting in /images/redcar.png
+        status_code: 200
+        severity: "High"
+  - uri: "/images/redcar.png"
+    checks:
+      - name : Trickbot Trojan Payload hosting redcar.png on Nginx
+        headers:
+          - 'Content-Type:application/octet-stream'
         remediation: Make sure your system is'nt compromised
         description: Possible Trickbot Trojan Payload hosting in /images/redcar.png
         status_code: 200
@@ -397,6 +432,8 @@ plugins:
   - uri: "/ico/VidT6cErs"
     checks:
       - name : Possible Trickbot Trojan Payload hosting VidT6cErs
+        no_match:
+          - '<!DOCTYPE html>'
         remediation: Make sure your system is'nt compromised
         description: Possible Trickbot Trojan Payload hosting in /ico/VidT6cErs
         status_code: 200
