@@ -170,6 +170,7 @@ Each check needs those fields:
 | headers | List of string | List of headers there should be in the HTTP response | Yes | N/A |
 | match | List of string| List the strings there should be in the HTTP response  | Yes |  "[branch" |
 | no_match | List of string | List the strings there should NOT be in the HTTP response | Yes | N/A |
+| query_string | GET parameters that have to be passed to the endpoint | String | Yes | `query_string: "id=FOO-chopchoptest"` |
 
 ## External Libraries
 

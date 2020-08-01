@@ -33,8 +33,9 @@ const (
 type Config struct {
 	Insecure bool `yaml:"insecure"`
 	Plugins  []struct {
-		URI    string `yaml:"uri"`
-		Checks []struct {
+		URI         string `yaml:"uri"`
+		QueryString string `yaml:"query_string"`
+		Checks      []struct {
 			Match       []*string     `yaml:"match"`
 			AllMatch    []*string     `yaml:"all_match"`
 			StatusCode  *int32        `yaml:"status_code"`
@@ -115,6 +116,9 @@ func Scan(cmd *cobra.Command, args []string) {
 		for index, plugin := range y.Plugins {
 			_ = index
 			tmpURL = prefix + urlList[i] + suffix + fmt.Sprint(plugin.URI)
+			if plugin.QueryString != "" {
+				tmpURL += "?" + plugin.QueryString
+			}
 			httpResponse, err := pkg.HTTPGet(insecure, tmpURL)
 			if err != nil {
 				_ = errors.Wrap(err, "Timeout of HTTP Request")
