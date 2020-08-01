@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"gochopchop/data"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -8,7 +9,7 @@ import (
 )
 
 //ResponseAnalysis of HTTP Request with checks
-func ResponseAnalysis(resp *http.Response, statusCode *int32, match []*string, allMatch []*string, noMatch []*string, headers []*string) bool {
+func ResponseAnalysis(resp *http.Response, signature data.Check) bool {
 
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
@@ -16,26 +17,25 @@ func ResponseAnalysis(resp *http.Response, statusCode *int32, match []*string, a
 	}
 	bodyString := string(bodyBytes)
 
-	if statusCode != nil {
-		tmpCode := *statusCode
-		if int32(resp.StatusCode) != tmpCode {
+	if signature.StatusCode != nil {
+		if int32(resp.StatusCode) != *signature.StatusCode {
 			return false
 		}
 	}
 	// all element needs to be found
-	if allMatch != nil {
-		for i := 0; i < len(allMatch); i++ {
-			if !strings.Contains(bodyString, *allMatch[i]) {
+	if signature.AllMatch != nil {
+		for i := 0; i < len(signature.AllMatch); i++ {
+			if !strings.Contains(bodyString, *signature.AllMatch[i]) {
 				return false
 			}
 		}
 	}
 
 	// one elements needs to be found
-	if match != nil {
+	if signature.Match != nil {
 		found := false
-		for i := 0; i < len(match); i++ {
-			if strings.Contains(bodyString, *match[i]) {
+		for i := 0; i < len(signature.Match); i++ {
+			if strings.Contains(bodyString, *signature.Match[i]) {
 				found = true
 			}
 		}
@@ -45,17 +45,17 @@ func ResponseAnalysis(resp *http.Response, statusCode *int32, match []*string, a
 	}
 
 	// if 1 element of list is not found
-	if noMatch != nil {
-		for i := 0; i < len(noMatch); i++ {
-			if strings.Contains(bodyString, *noMatch[i]) {
+	if signature.NoMatch != nil {
+		for i := 0; i < len(signature.NoMatch); i++ {
+			if strings.Contains(bodyString, *signature.NoMatch[i]) {
 				return false
 			}
 		}
 	}
-	if headers != nil {
-		for i := 0; i < len(headers); i++ {
+	if signature.Headers != nil {
+		for i := 0; i < len(signature.Headers); i++ {
 			// Parse headers
-			pHeaders := strings.Split(*headers[i], ":")
+			pHeaders := strings.Split(*signature.Headers[i], ":")
 			if v, kFound := resp.Header[pHeaders[0]]; kFound {
 				// Key found - check value
 				vFound := false

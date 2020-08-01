@@ -15,42 +15,10 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// SeverityType is basically an enum and values can be from Info, Low, Medium and High
-type SeverityType string
-
-const (
-	// Informational will be the default severityType
-	Informational SeverityType = "Informational"
-	// Low severity
-	Low = "Low"
-	// Medium severity
-	Medium = "Medium"
-	// High severity (highest rating)
-	High = "High"
-)
-
-// Config struct to load the configuration from the YAML file
-type Config struct {
-	Insecure bool `yaml:"insecure"`
-	Plugins  []struct {
-		URI         string `yaml:"uri"`
-		QueryString string `yaml:"query_string"`
-		Checks      []struct {
-			Match       []*string     `yaml:"match"`
-			AllMatch    []*string     `yaml:"all_match"`
-			StatusCode  *int32        `yaml:"status_code"`
-			PluginName  string        `yaml:"name"`
-			Remediation *string       `yaml:"remediation"`
-			Severity    *SeverityType `yaml:"severity"`
-			Description *string       `yaml:"description"`
-			NoMatch     []*string     `yaml:"no_match"`
-			Headers     []*string     `yaml:"headers"`
-		} `yaml:"checks"`
-	} `yaml:"plugins"`
-}
-
 // Scan of domain via url
 func Scan(cmd *cobra.Command, args []string) {
+	start := time.Now()
+
 	url, _ := cmd.Flags().GetString("url")
 	insecure, _ := cmd.Flags().GetBool("insecure")
 	csv, _ := cmd.Flags().GetBool("csv")
@@ -92,7 +60,7 @@ func Scan(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	y := Config{}
+	y := data.Config{}
 	if err = yaml.Unmarshal([]byte(dataCfg), &y); err != nil {
 		log.Fatal(err)
 	}
@@ -127,7 +95,7 @@ func Scan(cmd *cobra.Command, args []string) {
 			if httpResponse != nil {
 				for index, check := range plugin.Checks {
 					_ = index
-					answer := pkg.ResponseAnalysis(httpResponse, check.StatusCode, check.Match, check.AllMatch, check.NoMatch, check.Headers)
+					answer := pkg.ResponseAnalysis(httpResponse, check)
 					if answer {
 						hit = true
 						if BlockCI(blockedFlag, *check.Severity) {
@@ -149,6 +117,7 @@ func Scan(cmd *cobra.Command, args []string) {
 			_ = httpResponse.Body.Close()
 		}
 	}
+
 	if hit {
 		pkg.FormatOutputTable(out)
 		if json {
@@ -158,38 +127,40 @@ func Scan(cmd *cobra.Command, args []string) {
 		if csv {
 			pkg.FormatOutputCSV(date, out)
 		}
-		if blockedFlag != "" {
-			if block {
-				os.Exit(1)
-			} else {
-				fmt.Println("No critical vulnerabilities found...")
-				os.Exit(0)
-			}
+	}
+
+	elapsed := time.Since(start)
+	log.Printf("Scan execution time: %s", elapsed)
+
+	// return EXIT_SUCCESS if
+	// 1. no hit
+	// 2. no vulns >= the cricity we're looking for
+	if hit {
+		if blockedFlag != "" && !block {
+			os.Exit(0)
+		} else {
+			os.Exit(1)
 		}
-		os.Exit(1)
-	} else {
-		fmt.Println("No vulnerabilities found. Exiting...")
-		os.Exit(0)
 	}
 }
 
 // BlockCI function will allow the user to return a different status code depending on the highest severity that has triggered
-func BlockCI(severity string, severityType SeverityType) bool {
+func BlockCI(severity string, severityType data.SeverityType) bool {
 	switch severity {
 	case "High":
-		if severityType == High {
+		if severityType == data.High {
 			return true
 		}
 	case "Medium":
-		if severityType == High || severityType == Medium {
+		if severityType == data.High || severityType == data.Medium {
 			return true
 		}
 	case "Low":
-		if severityType == High || severityType == Medium || severityType == Low {
+		if severityType == data.High || severityType == data.Medium || severityType == data.Low {
 			return true
 		}
 	case "Informational":
-		if severityType == High || severityType == Medium || severityType == Low || severityType == Informational {
+		if severityType == data.High || severityType == data.Medium || severityType == data.Low || severityType == data.Informational {
 			return true
 		}
 	}
@@ -197,7 +168,7 @@ func BlockCI(severity string, severityType SeverityType) bool {
 }
 
 // CheckStructFields will parse the YAML configuration file
-func CheckStructFields(conf Config) {
+func CheckStructFields(conf data.Config) {
 	for index, plugin := range conf.Plugins {
 		_ = index
 		for index, check := range plugin.Checks {
@@ -211,19 +182,10 @@ func CheckStructFields(conf Config) {
 			if check.Severity == nil {
 				log.Fatal("Missing severity field in " + check.PluginName + " plugin checks. Stopping execution.")
 			} else {
-				if err := SeverityType.IsValid(*check.Severity); err != nil {
+				if err := data.SeverityType.IsValid(*check.Severity); err != nil {
 					log.Fatal(" ------ Unknown severity type : " + string(*check.Severity) + " . Only Informational / Low / Medium / High are valid severity types.")
 				}
 			}
 		}
 	}
-}
-
-// IsValid will verify that the severityType is part of the enum previously declared
-func (st SeverityType) IsValid() error {
-	switch st {
-	case Informational, Low, Medium, High:
-		return nil
-	}
-	return errors.New("Invalid Severity type. Please Check yaml config file")
 }

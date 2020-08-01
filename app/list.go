@@ -1,6 +1,7 @@
 package app
 
 import (
+	"gochopchop/data"
 	"io/ioutil"
 	"log"
 	"os"
@@ -22,10 +23,10 @@ func List(cmd *cobra.Command, args []string) {
 	}
 
 	defer file.Close()
-	data, err := ioutil.ReadAll(file)
-	y := Config{}
+	fileData, err := ioutil.ReadAll(file)
+	y := data.Config{}
 
-	err = yaml.Unmarshal([]byte(data), &y)
+	err = yaml.Unmarshal([]byte(fileData), &y)
 	if err != nil {
 		log.Fatalf("error: %v", err)
 	}
