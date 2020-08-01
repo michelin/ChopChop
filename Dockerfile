@@ -12,4 +12,5 @@ FROM alpine:3.8
 RUN mkdir -p /tmp
 COPY --from=build /app/gochopchop /tmp/gochopchop
 COPY --from=build /app/chopchop.yml /tmp/chopchop.yml
-CMD ["/tmp/gochopchop"]
+WORKDIR /tmp
+ENTRYPOINT ["/tmp/gochopchop"]

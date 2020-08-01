@@ -40,12 +40,30 @@ $ go build .
 
 There should be a resulting `gochopchop` binary in the folder.
 
+### Using Docker
+
+```bash
+docker build -t gochopchop .
+```
+
 ## Usage
 
 We are continuously trying to make `goChopChop` as easy as possible. Scanning a host with this utility is as simple as : 
 
 ```bash
 $ ./gochopchop scan --url https://foobar.com
+```
+
+### Using Docker
+
+```bash
+docker run chopchop scan --url https://foobar.com
+```
+
+#### Custom configuration file
+
+```bash
+docker run -v ./:/app chopchop scan -c /app/chopchop.yml --url https://foobar.com
 ```
 
 ## What's next
