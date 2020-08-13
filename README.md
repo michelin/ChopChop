@@ -58,7 +58,7 @@ $ ./gochopchop scan --url https://foobar.com
 ### Using Docker
 
 ```bash
-docker run chopchop scan --url https://foobar.com
+docker run gochopchop scan --url https://foobar.com
 ```
 
 #### Custom configuration file
