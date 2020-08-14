@@ -87,7 +87,15 @@ func Scan(cmd *cobra.Command, args []string) {
 			if plugin.QueryString != "" {
 				tmpURL += "?" + plugin.QueryString
 			}
-			httpResponse, err := pkg.HTTPGet(insecure, tmpURL)
+
+			// By default we follow HTTP redirects
+			followRedirects := true
+			// But for each plugin we can override and don't follow HTTP redirects
+			if plugin.FollowRedirects != nil && *plugin.FollowRedirects == false {
+				followRedirects = false
+			}
+
+			httpResponse, err := pkg.HTTPGet(insecure, tmpURL, followRedirects)
 			if err != nil {
 				_ = errors.Wrap(err, "Timeout of HTTP Request")
 			}

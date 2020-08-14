@@ -42,9 +42,10 @@ type Check struct {
 type Config struct {
 	Insecure bool `yaml:"insecure"`
 	Plugins  []struct {
-		URI         string  `yaml:"uri"`
-		QueryString string  `yaml:"query_string"`
-		Checks      []Check `yaml:"checks"`
+		URI             string  `yaml:"uri"`
+		QueryString     string  `yaml:"query_string"`
+		Checks          []Check `yaml:"checks"`
+		FollowRedirects *bool   `yaml:"follow_redirects"`
 	} `yaml:"plugins"`
 }
 
