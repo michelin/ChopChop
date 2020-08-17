@@ -439,3 +439,53 @@ plugins:
         description: Possible Trickbot Trojan Payload hosting in /ico/VidT6cErs
         status_code: 200
         severity: "High"
+  - uri: "/admin/admin.html"
+    checks:
+      - name : Stormshield SNS Web Administration console
+        no_match:
+          - '<title>Stormshield Network - Portal</title>'
+        remediation: Make sure that Stormshield SNS Web Administration console access is restricted & monitored
+        description: Stormshield SNS Web Administration console is accessible
+        status_code: 200
+        severity: "Informational"
+  - uri: "/auth"
+    checks:
+      - name : Stormshield default TLS autosigned Certificate
+        no_match:
+          - 'O="NETASQ"'
+          - 'C="FR"'
+          - 'ST="Nord"'
+          - 'OU="NETASQ Firewall Certification Authority"'
+        remediation: Use trusted certificate
+        description: Stormshield Web Access use default TLS autosigned Certificate
+        status_code: 200
+        severity: "Informational"
+  - uri: "/restgui/start.html"
+    checks:
+      - name : Dell IDRAC
+        no_match:
+          - 'C="US"'
+          - 'ST="Texas"'
+          - 'L="Round Rock"'
+          - 'O="Dell Inc."'
+          - 'OU="Remote Access Group"'
+          - 'CN="idrac'
+          - 'emailAddress="support@dell.com"'
+        remediation: Make sure that Dell IDRAC access is restricted & monitored
+        description: Dell IDRAC is accessible
+        status_code: 200
+        severity: "Informational"
+  - uri: "/"
+    checks:
+      - name : Microsoft-IIS/7.0 - Windows Server 2003/2008
+        headers:
+          - "Server:Microsoft-IIS/7.0"
+        remediation: Upgrade to maintened version
+        description: Microsoft-IIS/7.0 - Windows Server 2003/2008
+        severity: "Informational"
+      - name : Microsoft-IIS/7.5 - Windows Server 2003/2008
+        headers:
+          - "Server:Microsoft-IIS/7.5"
+        remediation: Upgrade to maintened version
+        description: Microsoft-IIS/7.5 - Windows Server 2003/2008
+        severity: "Informational"
