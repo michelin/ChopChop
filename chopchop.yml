@@ -434,11 +434,44 @@ plugins:
       - name : Possible Trickbot Trojan Payload hosting VidT6cErs
         no_match:
           - '<!DOCTYPE html>'
-          - '<head>'
-        remediation: Make sure your system isn't compromised
+        headers:
+          - "Accept-Ranges:bytes"
+        remediation: Make sure your system is'nt compromised
         description: Possible Trickbot Trojan Payload hosting in /ico/VidT6cErs
         status_code: 200
         severity: "High"
+  - uri: "/admin/libs/prettify-4-Mar-2013/prettify.css"
+    checks:
+      - name : Stormshield SNS Web Admin Console
+        headers:
+          - "Content-Type:text/css"
+        remediation: Make sure that Stormshield SNS Web Admin Console access is restricted & monitored
+        description: Stormshield SNS Web Admin Console is accessible
+        status_code: 200
+        severity: "Low"
+  - uri: "/auth"
+    checks:
+      - name : Stormshield Web Portal
+        match:
+          - '/data/flag-fr.jpg'
+          - '/data/flag-us.jpg'
+          - '/data/flag-bg.jpg'
+          - '/data/flag-cs.jpg'
+          - '/data/flag-de.jpg'
+          - '/data/i_auth.png'
+        remediation: Make sure that Stormshield Web Portal access is restricted & monitored
+        description: Stormshield Web Portal is accessible
+        status_code: 200
+        severity: "Informational"
+  - uri: "/restgui/start.html"
+    checks:
+      - name : Dell IDRAC
+        headers:
+          - "Content-Type:text/html"
+        remediation: Make sure that Dell IDRAC access is restricted & monitored
+        description: Dell IDRAC is accessible
+        status_code: 200
+        severity: "Informational"
   - uri: "/"
     checks:
       - name : Microsoft-IIS/7.0 - Windows Server 2003/2008
@@ -453,3 +486,12 @@ plugins:
         remediation: Upgrade to maintened version
         description: Microsoft-IIS/7.5 - Windows Server 2003/2008
         severity: "Informational"
+  - uri: "/"
+    checks:
+      - name : GE ViewPoint
+        match:
+          - '<title>ViewPoint System Status'
+        remediation: Make sure that GE ViewPoint System Status access is restricted & monitored
+        description: GE ViewPoint System Status is accessible
+        status_code: 200
+        severity: "Low"
