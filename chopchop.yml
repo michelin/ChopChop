@@ -495,3 +495,91 @@ plugins:
         description: GE ViewPoint System Status is accessible
         status_code: 200
         severity: "Low"
+  - uri: "/"
+    checks:
+      - name : Ascom IP-DECT Base Station
+        match:
+          - '<select product="Ascom IP-DECT Base Station"'
+        remediation: Make sure that Ascom IP-DECT Base Station access is restricted & monitored
+        description: Ascom IP-DECT Base Station is accessible
+        status_code: 200
+        severity: "Informational"
+  - uri: "/"
+    checks:
+      - name : EMC Unisphere
+        match:
+          - 'Unisphere<br>'
+          - '<div class="linkDiv">'
+          - '<p>JavaScript is disabled.'
+          - 'src="images/blank.jpg"/>'
+          - '<div class="linkAreaDiv"'
+        remediation: Make sure that EMC Unisphere access is restricted & monitored
+        description: Ascom EMC Unisphere is accessible
+        status_code: 200
+        severity: "Low"
+  - uri: "/ui"
+    checks:
+      - name : VMware ESXi
+        match:
+          - 'ng-app="esxUiApp"'
+          - '<title ng-bind="$root.title">'
+        remediation: Make sure that VMware ESXi access is restricted & monitored
+        description: VMware ESXi is accessible
+        status_code: 200
+        severity: "Low"
+  - uri: "/vsphere-client"
+    checks:
+      - name : VMware vCenter
+        match:
+          - '<title>vSphere Web Client</title>'
+        remediation: Make sure that VMware vCenter access is restricted & monitored
+        description: VMware vCenter is accessible
+        status_code: 200
+        severity: "Low"
+  - uri: "/eai/index.html"
+    checks:
+      - name : Enovacom Suite V2
+        match:
+          - '<title>Console d&#039;administration et d&#039;exploitation</title>'
+          - 'href="/eai/Ressources/Images/v2.ico"'
+        remediation: Make sure that EAI Enovacom Suite V2 access is restricted & monitored
+        description: EAI Enovacom Suite V2 is accessible
+        status_code: 200
+        severity: "Low"
+  - uri: "/"
+    checks:
+      - name : F-Secure Policy Manager Server
+        match:
+          - '<title>F-Secure Policy Manager Server</title>'
+          - 'href="/images/icon/f-secure.ico"'
+        remediation: Make sure that F-Secure Policy Manager Server access is monitored
+        description: F-Secure Policy Manager Server is accessible
+        status_code: 200
+        severity: "Informational"
+  - uri: "/mailscanner/login.php"
+    checks:
+      - name : MailWatch
+        match:
+          - '<title>MailWatch Login Page</title>'
+        remediation: Make sure that MailWatch access is monitored
+        description: MailWatch is accessible
+        status_code: 200
+        severity: "Low"
+  - uri: "/fog/management/index.php"
+    checks:
+      - name : FOG Project
+        match:
+          - '<title>Login</title>'
+          - '<b>FOG</b> Project'
+        remediation: Make sure that FOG Project access is monitored
+        description: FOG Project is accessible
+        status_code: 200
+        severity: "Low"
+  - uri: "/"
+    checks:
+      - name: Apache2 Debian Default Page
+        match:
+          - '<title>Apache2 Debian Default Page: It works</title>'
+        remediation: Remove the symbolic link from the Apache default configuration
+        description: Detects the presence of a default Apache page
+        severity: "Informational"
