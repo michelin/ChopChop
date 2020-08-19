@@ -462,10 +462,6 @@ plugins:
       - name : Stormshield Web Portal
         match:
           - '/data/flag-fr.jpg'
-          - '/data/flag-us.jpg'
-          - '/data/flag-bg.jpg'
-          - '/data/flag-cs.jpg'
-          - '/data/flag-de.jpg'
           - '/data/i_auth.png'
         remediation: Make sure that Stormshield Web Portal access is restricted & monitored
         description: Stormshield Web Portal is accessible
@@ -478,6 +474,61 @@ plugins:
           - "Content-Type:text/html"
         remediation: Make sure that Dell IDRAC access is restricted & monitored
         description: Dell IDRAC is accessible
+        status_code: 200
+        severity: "Informational"
+  - uri: "/ui"
+    checks:
+      - name : VMware ESXi
+        match:
+          - 'ng-app="esxUiApp"'
+        remediation: Make sure that VMware ESXi access is restricted & monitored
+        description: VMware ESXi is accessible
+        status_code: 200
+        severity: "Low"
+  - uri: "/vsphere-client"
+    checks:
+      - name : VMware vCenter
+        match:
+          - '<title>vSphere Web Client</title>'
+        remediation: Make sure that VMware vCenter access is restricted & monitored
+        description: VMware vCenter is accessible
+        status_code: 200
+        severity: "Low"
+  - uri: "/eai/index.html"
+    checks:
+      - name : Enovacom Suite V2
+        match:
+          - 'href="/eai/Ressources/Images/v2.ico"'
+        remediation: Make sure that EAI Enovacom Suite V2 access is restricted & monitored
+        description: EAI Enovacom Suite V2 is accessible
+        status_code: 200
+        severity: "Low"
+  - uri: "/mailscanner/login.php"
+    checks:
+      - name : MailWatch
+        match:
+          - '<title>MailWatch Login Page</title>'
+        remediation: Make sure that MailWatch access is monitored
+        description: MailWatch is accessible
+        status_code: 200
+        severity: "Low"
+  - uri: "/fog/management/index.php"
+    checks:
+      - name : FOG Project
+        match:
+          - '<title>Login</title>'
+          - '<b>FOG</b> Project'
+        remediation: Make sure that FOG Project access is monitored
+        description: FOG Project is accessible
+        status_code: 200
+        severity: "Low"
+  - uri: "/.well-known/security.txt"
+    checks:
+      - name: Security.txt
+        match:
+          - "Contact"
+        remediation: Great ! A Security.txt file for contact is present
+        description: Detects the presence of Security.txt file
         status_code: 200
         severity: "Informational"
   - uri: "/"
@@ -500,7 +551,7 @@ plugins:
         match:
           - '<title>ViewPoint System Status'
         remediation: Make sure that GE ViewPoint System Status access is restricted & monitored
-        description: GE ViewPoint System Status is accessible
+        description: GE ViewPoint System Status is accessible / sensitive information leaking
         status_code: 200
         severity: "Low"
   - uri: "/"
@@ -517,41 +568,8 @@ plugins:
       - name : EMC Unisphere
         match:
           - 'Unisphere<br>'
-          - '<div class="linkDiv">'
-          - '<p>JavaScript is disabled.'
-          - 'src="images/blank.jpg"/>'
-          - '<div class="linkAreaDiv"'
         remediation: Make sure that EMC Unisphere access is restricted & monitored
-        description: Ascom EMC Unisphere is accessible
-        status_code: 200
-        severity: "Low"
-  - uri: "/ui"
-    checks:
-      - name : VMware ESXi
-        match:
-          - 'ng-app="esxUiApp"'
-          - '<title ng-bind="$root.title">'
-        remediation: Make sure that VMware ESXi access is restricted & monitored
-        description: VMware ESXi is accessible
-        status_code: 200
-        severity: "Low"
-  - uri: "/vsphere-client"
-    checks:
-      - name : VMware vCenter
-        match:
-          - '<title>vSphere Web Client</title>'
-        remediation: Make sure that VMware vCenter access is restricted & monitored
-        description: VMware vCenter is accessible
-        status_code: 200
-        severity: "Low"
-  - uri: "/eai/index.html"
-    checks:
-      - name : Enovacom Suite V2
-        match:
-          - '<title>Console d&#039;administration et d&#039;exploitation</title>'
-          - 'href="/eai/Ressources/Images/v2.ico"'
-        remediation: Make sure that EAI Enovacom Suite V2 access is restricted & monitored
-        description: EAI Enovacom Suite V2 is accessible
+        description: EMC Unisphere is accessible
         status_code: 200
         severity: "Low"
   - uri: "/"
@@ -559,30 +577,10 @@ plugins:
       - name : F-Secure Policy Manager Server
         match:
           - '<title>F-Secure Policy Manager Server</title>'
-          - 'href="/images/icon/f-secure.ico"'
         remediation: Make sure that F-Secure Policy Manager Server access is monitored
         description: F-Secure Policy Manager Server is accessible
         status_code: 200
         severity: "Informational"
-  - uri: "/mailscanner/login.php"
-    checks:
-      - name : MailWatch
-        match:
-          - '<title>MailWatch Login Page</title>'
-        remediation: Make sure that MailWatch access is monitored
-        description: MailWatch is accessible
-        status_code: 200
-        severity: "Low"
-  - uri: "/fog/management/index.php"
-    checks:
-      - name : FOG Project
-        match:
-          - '<title>Login</title>'
-          - '<b>FOG</b> Project'
-        remediation: Make sure that FOG Project access is monitored
-        description: FOG Project is accessible
-        status_code: 200
-        severity: "Low"
   - uri: "/"
     checks:
       - name: Apache2 Debian Default Page
