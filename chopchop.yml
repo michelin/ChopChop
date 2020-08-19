@@ -1,5 +1,13 @@
 insecure: false
 plugins:
+  - uri: "/status.shtml"
+    checks:
+      - name: GENEREX UPS
+        match:
+          - 'UPS Status:'
+        remediation: Make sure that GENEREX UPS access is restricted & monitored
+        description: GENEREX UPS is accessible | don't move this rule to avoid client timeout
+        severity: "Medium"
   - uri: "/"
     checks:
       - name: Jenkins
@@ -260,7 +268,7 @@ plugins:
         remediation: Disable phpinfo() in PHP.ini
         description: Verifies that the phpinfo() function is accessible
         severity: "Low"
-  - uri: "/phpMyAdmin"
+  - uri: "/phpmyadmin"
     checks:
       - name: PHPMyAdmin
         match:
@@ -582,4 +590,36 @@ plugins:
           - '<title>Apache2 Debian Default Page: It works</title>'
         remediation: Remove the symbolic link from the Apache default configuration
         description: Detects the presence of a default Apache page
+        severity: "Informational"
+  - uri: "/"
+    checks:
+      - name : Cisco IOS
+        headers:
+          - "Server:cisco-IOS"
+        remediation: Make sure that Cisco IOS access is restricted & monitored
+        description: Cisco IOS is accessible
+        severity: "Low"
+  - uri: "/XsEXPL"
+    checks:
+      - name: Xplore Web RIS
+        match:
+          - '<title>Xplore Exploitation</title>'
+        remediation: Make sure that Xplore Web RIS access is restricted & monitored
+        description: Xplore Web RIS is accessible
+        severity: "Informational"
+  - uri: "/zimbraAdmin"
+    checks:
+      - name: Zimbra Administration
+        match:
+          - 'Zimbra Collaboration Suite Web Client'
+        remediation: Make sure that Zimbra Administration access is restricted & monitored
+        description: Zimbra Administration is accessible
+        severity: "Low"
+  - uri: "/"
+    checks:
+      - name: NETAVIS Observer
+        match:
+          - '<title>NETAVIS Observer'
+        remediation: Make sure that NETAVIS Observer access is restricted & monitored
+        description: NETAVIS Observer is accessible
         severity: "Informational"
