@@ -621,3 +621,55 @@ plugins:
         remediation: Make sure that NETAVIS Observer access is restricted & monitored
         description: NETAVIS Observer is accessible
         severity: "Informational"
+  - uri: "/"
+    checks:
+      - name : Odin
+        match:
+          - '<h1 title="Operations Automation">'
+        remediation: Make sure that Odin service automation access is restricted & monitored
+        description: Odin service automation is accessible
+        severity: "Informational"
+  - uri: "/"
+    checks:
+      - name : Nordex Control
+        headers:
+          - "Server:Jetty/3.1.8 (Windows 2000 5.0 x86)"
+        remediation: Make sure that Nordex Control access is restricted & monitored
+        description: Nordex Control is accessible
+        severity: "Low"
+  - uri: "/"
+    checks:
+      - name : EIG GaugeTech Electricity Meter
+        headers:
+          - "Server:EIG Embedded Web Server"
+        remediation: Make sure that EIG GaugeTech Electricity Meter access is restricted & monitored
+        description: EIG GaugeTech Electricity Meter is accessible
+        severity: "Low"
+  - uri: "/"
+    checks:
+      - name : Weave Scope
+        match:
+          - '<title>Weave Scope</title>'
+        remediation: Make sure that Weave Scope access is restricted & monitored
+        description: Weave Scope is accessible
+        severity: "Medium"
+  - uri: "/public/img/mongo-express-logo.png"
+    checks:
+      - name : Mongo Express
+        headers:
+          - 'Content-Type:image/png'
+        remediation: Make sure that Mongo Express access is restricted & monitored
+        description: Mongo Express is accessible
+        status_code: 200
+        severity: "High"
+  - uri: "/login.html"
+    checks:
+      - name : Polycom
+        headers:
+          - 'Server:lighttpd'
+        match:
+          - '<title>Polycom Login</title>'
+        remediation: Make sure that Polycom access is restricted & monitored
+        description: Polycom Video Conferencing is accessible
+        status_code: 200
+        severity: "Informational"
