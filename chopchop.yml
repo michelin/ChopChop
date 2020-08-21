@@ -673,3 +673,14 @@ plugins:
         description: Polycom Video Conferencing is accessible
         status_code: 200
         severity: "Informational"
+  - uri: "/securityRealm/user/admin/search/index?q=a"
+    checks:
+      - name : Jenkins CVE-2018-1000861 (RCE)
+        match:
+          - 'Jenkins'
+          - '<title>Search for'
+        no_match:
+          - 'HTTP ERROR 404 Not Found'
+        remediation: Patch the server as soon as possible
+        description: Jenkins server is vulnerable to RCE CVE-2018-1000861
+        severity: "High"
