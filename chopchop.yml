@@ -684,3 +684,48 @@ plugins:
         remediation: Patch the server as soon as possible
         description: Jenkins server is vulnerable to RCE CVE-2018-1000861
         severity: "High"
+  - uri: "/?MAIN=TOPACCESS"
+    checks:
+      - name : TopAccess Toshiba MFP
+        match:
+          - '<!--<title class="clsTitle1">TopAccess</title>-->'
+        remediation: Make sure that TopAccess access is restricted & monitored
+        description: TopAccess Toshiba MFP is accessible
+        status_code: 200
+        severity: "Low"
+  - uri: "/"
+    checks:
+      - name : HP Printer
+        headers:
+          - "Server:Virata-EmWeb/R6_2_1"
+        remediation: Make sure that HP Printer access is restricted & monitored
+        description: HP Printer is accessible
+        status_code: 200
+        severity: "Low"
+  - uri: "/ePrint/ePrintConfigDyn.xml"
+    checks:
+      - name : HP Printer
+        headers:
+          - 'Content-Type:text/xml'
+        remediation: Make sure that HP Printer access is restricted & monitored
+        description: HP Printer is accessible
+        status_code: 200
+        severity: "Low"
+  - uri: "/"
+    checks:
+      - name : Printer (Lexmark, Dell, Toshiba, Sindoh)
+        headers:
+          - "Server:Lexmark_Web_Server"
+        remediation: Make sure that Printer access is restricted & monitored
+        description: Printer (Lexmark, Dell, Toshiba, Sindoh) is accessible
+        status_code: 200
+        severity: "Low"
+  - uri: "/config.html"
+    checks:
+      - name : Zebra Label Printer
+        match:
+          - '<H1>Zebra Technologies'
+        remediation: Make sure that Zebra Label Printer access is restricted & monitored
+        description: Zebra Label Printer is accessible
+        status_code: 200
+        severity: "Low"
