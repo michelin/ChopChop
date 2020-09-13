@@ -18,6 +18,7 @@ func init() {
 	scanCmd.Flags().StringP("url-file", "f", "", "path to a specified file containing urls to test")        // --uri-file ou -f
 	scanCmd.Flags().StringP("suffix", "s", "", "Add suffix to urls when flag url-file is specified")        // --suffix ou -s
 	scanCmd.Flags().StringP("prefix", "p", "", "Add prefix to urls when flag url-file is specified")        // --prefix ou -p
+	scanCmd.Flags().Int32P("timeout", "t", 10, "Timeout for the HTTP requests (default: 10s)")              // --timeout ou -t
 	scanCmd.Flags().StringP("block", "b", "", "Block pipeline if severity is over or equal specified flag") // --block ou -b
 	scanCmd.Flags().BoolP("csv", "", false, "output as a csv file")                                         //--csv
 	scanCmd.Flags().BoolP("json", "", false, "output as a json file")                                       //--json

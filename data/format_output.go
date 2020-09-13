@@ -40,13 +40,16 @@ type Check struct {
 
 // Config struct to load the configuration from the YAML file
 type Config struct {
-	Insecure bool `yaml:"insecure"`
-	Plugins  []struct {
-		URI             string  `yaml:"uri"`
-		QueryString     string  `yaml:"query_string"`
-		Checks          []Check `yaml:"checks"`
-		FollowRedirects *bool   `yaml:"follow_redirects"`
-	} `yaml:"plugins"`
+	Insecure bool        `yaml:"insecure"`
+	Plugins  []Signature `yaml:"plugins"`
+}
+
+// Signature struct to load it afterwards
+type Signature struct {
+	URI             string  `yaml:"uri"`
+	QueryString     string  `yaml:"query_string"`
+	Checks          []Check `yaml:"checks"`
+	FollowRedirects *bool   `yaml:"follow_redirects"`
 }
 
 // IsValid will verify that the severityType is part of the enum previously declared

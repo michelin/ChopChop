@@ -2,20 +2,20 @@ package pkg
 
 import (
 	"crypto/tls"
-	"log"
 	"net/http"
 	"time"
 )
 
 //HTTPGet return http response of http get request
-func HTTPGet(insecure bool, url string, followRedirects bool) (*http.Response, error) {
+func HTTPGet(insecure bool, url string, followRedirects bool, timeout int) (*http.Response, error) {
+
 	tr := &http.Transport{}
 	if insecure {
 		tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	}
 	var netClient = &http.Client{
 		Transport: tr,
-		Timeout:   time.Second * 3,
+		Timeout:   time.Second * time.Duration(timeout),
 	}
 
 	// If we don't want to follow HTTP redirects
@@ -27,10 +27,10 @@ func HTTPGet(insecure bool, url string, followRedirects bool) (*http.Response, e
 	}
 
 	resp, err := netClient.Get(url)
-	if err != nil {
-		log.Println(err)
-		log.Println("If error unsupported protocol scheme encountered, try adding flag --prefix with http://, or add prefix directly in url list")
-	}
+
+	// if err != nil {
+	// 	log.Println(err)
+	// }
 
 	return resp, err
 }

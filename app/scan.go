@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/pkg/errors"
@@ -27,6 +28,7 @@ func Scan(cmd *cobra.Command, args []string) {
 	configFile, _ := cmd.Flags().GetString("config-file")
 	suffix, _ := cmd.Flags().GetString("suffix")
 	prefix, _ := cmd.Flags().GetString("prefix")
+	httpRequestTimeout, _ := cmd.Flags().GetInt("timeout")
 	blockedFlag, _ := cmd.Flags().GetString("block")
 
 	var tmpURL string
@@ -78,53 +80,58 @@ func Scan(cmd *cobra.Command, args []string) {
 	date := currentTime.Format("2006-01-02_15-04-05")
 	out := []data.Output{}
 
+	var wg sync.WaitGroup
+	wg.Add(len(urlList))
+
 	for i := 0; i < len(urlList); i++ {
-		fmt.Print("Testing domain : ")
-		fmt.Println(prefix + urlList[i] + suffix)
-		for index, plugin := range y.Plugins {
-			_ = index
-			tmpURL = prefix + urlList[i] + suffix + fmt.Sprint(plugin.URI)
-			if plugin.QueryString != "" {
-				tmpURL += "?" + plugin.QueryString
-			}
+		go func(domain string) {
+			defer wg.Done()
+			fmt.Print("Testing domain : ")
+			fmt.Println(prefix + domain + suffix)
+			for index, plugin := range y.Plugins {
+				_ = index
+				tmpURL = prefix + domain + suffix + fmt.Sprint(plugin.URI)
+				if plugin.QueryString != "" {
+					tmpURL += "?" + plugin.QueryString
+				}
 
-			// By default we follow HTTP redirects
-			followRedirects := true
-			// But for each plugin we can override and don't follow HTTP redirects
-			if plugin.FollowRedirects != nil && *plugin.FollowRedirects == false {
-				followRedirects = false
-			}
+				// By default we follow HTTP redirects
+				followRedirects := true
+				// But for each plugin we can override and don't follow HTTP redirects
+				if plugin.FollowRedirects != nil && *plugin.FollowRedirects == false {
+					followRedirects = false
+				}
 
-			httpResponse, err := pkg.HTTPGet(insecure, tmpURL, followRedirects)
-			if err != nil {
-				_ = errors.Wrap(err, "Timeout of HTTP Request")
-			}
+				httpResponse, err := pkg.HTTPGet(insecure, tmpURL, followRedirects, httpRequestTimeout)
+				if err != nil {
+					_ = errors.Wrap(err, "Timeout of HTTP Request")
+				}
 
-			if httpResponse != nil {
-				for index, check := range plugin.Checks {
-					_ = index
-					answer := pkg.ResponseAnalysis(httpResponse, check)
-					if answer {
-						hit = true
-						if BlockCI(blockedFlag, *check.Severity) {
-							block = true
+				if httpResponse != nil {
+					for index, check := range plugin.Checks {
+						_ = index
+						answer := pkg.ResponseAnalysis(httpResponse, check)
+						if answer {
+							hit = true
+							if BlockCI(blockedFlag, *check.Severity) {
+								block = true
+							}
+							out = append(out, data.Output{
+								Domain:      domain,
+								PluginName:  check.PluginName,
+								TestedURL:   plugin.URI,
+								Severity:    string(*check.Severity),
+								Remediation: *check.Remediation,
+							})
 						}
-						out = append(out, data.Output{
-							Domain:      urlList[i],
-							PluginName:  check.PluginName,
-							TestedURL:   plugin.URI,
-							Severity:    string(*check.Severity),
-							Remediation: *check.Remediation,
-						})
 					}
 				}
-			} else {
-				fmt.Println("Server refused the connection for URL : " + tmpURL)
-				continue
+				_ = httpResponse.Body.Close()
 			}
-			_ = httpResponse.Body.Close()
-		}
+		}(urlList[i])
 	}
+
+	wg.Wait()
 
 	if hit {
 		pkg.FormatOutputTable(out)
