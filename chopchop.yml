@@ -468,15 +468,6 @@ plugins:
         description: Stormshield Web Portal is accessible
         status_code: 200
         severity: "Informational"
-  - uri: "/restgui/start.html"
-    checks:
-      - name : Dell IDRAC
-        headers:
-          - "Content-Type:text/html"
-        remediation: Make sure that Dell IDRAC access is restricted & monitored
-        description: Dell IDRAC is accessible
-        status_code: 200
-        severity: "Informational"
   - uri: "/ui"
     checks:
       - name : VMware ESXi
