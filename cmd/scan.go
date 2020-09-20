@@ -22,6 +22,7 @@ func init() {
 	scanCmd.Flags().StringP("block", "b", "", "Block pipeline if severity is over or equal specified flag") // --block ou -b
 	scanCmd.Flags().BoolP("csv", "", false, "output as a csv file")                                         //--csv
 	scanCmd.Flags().BoolP("json", "", false, "output as a json file")                                       //--json
+	scanCmd.Flags().BoolP("verbose", "v", false, "Verbose mode")                                            //--verbose ou -v
 }
 
 var scanCmd = &cobra.Command{
@@ -57,12 +58,12 @@ func scanCheckArgsAndFlags(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("invalid value for block: %v", err)
 	}
-	if url != "" {
-		if !strings.HasPrefix(url, "http") {
-			// If http or https not specified, return fatal log
-			return fmt.Errorf("URL needs a specified prefix :  http:// or https://")
-		}
-	}
+	// if url != "" {
+	// 	if !strings.HasPrefix(url, "http") {
+	// 		// If http or https not specified, return fatal log
+	// 		return fmt.Errorf("URL needs a specified prefix :  http:// or https://")
+	// 	}
+	// }
 	if suffix != "" || prefix != "" {
 		if urlFile == "" {
 			return fmt.Errorf("suffix or prefix flags can't be assigned if flag url-file is not specified")

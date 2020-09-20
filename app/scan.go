@@ -16,6 +16,13 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// Verbose Verbose function
+func Verbose(message string, verbose bool) {
+	if verbose {
+		fmt.Println("[verbose] " + message)
+	}
+}
+
 // Scan of domain via url
 func Scan(cmd *cobra.Command, args []string) {
 	start := time.Now()
@@ -30,6 +37,7 @@ func Scan(cmd *cobra.Command, args []string) {
 	prefix, _ := cmd.Flags().GetString("prefix")
 	httpRequestTimeout, _ := cmd.Flags().GetInt("timeout")
 	blockedFlag, _ := cmd.Flags().GetString("block")
+	verbose, _ := cmd.Flags().GetBool("verbose")
 
 	var tmpURL string
 	var urlList []string
@@ -68,7 +76,7 @@ func Scan(cmd *cobra.Command, args []string) {
 	}
 	// If flag insecure isn't specified, check yaml file if it's specified in it
 	if insecure {
-		fmt.Println("Launching scan without validating the SSL certificate")
+		Verbose("Launching scan without validating the SSL certificate", verbose)
 	} else {
 		insecure = y.Insecure
 	}
@@ -86,8 +94,7 @@ func Scan(cmd *cobra.Command, args []string) {
 	for i := 0; i < len(urlList); i++ {
 		go func(domain string) {
 			defer wg.Done()
-			fmt.Print("Testing domain : ")
-			fmt.Println(prefix + domain + suffix)
+			Verbose("Testing domain : "+prefix+domain+suffix, verbose)
 			for index, plugin := range y.Plugins {
 				_ = index
 				tmpURL = prefix + domain + suffix + fmt.Sprint(plugin.URI)
@@ -102,6 +109,7 @@ func Scan(cmd *cobra.Command, args []string) {
 					followRedirects = false
 				}
 
+				Verbose("Testing URL: "+tmpURL, verbose)
 				httpResponse, err := pkg.HTTPGet(insecure, tmpURL, followRedirects, httpRequestTimeout)
 				if err != nil {
 					_ = errors.Wrap(err, "Timeout of HTTP Request")
@@ -112,6 +120,7 @@ func Scan(cmd *cobra.Command, args []string) {
 						_ = index
 						answer := pkg.ResponseAnalysis(httpResponse, check)
 						if answer {
+							Verbose("[!] Hit found!\n\tURL: "+tmpURL+"\n\tPlugin: "+check.PluginName+"\n\tSeverity: "+string(*check.Severity), verbose)
 							hit = true
 							if BlockCI(blockedFlag, *check.Severity) {
 								block = true
@@ -145,7 +154,7 @@ func Scan(cmd *cobra.Command, args []string) {
 	}
 
 	elapsed := time.Since(start)
-	log.Printf("Scan execution time: %s", elapsed)
+	Verbose(fmt.Sprintf("Scan execution time: %s", elapsed), verbose)
 
 	// return EXIT_SUCCESS if
 	// 1. no hit
@@ -156,6 +165,8 @@ func Scan(cmd *cobra.Command, args []string) {
 		} else {
 			os.Exit(1)
 		}
+	} else {
+		fmt.Println("No vulnerabilities found.")
 	}
 }
 
