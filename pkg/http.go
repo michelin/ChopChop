@@ -15,7 +15,7 @@ func HTTPGet(insecure bool, url string, followRedirects bool, timeout int) (*htt
 	}
 	var netClient = &http.Client{
 		Transport: tr,
-		Timeout:   time.Second * time.Duration(timeout),
+		Timeout:   time.Second * 10,
 	}
 
 	// If we don't want to follow HTTP redirects

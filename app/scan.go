@@ -134,8 +134,8 @@ func Scan(cmd *cobra.Command, args []string) {
 							})
 						}
 					}
+					_ = httpResponse.Body.Close()
 				}
-				_ = httpResponse.Body.Close()
 			}
 		}(urlList[i])
 	}
