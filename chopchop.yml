@@ -10,6 +10,102 @@ plugins:
         severity: "Medium"
   - uri: "/"
     checks:
+      - name : HP Printer
+        headers:
+          - "Server:Virata-EmWeb/R6_2_1"
+        remediation: Make sure that HP Printer access is restricted & monitored
+        description: HP Printer is accessible
+        status_code: 200
+        severity: "Low"
+      - name : Printer (Lexmark, Dell, Toshiba, Sindoh)
+        headers:
+          - "Server:Lexmark_Web_Server"
+        remediation: Make sure that Printer access is restricted & monitored
+        description: Printer (Lexmark, Dell, Toshiba, Sindoh) is accessible
+        status_code: 200
+        severity: "Low"
+      - name : Microsoft-IIS/7.0 - Windows Server 2003/2008
+        headers:
+          - "Server:Microsoft-IIS/7.0"
+        remediation: Upgrade to maintened version
+        description: Microsoft-IIS/7.0 - Windows Server 2003/2008
+        severity: "Informational"
+      - name : Microsoft-IIS/7.5 - Windows Server 2003/2008
+        headers:
+          - "Server:Microsoft-IIS/7.5"
+        remediation: Upgrade to maintened version
+        description: Microsoft-IIS/7.5 - Windows Server 2003/2008
+        severity: "Informational"
+      - name : GE ViewPoint
+        match:
+          - '<title>ViewPoint System Status'
+        remediation: Make sure that GE ViewPoint System Status access is restricted & monitored
+        description: GE ViewPoint System Status is accessible / sensitive information leaking
+        status_code: 200
+        severity: "Low"
+      - name : Ascom IP-DECT Base Station
+        match:
+          - '<select product="Ascom IP-DECT Base Station"'
+        remediation: Make sure that Ascom IP-DECT Base Station access is restricted & monitored
+        description: Ascom IP-DECT Base Station is accessible
+        status_code: 200
+        severity: "Informational"
+      - name : EMC Unisphere
+        match:
+          - 'Unisphere<br>'
+        remediation: Make sure that EMC Unisphere access is restricted & monitored
+        description: EMC Unisphere is accessible
+        status_code: 200
+        severity: "Low"
+      - name : F-Secure Policy Manager Server
+        match:
+          - '<title>F-Secure Policy Manager Server</title>'
+        remediation: Make sure that F-Secure Policy Manager Server access is monitored
+        description: F-Secure Policy Manager Server is accessible
+        status_code: 200
+        severity: "Informational"
+      - name: Apache2 Debian Default Page
+        match:
+          - '<title>Apache2 Debian Default Page: It works</title>'
+        remediation: Remove the symbolic link from the Apache default configuration
+        description: Detects the presence of a default Apache page
+        severity: "Informational"
+      - name : Cisco IOS
+        headers:
+          - "Server:cisco-IOS"
+        remediation: Make sure that Cisco IOS access is restricted & monitored
+        description: Cisco IOS is accessible
+        severity: "Low"
+      - name : Odin
+        match:
+          - '<h1 title="Operations Automation">'
+        remediation: Make sure that Odin service automation access is restricted & monitored
+        description: Odin service automation is accessible
+        severity: "Informational"
+      - name : Nordex Control
+        headers:
+          - "Server:Jetty/3.1.8 (Windows 2000 5.0 x86)"
+        remediation: Make sure that Nordex Control access is restricted & monitored
+        description: Nordex Control is accessible
+        severity: "Low"
+      - name : EIG GaugeTech Electricity Meter
+        headers:
+          - "Server:EIG Embedded Web Server"
+        remediation: Make sure that EIG GaugeTech Electricity Meter access is restricted & monitored
+        description: EIG GaugeTech Electricity Meter is accessible
+        severity: "Low"
+      - name : Weave Scope
+        match:
+          - '<title>Weave Scope</title>'
+        remediation: Make sure that Weave Scope access is restricted & monitored
+        description: Weave Scope is accessible
+        severity: "Medium"
+      - name: NETAVIS Observer
+        match:
+          - '<title>NETAVIS Observer'
+        remediation: Make sure that NETAVIS Observer access is restricted & monitored
+        description: NETAVIS Observer is accessible
+        severity: "Informational"
       - name: Jenkins
         match:
           - "hudson"
@@ -523,72 +619,6 @@ plugins:
         description: Detects the presence of Security.txt file
         status_code: 200
         severity: "Informational"
-  - uri: "/"
-    checks:
-      - name : Microsoft-IIS/7.0 - Windows Server 2003/2008
-        headers:
-          - "Server:Microsoft-IIS/7.0"
-        remediation: Upgrade to maintened version
-        description: Microsoft-IIS/7.0 - Windows Server 2003/2008
-        severity: "Informational"
-      - name : Microsoft-IIS/7.5 - Windows Server 2003/2008
-        headers:
-          - "Server:Microsoft-IIS/7.5"
-        remediation: Upgrade to maintened version
-        description: Microsoft-IIS/7.5 - Windows Server 2003/2008
-        severity: "Informational"
-  - uri: "/"
-    checks:
-      - name : GE ViewPoint
-        match:
-          - '<title>ViewPoint System Status'
-        remediation: Make sure that GE ViewPoint System Status access is restricted & monitored
-        description: GE ViewPoint System Status is accessible / sensitive information leaking
-        status_code: 200
-        severity: "Low"
-  - uri: "/"
-    checks:
-      - name : Ascom IP-DECT Base Station
-        match:
-          - '<select product="Ascom IP-DECT Base Station"'
-        remediation: Make sure that Ascom IP-DECT Base Station access is restricted & monitored
-        description: Ascom IP-DECT Base Station is accessible
-        status_code: 200
-        severity: "Informational"
-  - uri: "/"
-    checks:
-      - name : EMC Unisphere
-        match:
-          - 'Unisphere<br>'
-        remediation: Make sure that EMC Unisphere access is restricted & monitored
-        description: EMC Unisphere is accessible
-        status_code: 200
-        severity: "Low"
-  - uri: "/"
-    checks:
-      - name : F-Secure Policy Manager Server
-        match:
-          - '<title>F-Secure Policy Manager Server</title>'
-        remediation: Make sure that F-Secure Policy Manager Server access is monitored
-        description: F-Secure Policy Manager Server is accessible
-        status_code: 200
-        severity: "Informational"
-  - uri: "/"
-    checks:
-      - name: Apache2 Debian Default Page
-        match:
-          - '<title>Apache2 Debian Default Page: It works</title>'
-        remediation: Remove the symbolic link from the Apache default configuration
-        description: Detects the presence of a default Apache page
-        severity: "Informational"
-  - uri: "/"
-    checks:
-      - name : Cisco IOS
-        headers:
-          - "Server:cisco-IOS"
-        remediation: Make sure that Cisco IOS access is restricted & monitored
-        description: Cisco IOS is accessible
-        severity: "Low"
   - uri: "/XsEXPL"
     checks:
       - name: Xplore Web RIS
@@ -605,46 +635,6 @@ plugins:
         remediation: Make sure that Zimbra Administration access is restricted & monitored
         description: Zimbra Administration is accessible
         severity: "Low"
-  - uri: "/"
-    checks:
-      - name: NETAVIS Observer
-        match:
-          - '<title>NETAVIS Observer'
-        remediation: Make sure that NETAVIS Observer access is restricted & monitored
-        description: NETAVIS Observer is accessible
-        severity: "Informational"
-  - uri: "/"
-    checks:
-      - name : Odin
-        match:
-          - '<h1 title="Operations Automation">'
-        remediation: Make sure that Odin service automation access is restricted & monitored
-        description: Odin service automation is accessible
-        severity: "Informational"
-  - uri: "/"
-    checks:
-      - name : Nordex Control
-        headers:
-          - "Server:Jetty/3.1.8 (Windows 2000 5.0 x86)"
-        remediation: Make sure that Nordex Control access is restricted & monitored
-        description: Nordex Control is accessible
-        severity: "Low"
-  - uri: "/"
-    checks:
-      - name : EIG GaugeTech Electricity Meter
-        headers:
-          - "Server:EIG Embedded Web Server"
-        remediation: Make sure that EIG GaugeTech Electricity Meter access is restricted & monitored
-        description: EIG GaugeTech Electricity Meter is accessible
-        severity: "Low"
-  - uri: "/"
-    checks:
-      - name : Weave Scope
-        match:
-          - '<title>Weave Scope</title>'
-        remediation: Make sure that Weave Scope access is restricted & monitored
-        description: Weave Scope is accessible
-        severity: "Medium"
   - uri: "/public/img/mongo-express-logo.png"
     checks:
       - name : Mongo Express
@@ -685,15 +675,6 @@ plugins:
         description: TopAccess Toshiba MFP is accessible
         status_code: 200
         severity: "Low"
-  - uri: "/"
-    checks:
-      - name : HP Printer
-        headers:
-          - "Server:Virata-EmWeb/R6_2_1"
-        remediation: Make sure that HP Printer access is restricted & monitored
-        description: HP Printer is accessible
-        status_code: 200
-        severity: "Low"
   - uri: "/ePrint/ePrintConfigDyn.xml"
     checks:
       - name : HP Printer
@@ -701,15 +682,6 @@ plugins:
           - 'Content-Type:text/xml'
         remediation: Make sure that HP Printer access is restricted & monitored
         description: HP Printer is accessible
-        status_code: 200
-        severity: "Low"
-  - uri: "/"
-    checks:
-      - name : Printer (Lexmark, Dell, Toshiba, Sindoh)
-        headers:
-          - "Server:Lexmark_Web_Server"
-        remediation: Make sure that Printer access is restricted & monitored
-        description: Printer (Lexmark, Dell, Toshiba, Sindoh) is accessible
         status_code: 200
         severity: "Low"
   - uri: "/config.html"
