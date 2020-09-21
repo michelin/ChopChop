@@ -1,0 +1,13 @@
+name: ChopChop YAML configuration Linter
+
+on: [push]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+     - uses: actions/checkout@v1
+     - run: |
+        cat chopchop.yml | grep "uri:" | sort | uniq -c | sort -n
+        test=`cat chopchop.yml | grep "uri:" | sort | uniq -c | grep -v 1 | wc -l`
+        if [ $test != 0 ]; then echo "There shouldn't be multiple (and identical) 'uri'. It should be refactored. "; exit 1; fi
