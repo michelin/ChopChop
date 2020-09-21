@@ -488,8 +488,6 @@ plugins:
         description: Possible Trickbot Trojan Payload hosting in /images/imgpaper.png
         status_code: 200
         severity: "High"
-  - uri: "/images/imgpaper.png"
-    checks:
       - name : Trickbot Trojan Payload hosting imgpaper.png on Nginx
         headers:
           - 'Content-Type:application/octet-stream'
@@ -506,8 +504,6 @@ plugins:
         description: Possible Trickbot Trojan Payload hosting in /images/cursor.png
         status_code: 200
         severity: "High"
-  - uri: "/images/cursor.png"
-    checks:
       - name: Trickbot Trojan Payload hosting cursor.png on Nginx
         headers:
           - 'Content-Type:application/octet-stream'
@@ -524,8 +520,6 @@ plugins:
         description: Possible Trickbot Trojan Payload hosting in /images/redcar.png
         status_code: 200
         severity: "High"
-  - uri: "/images/redcar.png"
-    checks:
       - name : Trickbot Trojan Payload hosting redcar.png on Nginx
         headers:
           - 'Content-Type:application/octet-stream'
