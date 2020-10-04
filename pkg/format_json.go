@@ -62,9 +62,9 @@ func AddVulnToOutputJSON(out []data.Output) OutputJSON {
 	return jsonOut
 }
 
-// CreateFileJSON will save the output to a JSON file
-func CreateFileJSON(date string, out OutputJSON) {
-	f, err := os.OpenFile("./gochopchop_"+date+".json", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+// WriteJSONOutput will save the output to a JSON file
+func WriteJSONOutput(fileResults string, out OutputJSON) {
+	f, err := os.OpenFile(fileResults, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -75,6 +75,6 @@ func CreateFileJSON(date string, out OutputJSON) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Output as json :" + "./gochopchop_" + date + ".json")
+	fmt.Println("Successfuly written output in:" + fileResults)
 	f.Close()
 }

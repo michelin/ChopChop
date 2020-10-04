@@ -7,9 +7,9 @@ import (
 	"os"
 )
 
-// FormatOutputCSV is a simple wrapper for CSV formatting
-func FormatOutputCSV(date string, out []data.Output) {
-	f, err := os.OpenFile("./gochopchop_"+date+".csv", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+// WriteCSVOutput is a simple wrapper for CSV formatting
+func WriteCSVOutput(fileResults string, out []data.Output) {
+	f, err := os.OpenFile(fileResults, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -25,6 +25,6 @@ func FormatOutputCSV(date string, out []data.Output) {
 		}
 	}
 
-	fmt.Println("Output as csv :" + "./gochopchop_" + date + ".csv")
+	fmt.Println("Successfuly written output in:" + fileResults)
 	f.Close()
 }
