@@ -12,17 +12,19 @@ import (
 
 func init() {
 	rootCmd.AddCommand(scanCmd)
-	scanCmd.Flags().StringP("url", "u", "", "url to scan")                                                  // --url OU -u
-	scanCmd.Flags().StringP("config-file", "c", "chopchop.yml", "path to config/data file")                 // --config-file ou -c
-	scanCmd.Flags().BoolP("insecure", "i", false, "Check SSL certificate")                                  // --insecure ou -n
-	scanCmd.Flags().StringP("url-file", "f", "", "path to a specified file containing urls to test")        // --uri-file ou -f
-	scanCmd.Flags().StringP("suffix", "s", "", "Add suffix to urls when flag url-file is specified")        // --suffix ou -s
-	scanCmd.Flags().StringP("prefix", "p", "", "Add prefix to urls when flag url-file is specified")        // --prefix ou -p
-	scanCmd.Flags().Int32P("timeout", "t", 10, "Timeout for the HTTP requests (default: 10s)")              // --timeout ou -t
-	scanCmd.Flags().StringP("block", "b", "", "Block pipeline if severity is over or equal specified flag") // --block ou -b
-	scanCmd.Flags().BoolP("csv", "", false, "output as a csv file")                                         //--csv
-	scanCmd.Flags().BoolP("json", "", false, "output as a json file")                                       //--json
-	scanCmd.Flags().BoolP("verbose", "v", false, "Verbose mode")                                            //--verbose ou -v
+	scanCmd.Flags().StringP("url", "u", "", "url to scan")                                                    // --url OU -u
+	scanCmd.Flags().StringP("config-file", "c", "chopchop.yml", "path to config/data file")                   // --config-file ou -c
+	scanCmd.Flags().BoolP("insecure", "i", false, "Check SSL certificate")                                    // --insecure ou -n
+	scanCmd.Flags().StringP("url-file", "f", "", "path to a specified file containing urls to test")          // --uri-file ou -f
+	scanCmd.Flags().StringP("suffix", "s", "", "Add suffix to urls when flag url-file is specified")          // --suffix ou -s
+	scanCmd.Flags().StringP("prefix", "p", "", "Add prefix to urls when flag url-file is specified")          // --prefix ou -p
+	scanCmd.Flags().Int32P("timeout", "t", 10, "Timeout for the HTTP requests (default: 10s)")                // --timeout ou -t
+	scanCmd.Flags().StringP("block", "b", "", "Block pipeline if severity is over or equal specified flag")   // --block ou -b
+	scanCmd.Flags().BoolP("csv", "", false, "output as a csv file")                                           //--csv
+	scanCmd.Flags().BoolP("json", "", false, "output as a json file")                                         //--json
+	scanCmd.Flags().StringP("csv-file", "", "results.csv", "output as a csv file (Default: results.csv)")     //--csv mydomain.csv
+	scanCmd.Flags().StringP("json-file", "", "results.json", "output as a json file (Default: results.json)") //--json mydomain.json
+	scanCmd.Flags().BoolP("verbose", "v", false, "Verbose mode")                                              //--verbose ou -v
 }
 
 var scanCmd = &cobra.Command{

@@ -31,6 +31,8 @@ func Scan(cmd *cobra.Command, args []string) {
 	insecure, _ := cmd.Flags().GetBool("insecure")
 	csv, _ := cmd.Flags().GetBool("csv")
 	json, _ := cmd.Flags().GetBool("json")
+	csvFile, _ := cmd.Flags().GetString("csv-file")
+	jsonFile, _ := cmd.Flags().GetString("json-file")
 	urlFile, _ := cmd.Flags().GetString("url-file")
 	configFile, _ := cmd.Flags().GetString("config-file")
 	suffix, _ := cmd.Flags().GetString("suffix")
@@ -84,8 +86,6 @@ func Scan(cmd *cobra.Command, args []string) {
 	CheckStructFields(y)
 	hit := false
 	block := false
-	currentTime := time.Now()
-	date := currentTime.Format("2006-01-02_15-04-05")
 	out := []data.Output{}
 
 	var wg sync.WaitGroup
@@ -146,10 +146,10 @@ func Scan(cmd *cobra.Command, args []string) {
 		pkg.FormatOutputTable(out)
 		if json {
 			outputJSON := pkg.AddVulnToOutputJSON(out)
-			pkg.CreateFileJSON(date, outputJSON)
+			pkg.WriteJSONOutput(jsonFile, outputJSON)
 		}
 		if csv {
-			pkg.FormatOutputCSV(date, out)
+			pkg.WriteCSVOutput(csvFile, out)
 		}
 	}
 
