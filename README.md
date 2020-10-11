@@ -89,6 +89,8 @@ You can find the available flags here :
 | `-f` | `--url-file` | Set a file containing a list of URLs |
 | | `--csv` | Export results in CSV | 
 | | `--json` | Export results in JSON | 
+| | `--csv-file` | Filename for the CSV export | 
+| | `--json-file` | Filename for the JSON export | 
 
 ## Advanced usage
 
@@ -140,7 +142,7 @@ $ ./gochopchop scan --url-file url_file.txt
 - Export GoChopChop results in CSV and JSON format
 
 ```bash
-$ ./gochopchop  scan --url https://foobar.com --json --csv 
+$ ./gochopchop  scan --url https://foobar.com --json --csv --csv-file results.csv --json-file results.json
 ```
 
 ## Creating a new check
