@@ -43,6 +43,16 @@ There should be a resulting `gochopchop` binary in the folder.
 
 ### Using Docker
 
+Thanks to [Github Container Registry](https://github.blog/2020-09-01-introducing-github-container-registry/), we are able to provide you some freshly-build Docker images!
+
+```
+docker run ghcr.io/michelin/gochopchop scan -u https://foobar.com --verbose
+```
+
+But if you prefer, you can also build it locally, see below: 
+
+#### Build locally
+
 ```bash
 docker build -t gochopchop .
 ```
@@ -203,6 +213,7 @@ Please, refer to the `third-party.txt` file for further information.
 ## Talks
 
 - PyCon FR 2019 (The tool was initially developed in Python) - https://docs.google.com/presentation/d/1uVXGUpt7tC7zQ1HWegoBbEg2LHamABIqfDfiD9MWsD8/edit
+- DEFCON AppSec Village 2020 "Turning offsec mindset to developer's toolset" - https://drive.google.com/file/d/15P8eSarIohwCVW-tR3FN78KJPGbpAtR1/view
 
 ## License
 
