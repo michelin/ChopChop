@@ -60,3 +60,7 @@ func (st SeverityType) IsValid() error {
 	}
 	return errors.New("Invalid Severity type. Please Check yaml config file")
 }
+
+func (st SeverityType) String() string {
+	return string(st)
+}

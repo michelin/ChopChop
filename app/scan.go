@@ -35,6 +35,7 @@ func Scan(cmd *cobra.Command, args []string) {
 	csvFile, _ := cmd.Flags().GetString("csv-file")
 	jsonFile, _ := cmd.Flags().GetString("json-file")
 	signatureName, _ := cmd.Flags().GetString("signature-name")
+	severity, _ := cmd.Flags().GetString("severity")
 	urlFile, _ := cmd.Flags().GetString("url-file")
 	configFile, _ := cmd.Flags().GetString("config-file")
 	suffix, _ := cmd.Flags().GetString("suffix")
@@ -102,12 +103,17 @@ func Scan(cmd *cobra.Command, args []string) {
 			for index, plugin := range y.Plugins {
 				_ = index
 
-				canExecutePlugin := isPluginAuthorized(plugin, tags)
-				if !canExecutePlugin {
+				canExecutePluginByName := isPluginAuthorized(plugin, tags)
+				if !canExecutePluginByName {
 					Verbose("Skipping signature rule with URI: "+plugin.URI, verbose)
 				}
 
-				if canExecutePlugin {
+				canExecutePluginBySeverity := isPluginAuthorizedBySeverity(plugin, severity)
+				if !canExecutePluginBySeverity {
+					Verbose("Skipping signature rule with URI: "+plugin.URI, verbose)
+				}
+
+				if canExecutePluginByName && canExecutePluginBySeverity {
 					tmpURL = prefix + domain + suffix + fmt.Sprint(plugin.URI)
 					if plugin.QueryString != "" {
 						tmpURL += "?" + plugin.QueryString
@@ -128,6 +134,9 @@ func Scan(cmd *cobra.Command, args []string) {
 
 					if httpResponse != nil {
 						for _, check := range plugin.Checks {
+							if severity != "" && check.Severity.String() != severity {
+								continue // break if the severity is defined and different from the one we specified
+							}
 							answer := pkg.ResponseAnalysis(httpResponse, check)
 							if answer {
 								Verbose("[!] Hit found!\n\tURL: "+tmpURL+"\n\tPlugin: "+check.PluginName+"\n\tSeverity: "+string(*check.Severity), verbose)
@@ -179,6 +188,20 @@ func Scan(cmd *cobra.Command, args []string) {
 	} else {
 		fmt.Println("No vulnerabilities found.")
 	}
+}
+
+// isPluginAuthorizedBySeverity returns `true` if there's at least one check with the same severity
+func isPluginAuthorizedBySeverity(signature data.Signature, severity string) bool {
+	// if the flag is not properly set by the user, return true and execute them all
+	if severity == "" {
+		return true
+	}
+	for _, check := range signature.Checks {
+		if check.Severity.String() == severity {
+			return true
+		}
+	}
+	return false
 }
 
 // isPluginAuthorized returns `true` if there's at least one tag in a check name
