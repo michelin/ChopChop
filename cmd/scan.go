@@ -21,6 +21,7 @@ func init() {
 	scanCmd.Flags().Int32P("timeout", "t", 10, "Timeout for the HTTP requests (default: 10s)")                                                                 // --timeout ou -t
 	scanCmd.Flags().StringP("block", "b", "", "Block pipeline if severity is over or equal specified flag")                                                    // --block ou -b
 	scanCmd.Flags().StringP("signature-name", "", "", "Filter by signature names (engine will check if words are contained), can use comma for multiple ones") // --signature-name
+	scanCmd.Flags().StringP("severity", "", "", "Filter by severity (engine will check for same severity checks)")                                             // --severity
 	scanCmd.Flags().BoolP("csv", "", false, "output as a csv file")                                                                                            //--csv
 	scanCmd.Flags().BoolP("json", "", false, "output as a json file")                                                                                          //--json
 	scanCmd.Flags().StringP("csv-file", "", "results.csv", "output as a csv file (Default: results.csv)")                                                      //--csv mydomain.csv
