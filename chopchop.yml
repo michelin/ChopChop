@@ -1,3 +1,4 @@
+---
 insecure: false
 plugins:
   - uri: "/status.shtml"
@@ -10,54 +11,54 @@ plugins:
         severity: "Medium"
   - uri: "/"
     checks:
-      - name : HP Printer
+      - name: HP Printer
         headers:
           - "Server:Virata-EmWeb/R6_2_1"
         remediation: Make sure that HP Printer access is restricted & monitored
         description: HP Printer is accessible
         status_code: 200
         severity: "Low"
-      - name : Printer (Lexmark, Dell, Toshiba, Sindoh)
+      - name: Printer (Lexmark, Dell, Toshiba, Sindoh)
         headers:
           - "Server:Lexmark_Web_Server"
         remediation: Make sure that Printer access is restricted & monitored
         description: Printer (Lexmark, Dell, Toshiba, Sindoh) is accessible
         status_code: 200
         severity: "Low"
-      - name : Microsoft-IIS/7.0 - Windows Server 2003/2008
+      - name: Microsoft-IIS/7.0 - Windows Server 2003/2008
         headers:
           - "Server:Microsoft-IIS/7.0"
         remediation: Upgrade to maintened version
         description: Microsoft-IIS/7.0 - Windows Server 2003/2008
         severity: "Informational"
-      - name : Microsoft-IIS/7.5 - Windows Server 2003/2008
+      - name: Microsoft-IIS/7.5 - Windows Server 2003/2008
         headers:
           - "Server:Microsoft-IIS/7.5"
         remediation: Upgrade to maintened version
         description: Microsoft-IIS/7.5 - Windows Server 2003/2008
         severity: "Informational"
-      - name : GE ViewPoint
+      - name: GE ViewPoint
         match:
           - '<title>ViewPoint System Status'
         remediation: Make sure that GE ViewPoint System Status access is restricted & monitored
         description: GE ViewPoint System Status is accessible / sensitive information leaking
         status_code: 200
         severity: "Low"
-      - name : Ascom IP-DECT Base Station
+      - name: Ascom IP-DECT Base Station
         match:
           - '<select product="Ascom IP-DECT Base Station"'
         remediation: Make sure that Ascom IP-DECT Base Station access is restricted & monitored
         description: Ascom IP-DECT Base Station is accessible
         status_code: 200
         severity: "Informational"
-      - name : EMC Unisphere
+      - name: EMC Unisphere
         match:
           - 'Unisphere<br>'
         remediation: Make sure that EMC Unisphere access is restricted & monitored
         description: EMC Unisphere is accessible
         status_code: 200
         severity: "Low"
-      - name : F-Secure Policy Manager Server
+      - name: F-Secure Policy Manager Server
         match:
           - '<title>F-Secure Policy Manager Server</title>'
         remediation: Make sure that F-Secure Policy Manager Server access is monitored
@@ -70,31 +71,31 @@ plugins:
         remediation: Remove the symbolic link from the Apache default configuration
         description: Detects the presence of a default Apache page
         severity: "Informational"
-      - name : Cisco IOS
+      - name: Cisco IOS
         headers:
           - "Server:cisco-IOS"
         remediation: Make sure that Cisco IOS access is restricted & monitored
         description: Cisco IOS is accessible
         severity: "Low"
-      - name : Odin
+      - name: Odin
         match:
           - '<h1 title="Operations Automation">'
         remediation: Make sure that Odin service automation access is restricted & monitored
         description: Odin service automation is accessible
         severity: "Informational"
-      - name : Nordex Control
+      - name: Nordex Control
         headers:
           - "Server:Jetty/3.1.8 (Windows 2000 5.0 x86)"
         remediation: Make sure that Nordex Control access is restricted & monitored
         description: Nordex Control is accessible
         severity: "Low"
-      - name : EIG GaugeTech Electricity Meter
+      - name: EIG GaugeTech Electricity Meter
         headers:
           - "Server:EIG Embedded Web Server"
         remediation: Make sure that EIG GaugeTech Electricity Meter access is restricted & monitored
         description: EIG GaugeTech Electricity Meter is accessible
         severity: "Low"
-      - name : Weave Scope
+      - name: Weave Scope
         match:
           - '<title>Weave Scope</title>'
         remediation: Make sure that Weave Scope access is restricted & monitored
@@ -114,7 +115,7 @@ plugins:
         severity: "Informational"
         headers:
           - "Cache-Control:no-cache,no-store,must-revalidate"
-      - name : BigIPServer
+      - name: BigIPServer
         remediation: Encrypt sticky cookie to avoid leaking internal IPs
         description: Detects the presence of unencrypted sticky cookies that allow to retrieve internal Ips
         severity: "Medium"
@@ -132,7 +133,7 @@ plugins:
           - "The site you were looking for couldn't be found"
           - "The request could not be satisfied"
           - "project not found"
-          - "Your CNAME settings"
+          - "Your Cnamesettings"
           - "The resource that you are attempting to access does not exist or you don't have the necessary permissions to view it."
           - "Domain mapping upgrade for this domain not found"
           - "The feed has not been found"
@@ -418,7 +419,7 @@ plugins:
           - 'Content-Type:application/octet-stream'
         remediation: Do not deploy .svn on production servers
         description: Checks if an SVN database is publicly accessible
-        status_code : 200
+        status_code: 200
         severity: "High"
   - uri: "/.svn/entries"
     checks:
@@ -448,7 +449,7 @@ plugins:
         severity: "Informational"
   - uri: "/wp-links-opml.php"
     checks:
-      - name:  WpLinksOpml
+      - name: WpLinksOpml
         match:
           - 'generator="WordPress'
         remediation: Be sure the wordpress uses the latest version
@@ -458,9 +459,9 @@ plugins:
     checks:
       - name: JMX Console
         match:
-        - "service=MainDeployer"
-        remediation : Alter configurations to deny external access - Change the default configuration to require authentication for ALL HTTP requests
-        description : JMX Console displays an index with all available services. Authentication can be bypassed by intruder.
+          - "service=MainDeployer"
+        remediation: Alter configurations to deny external access - Change the default configuration to require authentication for ALL HTTP requests
+        description: JMX Console displays an index with all available services. Authentication can be bypassed by intruder.
         severity: "Medium"
   - uri: "/tmui/login.jsp/..;/tmui/locallb/workspace/fileRead.jsp?fileName=/config/bigip.license"
     checks:
@@ -481,14 +482,14 @@ plugins:
         severity: "Low"
   - uri: "/images/imgpaper.png"
     checks:
-      - name : Possible Trickbot Trojan Payload hosting imgpaper.png on Apache
+      - name: Possible Trickbot Trojan Payload hosting imgpaper.png on Apache
         headers:
           - 'Content-Type:image/png'
         remediation: Make sure your system isn't compromised
         description: Possible Trickbot Trojan Payload hosting in /images/imgpaper.png
         status_code: 200
         severity: "High"
-      - name : Trickbot Trojan Payload hosting imgpaper.png on Nginx
+      - name: Trickbot Trojan Payload hosting imgpaper.png on Nginx
         headers:
           - 'Content-Type:application/octet-stream'
         remediation: Make sure your system isn't compromised
@@ -513,14 +514,14 @@ plugins:
         severity: "High"
   - uri: "/images/redcar.png"
     checks:
-      - name : Possible Trickbot Trojan Payload hosting redcar.png on Apache
+      - name: Possible Trickbot Trojan Payload hosting redcar.png on Apache
         headers:
           - 'Content-Type:image/png'
         remediation: Make sure your system isn't compromised
         description: Possible Trickbot Trojan Payload hosting in /images/redcar.png
         status_code: 200
         severity: "High"
-      - name : Trickbot Trojan Payload hosting redcar.png on Nginx
+      - name: Trickbot Trojan Payload hosting redcar.png on Nginx
         headers:
           - 'Content-Type:application/octet-stream'
         remediation: Make sure your system isn't compromised
@@ -529,7 +530,7 @@ plugins:
         severity: "High"
   - uri: "/ico/VidT6cErs"
     checks:
-      - name : Possible Trickbot Trojan Payload hosting VidT6cErs
+      - name: Possible Trickbot Trojan Payload hosting VidT6cErs
         no_match:
           - '<!DOCTYPE html>'
           - '<head>'
@@ -541,7 +542,7 @@ plugins:
         severity: "High"
   - uri: "/admin/libs/prettify-4-Mar-2013/prettify.css"
     checks:
-      - name : Stormshield SNS Web Admin Console
+      - name: Stormshield SNS Web Admin Console
         headers:
           - "Content-Type:text/css"
         remediation: Make sure that Stormshield SNS Web Admin Console access is restricted & monitored
@@ -550,7 +551,7 @@ plugins:
         severity: "Low"
   - uri: "/auth"
     checks:
-      - name : Stormshield Web Portal
+      - name: Stormshield Web Portal
         match:
           - '/data/flag-fr.jpg'
           - '/data/i_auth.png'
@@ -560,7 +561,7 @@ plugins:
         severity: "Informational"
   - uri: "/ui"
     checks:
-      - name : VMware ESXi
+      - name: VMware ESXi
         match:
           - 'ng-app="esxUiApp"'
         remediation: Make sure that VMware ESXi access is restricted & monitored
@@ -569,7 +570,7 @@ plugins:
         severity: "Low"
   - uri: "/vsphere-client"
     checks:
-      - name : VMware vCenter
+      - name: VMware vCenter
         match:
           - '<title>vSphere Web Client</title>'
         remediation: Make sure that VMware vCenter access is restricted & monitored
@@ -578,7 +579,7 @@ plugins:
         severity: "Low"
   - uri: "/eai/index.html"
     checks:
-      - name : Enovacom Suite V2
+      - name: Enovacom Suite V2
         match:
           - 'href="/eai/Ressources/Images/v2.ico"'
         remediation: Make sure that EAI Enovacom Suite V2 access is restricted & monitored
@@ -587,7 +588,7 @@ plugins:
         severity: "Low"
   - uri: "/mailscanner/login.php"
     checks:
-      - name : MailWatch
+      - name: MailWatch
         match:
           - '<title>MailWatch Login Page</title>'
         remediation: Make sure that MailWatch access is monitored
@@ -596,7 +597,7 @@ plugins:
         severity: "Low"
   - uri: "/fog/management/index.php"
     checks:
-      - name : FOG Project
+      - name: FOG Project
         match:
           - '<title>Login</title>'
           - '<b>FOG</b> Project'
@@ -631,7 +632,7 @@ plugins:
         severity: "Low"
   - uri: "/public/img/mongo-express-logo.png"
     checks:
-      - name : Mongo Express
+      - name: Mongo Express
         headers:
           - 'Content-Type:image/png'
         remediation: Make sure that Mongo Express access is restricted & monitored
@@ -640,7 +641,7 @@ plugins:
         severity: "High"
   - uri: "/login.html"
     checks:
-      - name : Polycom
+      - name: Polycom
         headers:
           - 'Server:lighttpd'
         match:
@@ -651,7 +652,7 @@ plugins:
         severity: "Informational"
   - uri: "/securityRealm/user/admin/search/index?q=a"
     checks:
-      - name : Jenkins CVE-2018-1000861 (RCE)
+      - name: Jenkins CVE-2018-1000861 (RCE)
         match:
           - 'Jenkins'
           - '<title>Search for'
@@ -662,7 +663,7 @@ plugins:
         severity: "High"
   - uri: "/?MAIN=TOPACCESS"
     checks:
-      - name : TopAccess Toshiba MFP
+      - name: TopAccess Toshiba MFP
         match:
           - '<!--<title class="clsTitle1">TopAccess</title>-->'
         remediation: Make sure that TopAccess access is restricted & monitored
@@ -671,7 +672,7 @@ plugins:
         severity: "Low"
   - uri: "/ePrint/ePrintConfigDyn.xml"
     checks:
-      - name : HP Printer
+      - name: HP Printer
         headers:
           - 'Content-Type:text/xml'
         remediation: Make sure that HP Printer access is restricted & monitored
@@ -680,7 +681,7 @@ plugins:
         severity: "Low"
   - uri: "/config.html"
     checks:
-      - name : Zebra Label Printer
+      - name: Zebra Label Printer
         match:
           - '<H1>Zebra Technologies'
         remediation: Make sure that Zebra Label Printer access is restricted & monitored
