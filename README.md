@@ -78,19 +78,24 @@ The Golang rewrite took place a couple of months ago but there's so much to do, 
 
 ## Available flags
 
-You can find the available flags here :
+You can find the available flags available for the `scan` command :
 
 | Flag | Full flag | Description |
 |---|---|---|
+| `-b` | `--block <string>` | Block pipeline if severity is over or equal specified flag|
 | `-h` | `--help` | Help wizard |
-| `-u` | `--url` | Set the target URL |
+| `-u` | `--url <string>` | Set the target URL |
 | `-i` | `--insecure` | Disable SSL Verification |
-| `-c` | `--config-file` | Set a custom configuration file |
-| `-f` | `--url-file` | Set a file containing a list of URLs |
+| `-c` | `--config-file <string>` | Set a custom configuration file |
+| `-f` | `--url-file <string>` | Set a file containing a list of URLs |
+| `-p` | `--prefix <string>` | Add prefix to urls when flag url-file is specified |
+| `-s` | `--suffix <string>` | Add suffix to urls when flag url-file is specified |
+| `-t` | `--timeout <integer>` | Timeout for the HTTP requests (default: 10s) |
+| `-v` | `--verbose` | Verbose mode |
 | | `--csv` | Export results in CSV | 
 | | `--json` | Export results in JSON | 
-| | `--csv-file` | Filename for the CSV export | 
-| | `--json-file` | Filename for the JSON export | 
+| | `--csv-file <string>` | Filename for the CSV export | 
+| | `--json-file <string>` | Filename for the JSON export | 
 
 ## Advanced usage
 
@@ -119,6 +124,12 @@ $ ./gochopchop plugins --severity High
 
 ```bash
 $ ./gochopchop scan --url https://foobar.com --insecure --block Medium
+```
+
+- Ability to specify specific signatures to be checked 
+
+```bash
+./gochopchop scan -u https://foobar.com --timeout 1 --verbose --csv --csv-file boo.csv --signature-name "Git,Zimbra,Jenkins"
 ```
 
 - Ability to list all the plugins
