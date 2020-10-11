@@ -3,6 +3,15 @@ name: ChopChop YAML configuration Linter
 on: [push]
 
 jobs:
+  lintAllTheThings:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: yaml-lint
+      uses: ibiqlik/action-yamllint@v1
+      with:
+        file_or_dir: chopchop.yml
+        config_file: .yamllint.yml  
   lint:
     runs-on: ubuntu-latest
     steps:
