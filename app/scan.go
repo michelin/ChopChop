@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -33,6 +34,7 @@ func Scan(cmd *cobra.Command, args []string) {
 	json, _ := cmd.Flags().GetBool("json")
 	csvFile, _ := cmd.Flags().GetString("csv-file")
 	jsonFile, _ := cmd.Flags().GetString("json-file")
+	signatureName, _ := cmd.Flags().GetString("signature-name")
 	urlFile, _ := cmd.Flags().GetString("url-file")
 	configFile, _ := cmd.Flags().GetString("config-file")
 	suffix, _ := cmd.Flags().GetString("suffix")
@@ -91,50 +93,59 @@ func Scan(cmd *cobra.Command, args []string) {
 	var wg sync.WaitGroup
 	wg.Add(len(urlList))
 
+	tags := strings.Split(signatureName, ",")
+
 	for i := 0; i < len(urlList); i++ {
 		go func(domain string) {
 			defer wg.Done()
 			Verbose("Testing domain : "+prefix+domain+suffix, verbose)
 			for index, plugin := range y.Plugins {
 				_ = index
-				tmpURL = prefix + domain + suffix + fmt.Sprint(plugin.URI)
-				if plugin.QueryString != "" {
-					tmpURL += "?" + plugin.QueryString
+
+				canExecutePlugin := isPluginAuthorized(plugin, tags)
+				if !canExecutePlugin {
+					Verbose("Skipping signature rule with URI: "+plugin.URI, verbose)
 				}
 
-				// By default we follow HTTP redirects
-				followRedirects := true
-				// But for each plugin we can override and don't follow HTTP redirects
-				if plugin.FollowRedirects != nil && *plugin.FollowRedirects == false {
-					followRedirects = false
-				}
-
-				Verbose("Testing URL: "+tmpURL, verbose)
-				httpResponse, err := pkg.HTTPGet(insecure, tmpURL, followRedirects, httpRequestTimeout)
-				if err != nil {
-					_ = errors.Wrap(err, "Timeout of HTTP Request")
-				}
-
-				if httpResponse != nil {
-					for index, check := range plugin.Checks {
-						_ = index
-						answer := pkg.ResponseAnalysis(httpResponse, check)
-						if answer {
-							Verbose("[!] Hit found!\n\tURL: "+tmpURL+"\n\tPlugin: "+check.PluginName+"\n\tSeverity: "+string(*check.Severity), verbose)
-							hit = true
-							if BlockCI(blockedFlag, *check.Severity) {
-								block = true
-							}
-							out = append(out, data.Output{
-								Domain:      domain,
-								PluginName:  check.PluginName,
-								TestedURL:   plugin.URI,
-								Severity:    string(*check.Severity),
-								Remediation: *check.Remediation,
-							})
-						}
+				if canExecutePlugin {
+					tmpURL = prefix + domain + suffix + fmt.Sprint(plugin.URI)
+					if plugin.QueryString != "" {
+						tmpURL += "?" + plugin.QueryString
 					}
-					_ = httpResponse.Body.Close()
+
+					// By default we follow HTTP redirects
+					followRedirects := true
+					// But for each plugin we can override and don't follow HTTP redirects
+					if plugin.FollowRedirects != nil && *plugin.FollowRedirects == false {
+						followRedirects = false
+					}
+
+					Verbose("Testing URL: "+tmpURL, verbose)
+					httpResponse, err := pkg.HTTPGet(insecure, tmpURL, followRedirects, httpRequestTimeout)
+					if err != nil {
+						_ = errors.Wrap(err, "Timeout of HTTP Request")
+					}
+
+					if httpResponse != nil {
+						for _, check := range plugin.Checks {
+							answer := pkg.ResponseAnalysis(httpResponse, check)
+							if answer {
+								Verbose("[!] Hit found!\n\tURL: "+tmpURL+"\n\tPlugin: "+check.PluginName+"\n\tSeverity: "+string(*check.Severity), verbose)
+								hit = true
+								if BlockCI(blockedFlag, *check.Severity) {
+									block = true
+								}
+								out = append(out, data.Output{
+									Domain:      domain,
+									PluginName:  check.PluginName,
+									TestedURL:   plugin.URI,
+									Severity:    string(*check.Severity),
+									Remediation: *check.Remediation,
+								})
+							}
+						}
+						_ = httpResponse.Body.Close()
+					}
 				}
 			}
 		}(urlList[i])
@@ -168,6 +179,27 @@ func Scan(cmd *cobra.Command, args []string) {
 	} else {
 		fmt.Println("No vulnerabilities found.")
 	}
+}
+
+// isPluginAuthorized returns `true` if there's at least one tag in a check name
+func isPluginAuthorized(signature data.Signature, tags []string) bool {
+	// if the flag is not properly set by the user, return true and execute them all
+	if tags[0] == "" {
+		return true
+	}
+	for j := 0; j < len(tags); j++ {
+		for _, check := range signature.Checks {
+			// fmt.Println(check.PluginName)
+			// fmt.Println(tags[j])
+
+			// if there's one tag in one of the `checks`, we do the request
+			// otherwise, we don't
+			if strings.Contains(check.PluginName, tags[j]) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // BlockCI function will allow the user to return a different status code depending on the highest severity that has triggered
