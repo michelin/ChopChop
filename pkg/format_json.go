@@ -75,6 +75,6 @@ func WriteJSONOutput(fileResults string, out OutputJSON) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Successfuly written output in:" + fileResults)
+	fmt.Println("Successfuly written output in: " + fileResults)
 	f.Close()
 }
