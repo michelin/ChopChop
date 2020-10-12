@@ -14,7 +14,7 @@ func WriteCSVOutput(fileResults string, out []data.Output) {
 		log.Fatal(err)
 	}
 
-	_, err = f.WriteString("Domain,endpoint,severity,pluginName,remediation\n")
+	_, err = f.WriteString("Domain,uri,severity,pluginName,remediation\n")
 	if err != nil {
 		log.Println(err)
 	}
@@ -25,6 +25,6 @@ func WriteCSVOutput(fileResults string, out []data.Output) {
 		}
 	}
 
-	fmt.Println("Successfuly written output in:" + fileResults)
+	fmt.Println("Successfuly written output in: " + fileResults)
 	f.Close()
 }
