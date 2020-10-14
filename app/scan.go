@@ -47,6 +47,10 @@ func Scan(cmd *cobra.Command, args []string) {
 	var tmpURL string
 	var urlList []string
 
+	if url == "" && urlFile == "" {
+		log.Fatal("`url` or either `url-file` have been specified! Use `scan -help` for usage")
+	}
+
 	cfg, err := os.Open(configFile)
 	if err != nil {
 		log.Fatal(err)
