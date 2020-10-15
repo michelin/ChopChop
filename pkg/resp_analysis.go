@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"bytes"
 	"gochopchop/data"
 	"io/ioutil"
 	"log"
@@ -15,6 +16,9 @@ func ResponseAnalysis(resp *http.Response, signature data.Check) bool {
 	if err != nil {
 		log.Fatal(err)
 	}
+	// Restore the io.ReadCloser to its original state
+	resp.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+
 	bodyString := string(bodyBytes)
 
 	if signature.StatusCode != nil {
