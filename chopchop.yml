@@ -110,8 +110,8 @@ plugins:
       - name: Jenkins
         match:
           - "hudson"
-        remediation: Monitor access to jenkins only to trusted people, be sure that only connected people can run commands and that passwords are robust
-        description: Verifies that the domain is not a Jenkins instance
+        remediation: Monitor access to your jenkins instance.
+        description: Checks that the domain is not a Jenkins instance
         severity: "Informational"
         headers:
           - "Cache-Control:no-cache,no-store,must-revalidate"
@@ -144,8 +144,8 @@ plugins:
       - name: AsmxWebservices
         match:
           - ".asmx"
-        remediation: Monitor access to jenkins only to trusted people, be sure that only connected people can run commands and that passwords are robust
-        description: Verifies that the domain is not a Jenkins instance
+        remediation: Monitor that webservices are well monitored.
+        description: Checks the presence of webservices in the page
         severity: "Informational"
       - name: Gitlab instance
         match:
@@ -176,7 +176,7 @@ plugins:
         headers:
           - "Server:Microsoft-IIS/6.0"
         remediation: Patch the server as soon as possible
-        description: Verifies that the server is an IIS 6.0
+        description: Checks that the server is an IIS 6.0
         severity: "Informational"
       - name: Indexof
         match:
@@ -200,13 +200,13 @@ plugins:
         match:
           - 'Welcome to nginx!'
         remediation: Delete symbolic link from Nginx default configuration
-        description: Verifies that the default Nginx site is not accessible
+        description: Checks that the default Nginx site is not accessible
         severity: "Low"
       - name: Osticket
         match:
           - 'Helpdesk software - powered by osTicket'
         remediation: Check that the passwords used are robust
-        description: Verifies that the domain is not an OS Ticket instance
+        description: Checks that the domain is not an OS Ticket instance
         severity: "Informational"
       - name: PHP open code
         match:
@@ -218,7 +218,7 @@ plugins:
       - name: PHP fopen function error
         match:
           - 'failed to open stream'
-        remediation: Check that the application is running correctly and understand why the application is not running correctly
+        remediation: Check that the application is running correctly
         description: Detects the presence of php errors via the fopen call
         severity: "Low"
   - uri: "/.git/config"
@@ -231,7 +231,7 @@ plugins:
           - "[core]"
           - "[user]"
         remediation: Do not deploy .git folder on production servers
-        description: Verifies that the GIT repository is accessible from the site
+        description: Checks that the GIT repository is accessible from the site
         severity: "High"
   - uri: "/crossdomain.xml"
     checks:
@@ -246,7 +246,7 @@ plugins:
       - name: tomcat manager
         status_code: 401
         remediation: Disable this interface in production
-        description: Verifies that under /manager/html the Tomcat administration interface is not accessible
+        description: Checks that under /manager/html the Tomcat administration interface is not accessible
         severity: "Medium"
   - uri: "/.htpasswd"
     checks:
@@ -266,7 +266,7 @@ plugins:
         match:
           - "RewriteRule"
         remediation: Check that no sensitive information is present on the .htaccess
-        description: Verifies the presence of an .htaccess file at the root of the domain
+        description: Checks the presence of an .htaccess file at the root of the domain
         status_code: 200
         severity: "Low"
   - uri: "/idontexist"
@@ -339,7 +339,7 @@ plugins:
         match:
           - "To start over"
         remediation: Delete install.php file
-        description: Verifies the presence of a PHP installation script
+        description: Checks the presence of a PHP installation script
         severity: "Low"
   - uri: "/administrator"
     checks:
@@ -363,7 +363,7 @@ plugins:
         match:
           - 'phpinfo()'
         remediation: Disable phpinfo() in PHP.ini
-        description: Verifies that the phpinfo() function is accessible
+        description: Checks that the phpinfo() function is accessible
         severity: "Low"
   - uri: "/phpmyadmin"
     checks:
@@ -371,7 +371,7 @@ plugins:
         match:
           - '<title>phpMyAdmin'
         remediation: Make sure that PHPMyAdmin access is monitored
-        description: Verifies that under /phpmyadmin a PHPMyAdmin instance is not accessible
+        description: Checks that under /phpmyadmin a PHPMyAdmin instance is not accessible
         status_code: 200
         severity: "Low"
   - uri: "/server-status"
@@ -380,7 +380,7 @@ plugins:
         match:
           - 'Waiting for Connection'
         remediation: Disable this feature in Apache
-        description: Verifies that under /server-status of Apache information is accessible
+        description: Checks that under /server-status of Apache information is accessible
         severity: "Low"
   - uri: "/examples/jsp/snp/snoop.jsp"
     checks:
@@ -398,7 +398,7 @@ plugins:
         headers:
           - "Content-Type:application/json"
         remediation: Disable this feature or protect access
-        description: Verifies that under /actuator/health information is not disclosed by Springboot
+        description: Checks that under /actuator/health information is not disclosed by Springboot
         severity: "Low"
         status_code: 200
   - uri: "/health"
@@ -409,7 +409,7 @@ plugins:
         headers:
           - "Content-Type:application/json"
         remediation: Disable this feature or protect access
-        description: Verifies that under /health information is not disclosed by Springboot
+        description: Checks that under /health information is not disclosed by Springboot
         severity: "Low"
         status_code: 200
   - uri: "/.svn/wc.db"
@@ -436,7 +436,7 @@ plugins:
         match:
           - '<configuration>'
         remediation: Check that no sensitive information is present in the web.config
-        description: Verifies that the web.config configuration file of the ASP.net server is not accessible
+        description: Checks that the web.config configuration file of the ASP.net server is not accessible
         severity: "Low"
   - uri: "/wp-login.php"
     checks:
@@ -445,7 +445,7 @@ plugins:
           - 'wp-login.php" method="post"'
           - '<body class="login login-action-login wp-core-ui'
         remediation: Set up an.htaccess to avoid exposing the admin interface unnecessarily
-        description: Verifies that under /wp-login the Worpress connection interface is not accessible
+        description: Checks that under /wp-login the Worpress connection interface is not accessible
         severity: "Informational"
   - uri: "/wp-links-opml.php"
     checks:
@@ -460,7 +460,7 @@ plugins:
       - name: JMX Console
         match:
           - "service=MainDeployer"
-        remediation: Alter configurations to deny external access - Change the default configuration to require authentication for ALL HTTP requests
+        remediation: Alter configurations to deny external access.
         description: JMX Console displays an index with all available services. Authentication can be bypassed by intruder.
         severity: "Medium"
   - uri: "/tmui/login.jsp/..;/tmui/locallb/workspace/fileRead.jsp?fileName=/config/bigip.license"
@@ -478,7 +478,7 @@ plugins:
         match:
           - "<title>BIG-IP"
         remediation: Make sure that F5 BIG-IP - TMUI access is monitored
-        description: Verifies that under /tmui a F5 BIG-IP TMUI is not accessible
+        description: Checks that under /tmui a F5 BIG-IP TMUI is not accessible
         severity: "Low"
   - uri: "/images/imgpaper.png"
     checks:

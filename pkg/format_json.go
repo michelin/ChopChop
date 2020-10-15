@@ -64,7 +64,7 @@ func AddVulnToOutputJSON(out []data.Output) OutputJSON {
 
 // WriteJSONOutput will save the output to a JSON file
 func WriteJSONOutput(fileResults string, out OutputJSON) {
-	f, err := os.OpenFile(fileResults, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	f, err := os.OpenFile(fileResults, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
 	if err != nil {
 		log.Fatal(err)
 	}
