@@ -9,7 +9,7 @@ import (
 
 // WriteCSVOutput is a simple wrapper for CSV formatting
 func WriteCSVOutput(fileResults string, out []data.Output) {
-	f, err := os.OpenFile(fileResults, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	f, err := os.OpenFile(fileResults, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
 	if err != nil {
 		log.Fatal(err)
 	}

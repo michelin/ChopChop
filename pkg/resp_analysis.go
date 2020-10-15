@@ -64,7 +64,7 @@ func ResponseAnalysis(resp *http.Response, signature data.Check) bool {
 				// Key found - check value
 				vFound := false
 				for i, n := range v {
-					if pHeaders[1] == n {
+					if strings.Contains(n, pHeaders[1]) {
 						_ = i
 						vFound = true
 					}

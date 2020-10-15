@@ -43,5 +43,8 @@ func FormatOutputTable(out []data.Output) {
 			out[i].Remediation,
 		})
 	}
+	t.SortBy([]table.SortBy{
+		{Name: "Severity", Mode: table.Asc},
+	})
 	t.Render()
 }
