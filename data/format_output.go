@@ -47,10 +47,11 @@ type Config struct {
 
 // Signature struct to load it afterwards
 type Signature struct {
-	URI             string  `yaml:"uri"`
-	QueryString     string  `yaml:"query_string"`
-	Checks          []Check `yaml:"checks"`
-	FollowRedirects *bool   `yaml:"follow_redirects"`
+	URI             string   `yaml:"uri"`
+	ListOfURI       []string `yaml:"uris"`
+	QueryString     string   `yaml:"query_string"`
+	Checks          []Check  `yaml:"checks"`
+	FollowRedirects *bool    `yaml:"follow_redirects"`
 }
 
 // IsValid will verify that the severityType is part of the enum previously declared
