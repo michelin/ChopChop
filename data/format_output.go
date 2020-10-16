@@ -36,6 +36,7 @@ type Check struct {
 	Description *string       `yaml:"description"`
 	NoMatch     []*string     `yaml:"no_match"`
 	Headers     []*string     `yaml:"headers"`
+	NoHeaders   []*string     `yaml:"no_headers"`
 }
 
 // Config struct to load the configuration from the YAML file
