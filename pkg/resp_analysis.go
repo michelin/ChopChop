@@ -86,6 +86,8 @@ func ResponseAnalysis(resp *http.Response, signature data.Check) bool {
 			// if the header has not been found, hit!
 			if !kFound {
 				return true
+			} else if kFound && len(pNoHeaders) == 1 { // if the header has not been specified.
+				return false
 			} else {
 				for _, n := range v { // usually, only one iteration
 					if strings.Contains(n, pNoHeaders[1]) {
