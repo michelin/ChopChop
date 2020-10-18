@@ -12,7 +12,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
 )
@@ -133,7 +132,7 @@ func Scan(cmd *cobra.Command, args []string) {
 					Verbose("Testing URL: "+tmpURL, verbose)
 					httpResponse, err := pkg.HTTPGet(insecure, tmpURL, followRedirects, httpRequestTimeout)
 					if err != nil {
-						_ = errors.Wrap(err, "Timeout of HTTP Request")
+						fmt.Println(err)
 					}
 
 					if httpResponse != nil {
