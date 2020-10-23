@@ -103,60 +103,74 @@ func Scan(cmd *cobra.Command, args []string) {
 		go func(domain string) {
 			defer wg.Done()
 			Verbose("Testing domain : "+prefix+domain+suffix, verbose)
-			for index, plugin := range y.Plugins {
-				_ = index
+			for _, plugin := range y.Plugins {
 
-				canExecutePluginByName := isPluginAuthorized(plugin, tags)
-				if !canExecutePluginByName {
-					Verbose("Skipping signature rule with URI: "+plugin.URI, verbose)
+				var uris []string
+				// check the present of `uri` and `uris` which has to be forbidden
+				if len(plugin.ListOfURI) > 0 && plugin.URI != "" {
+					log.Fatal("You can't both have `uri` and `uris` specified for URI: " + plugin.URI)
 				}
 
-				canExecutePluginBySeverity := isPluginAuthorizedBySeverity(plugin, severity)
-				if !canExecutePluginBySeverity {
-					Verbose("Skipping signature rule with URI: "+plugin.URI, verbose)
+				if plugin.URI != "" {
+					uris = make([]string, 1)
+					uris[0] = plugin.URI
+				} else {
+					uris = plugin.ListOfURI
 				}
 
-				if canExecutePluginByName && canExecutePluginBySeverity {
-					tmpURL = prefix + domain + suffix + fmt.Sprint(plugin.URI)
-					if plugin.QueryString != "" {
-						tmpURL += "?" + plugin.QueryString
+				for j := 0; j < len(uris); j++ {
+					canExecutePluginByName := isPluginAuthorized(plugin, tags)
+					if !canExecutePluginByName {
+						Verbose("Skipping signature rule with URI: "+uris[j], verbose)
 					}
 
-					// By default we follow HTTP redirects
-					followRedirects := true
-					// But for each plugin we can override and don't follow HTTP redirects
-					if plugin.FollowRedirects != nil && *plugin.FollowRedirects == false {
-						followRedirects = false
+					canExecutePluginBySeverity := isPluginAuthorizedBySeverity(plugin, severity)
+					if !canExecutePluginBySeverity {
+						Verbose("Skipping signature rule with URI: "+uris[j], verbose)
 					}
 
-					Verbose("Testing URL: "+tmpURL, verbose)
-					httpResponse, err := pkg.HTTPGet(insecure, tmpURL, followRedirects, httpRequestTimeout)
-					if err != nil {
-						fmt.Println(err)
-					}
-
-					if httpResponse != nil {
-						for _, check := range plugin.Checks {
-							if severity != "" && check.Severity.String() != severity {
-								continue // break if the severity is defined and different from the one we specified
-							}
-							answer := pkg.ResponseAnalysis(httpResponse, check)
-							if answer {
-								Verbose("[!] Hit found!\n\tURL: "+tmpURL+"\n\tPlugin: "+check.PluginName+"\n\tSeverity: "+string(*check.Severity), verbose)
-								hit = true
-								if BlockCI(blockedFlag, *check.Severity) {
-									block = true
-								}
-								out = append(out, data.Output{
-									Domain:      domain,
-									PluginName:  check.PluginName,
-									TestedURL:   plugin.URI,
-									Severity:    string(*check.Severity),
-									Remediation: *check.Remediation,
-								})
-							}
+					if canExecutePluginByName && canExecutePluginBySeverity {
+						tmpURL = prefix + domain + suffix + fmt.Sprint(uris[j])
+						if plugin.QueryString != "" {
+							tmpURL += "?" + plugin.QueryString
 						}
-						_ = httpResponse.Body.Close()
+
+						// By default we follow HTTP redirects
+						followRedirects := true
+						// But for each plugin we can override and don't follow HTTP redirects
+						if plugin.FollowRedirects != nil && *plugin.FollowRedirects == false {
+							followRedirects = false
+						}
+
+						Verbose("Testing URL: "+tmpURL, verbose)
+						httpResponse, err := pkg.HTTPGet(insecure, tmpURL, followRedirects, httpRequestTimeout)
+						if err != nil {
+							fmt.Println(err)
+						}
+
+						if httpResponse != nil {
+							for _, check := range plugin.Checks {
+								if severity != "" && check.Severity.String() != severity {
+									continue // break if the severity is defined and different from the one we specified
+								}
+								answer := pkg.ResponseAnalysis(httpResponse, check)
+								if answer {
+									Verbose("[!] Hit found!\n\tURL: "+tmpURL+"\n\tPlugin: "+check.PluginName+"\n\tSeverity: "+string(*check.Severity), verbose)
+									hit = true
+									if BlockCI(blockedFlag, *check.Severity) {
+										block = true
+									}
+									out = append(out, data.Output{
+										Domain:      domain,
+										PluginName:  check.PluginName,
+										TestedURL:   uris[j],
+										Severity:    string(*check.Severity),
+										Remediation: *check.Remediation,
+									})
+								}
+							}
+							_ = httpResponse.Body.Close()
+						}
 					}
 				}
 			}
