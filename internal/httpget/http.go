@@ -6,8 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
-
-	log "github.com/sirupsen/logrus"
 )
 
 type IHTTPClient interface {
@@ -64,7 +62,6 @@ func (s Fetcher) Fetch(url string) (*internal.HTTPResponse, error) {
 
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Println(err)
 		return nil, err
 	}
 	bodyString := string(bodyBytes)

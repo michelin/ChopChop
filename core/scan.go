@@ -33,7 +33,7 @@ type Scanner struct {
 	Fetcher           IFetcher
 	NoRedirectFetcher IFetcher
 	// Two fetchers are needed because we can't use the same http client to follow redirects
-	safeData          *SafeData
+	safeData *SafeData
 }
 
 func NewScanner(fetcher IFetcher, noRedirectFetcher IFetcher, signatures *Signatures) *Scanner {
@@ -58,6 +58,7 @@ func (s Scanner) Scan(ctx context.Context, urls []string) ([]Output, error) {
 					endpoint = fmt.Sprintf("%s?%s", endpoint, plugin.QueryString)
 				}
 				fullURL := fmt.Sprintf("%s%s", url, endpoint)
+				log.Info("Testing full url : ", fullURL)
 
 				wg.Add(1)
 				go func(plugin *Plugin) {
@@ -68,7 +69,7 @@ func (s Scanner) Scan(ctx context.Context, urls []string) ([]Output, error) {
 					default:
 						resp, err := s.fetch(fullURL, plugin.FollowRedirects)
 						if err != nil {
-							log.Error(err)
+							log.Debug(err)
 							return
 						}
 						swg := new(sync.WaitGroup)
