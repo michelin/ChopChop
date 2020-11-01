@@ -11,8 +11,8 @@ type Signatures struct {
 }
 
 type Plugin struct {
-	URIs            []string `yaml:"uris"`
-	URI             string   `yaml:"uri"`
+	Endpoints       []string `yaml:"endpoints"`
+	Endpoint        string   `yaml:"endpoint"`
 	QueryString     string   `yaml:"query_string"`
 	Checks          []*Check `yaml:"checks"`
 	FollowRedirects bool     `yaml:"follow_redirects"`

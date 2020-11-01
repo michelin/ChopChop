@@ -170,7 +170,7 @@ $ ./gochopchop scan https://foobar.com  --export=csv,json --export-filename resu
 Writing a new check is as simple as : 
 
 ```yaml
-  - uri: "/.git/config"
+  - endpoint: "/.git/config"
     checks:
       - name: Git exposed
         match:
@@ -180,7 +180,7 @@ Writing a new check is as simple as :
         severity: "High"
 ```
 
-An URI (eg. ```/.git/config```) is mapped to multiple checks which avoids sending X requests for X checks. Multiple checks can be done through a single HTTP request.
+An endpoint (eg. ```/.git/config```) is mapped to multiple checks which avoids sending X requests for X checks. Multiple checks can be done through a single HTTP request.
 Each check needs those fields:
 
 | Attribute | Type | Description | Optional ? | Example | 

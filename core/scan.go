@@ -85,6 +85,7 @@ func (s Scanner) Scan(ctx context.Context, urls []string) ([]Output, error) {
 								return
 							default:
 								if check.Match(resp) {
+									log.Debug("matching check detected")
 									o := Output{
 										URL:         job.url,
 										Name:        check.Name,
@@ -104,14 +105,17 @@ func (s Scanner) Scan(ctx context.Context, urls []string) ([]Output, error) {
 	}
 
 	for _, url := range urls {
-		log.Info("Testing url : ", url)
 		for _, plugin := range s.Signatures.Plugins {
-			for _, uri := range plugin.URIs {
-				endpoint := uri
+			if plugin.Endpoint != "" {
+				plugin.Endpoints = []string{plugin.Endpoint}
+			}
+			for _, e := range plugin.Endpoints {
+				endpoint := e
 				if plugin.QueryString != "" {
 					endpoint = fmt.Sprintf("%s?%s", endpoint, plugin.QueryString)
 				}
 				fullURL := fmt.Sprintf("%s%s", url, endpoint)
+				log.Info("Testing url : ", fullURL)
 
 				w := workerJob{url: fullURL, endpoint: endpoint, plugin: plugin}
 				select {

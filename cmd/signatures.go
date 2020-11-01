@@ -58,11 +58,10 @@ func parseSignatures(cmd *cobra.Command) (*core.Signatures, error) {
 	}
 
 	for _, plugin := range signatures.Plugins {
-		if plugin.URI != "" {
-			if len(plugin.URIs) > 0 {
+		if plugin.Endpoint == "" {
+			if len(plugin.Endpoints) > 0 {
 				return nil, fmt.Errorf("URI and URIs can't be set at the same time in plugin checks. Stopping execution.")
 			}
-			plugin.URIs = []string{plugin.URI}
 		}
 		for _, check := range plugin.Checks {
 			if check.Description == "" {

@@ -7,7 +7,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/sirupsen/logrus"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -43,7 +42,7 @@ func Execute() {
 		return nil
 	}
 
-	rootCmd.PersistentFlags().StringVarP(&v, "verbosity", "v", logrus.WarnLevel.String(), "Log level (debug, info, warn, error, fatal, panic)")
+	rootCmd.PersistentFlags().StringVarP(&v, "verbosity", "v", log.WarnLevel.String(), "Log level (debug, info, warn, error, fatal, panic)")
 	rootCmd.PersistentFlags().IntP("threads", "", 1, "Number of threads")
 	ctx, cancel := context.WithCancel(context.Background())
 	sigs := make(chan os.Signal, 1)
@@ -69,11 +68,11 @@ func Execute() {
 
 func setupLogs(out io.Writer, level string) error {
 	log.SetFormatter(&log.JSONFormatter{})
-	logrus.SetOutput(out)
-	lvl, err := logrus.ParseLevel(level)
+	log.SetOutput(out)
+	lvl, err := log.ParseLevel(level)
 	if err != nil {
 		return err
 	}
-	logrus.SetLevel(lvl)
+	log.SetLevel(lvl)
 	return nil
 }

@@ -41,7 +41,7 @@ func runList(cmd *cobra.Command, args []string) error {
 	for _, plugin := range signatures.Plugins {
 		for _, check := range plugin.Checks {
 			if options.Severity == "" || options.Severity == string(check.Severity) {
-				t.AppendRow([]interface{}{plugin.URI, check.Name, check.Severity, check.Description})
+				t.AppendRow([]interface{}{plugin.Endpoint, check.Name, check.Severity, check.Description})
 				cpt++
 			}
 		}

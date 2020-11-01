@@ -46,10 +46,9 @@ func runScan(cmd *cobra.Command, args []string) error {
 
 	begin := time.Now()
 
-	// serverside
 	fetcher := httpget.NewFetcher(config.HTTP.Insecure, config.HTTP.Timeout)
 	noRedirectFetcher := httpget.NewNoRedirectFetcher(config.HTTP.Insecure, config.HTTP.Timeout)
-	// core
+
 	scanner := core.NewScanner(fetcher, noRedirectFetcher, signatures, config.Threads)
 
 	result, err := scanner.Scan(cmd.Context(), config.Urls)
