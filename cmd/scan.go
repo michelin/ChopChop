@@ -50,7 +50,7 @@ func runScan(cmd *cobra.Command, args []string) error {
 	fetcher := httpget.NewFetcher(config.HTTP.Insecure, config.HTTP.Timeout)
 	noRedirectFetcher := httpget.NewNoRedirectFetcher(config.HTTP.Insecure, config.HTTP.Timeout)
 	// core
-	scanner := core.NewScanner(fetcher, noRedirectFetcher, signatures)
+	scanner := core.NewScanner(fetcher, noRedirectFetcher, signatures, config.Threads)
 
 	result, err := scanner.Scan(cmd.Context(), config.Urls)
 	if err != nil {
@@ -186,6 +186,15 @@ func parseConfig(cmd *cobra.Command, args []string) (*core.Config, error) {
 		return nil, fmt.Errorf("Invalid value for timeout: %v", err)
 	}
 
+	threads, err := rootCmd.Flags().GetInt("threads")
+	if err != nil {
+		return nil, fmt.Errorf("invalid value for threads: %w", err)
+	}
+
+	if threads <= 0 {
+		return nil, fmt.Errorf("The number of threads must be positive")
+	}
+
 	config := &core.Config{
 		HTTP: core.HTTPConfig{
 			Insecure: insecure,
@@ -197,6 +206,7 @@ func parseConfig(cmd *cobra.Command, args []string) (*core.Config, error) {
 		ExportFilename: exportFilename,
 		SeverityFilter: severityFilter,
 		PluginFilter:   pluginFilters,
+		Threads:        threads,
 	}
 
 	return config, nil

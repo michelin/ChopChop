@@ -9,6 +9,7 @@ type Config struct {
 	ExportFilename string
 	SeverityFilter string
 	PluginFilter   []string
+	Threads        int
 }
 
 type HTTPConfig struct {

@@ -44,7 +44,7 @@ func Execute() {
 	}
 
 	rootCmd.PersistentFlags().StringVarP(&v, "verbosity", "v", logrus.WarnLevel.String(), "Log level (debug, info, warn, error, fatal, panic)")
-
+	rootCmd.PersistentFlags().IntP("threads", "", 1, "Number of threads")
 	ctx, cancel := context.WithCancel(context.Background())
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
@@ -55,8 +55,9 @@ func Execute() {
 	go func() {
 		select {
 		case <-sigs:
-			log.Warn("\n[!] Keyboard interrupt detected, cleaning up before terminating.")
+			log.Warn("\n[!] Keyboard interrupt detected.")
 			cancel()
+			os.Exit(1)
 		case <-ctx.Done():
 		}
 	}()
@@ -67,6 +68,7 @@ func Execute() {
 }
 
 func setupLogs(out io.Writer, level string) error {
+	log.SetFormatter(&log.JSONFormatter{})
 	logrus.SetOutput(out)
 	lvl, err := logrus.ParseLevel(level)
 	if err != nil {

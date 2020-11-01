@@ -34,20 +34,74 @@ type Scanner struct {
 	NoRedirectFetcher IFetcher
 	// Two fetchers are needed because we can't use the same http client to follow redirects
 	safeData *SafeData
+	Threads  int
 }
 
-func NewScanner(fetcher IFetcher, noRedirectFetcher IFetcher, signatures *Signatures) *Scanner {
+func NewScanner(fetcher IFetcher, noRedirectFetcher IFetcher, signatures *Signatures, threads int) *Scanner {
 	safeData := new(SafeData)
 	return &Scanner{
 		Signatures:        signatures,
 		Fetcher:           fetcher,
 		NoRedirectFetcher: noRedirectFetcher,
 		safeData:          safeData,
+		Threads:           threads,
 	}
+}
+
+type workerJob struct {
+	url      string
+	endpoint string
+	plugin   *Plugin
 }
 
 func (s Scanner) Scan(ctx context.Context, urls []string) ([]Output, error) {
 	wg := new(sync.WaitGroup)
+	jobs := make(chan workerJob)
+
+	for i := 0; i < s.Threads; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for {
+				select {
+				case <-ctx.Done():
+					return
+				case job, ok := <-jobs:
+					if !ok { // no more jobs
+						return
+					}
+					resp, err := s.fetch(job.url, job.plugin.FollowRedirects)
+					if err != nil {
+						log.Error(err)
+						return
+					}
+					swg := new(sync.WaitGroup)
+					for _, check := range job.plugin.Checks {
+						swg.Add(1)
+						go func(check *Check) {
+							defer swg.Done()
+							select {
+							case <-ctx.Done():
+								return
+							default:
+								if check.Match(resp) {
+									o := Output{
+										URL:         job.url,
+										Name:        check.Name,
+										Endpoint:    job.endpoint,
+										Severity:    check.Severity,
+										Remediation: check.Remediation,
+									}
+									s.safeData.Add(o)
+								}
+							}
+						}(check)
+					}
+					swg.Wait()
+				}
+			}
+		}()
+	}
 
 	for _, url := range urls {
 		log.Info("Testing url : ", url)
@@ -58,48 +112,18 @@ func (s Scanner) Scan(ctx context.Context, urls []string) ([]Output, error) {
 					endpoint = fmt.Sprintf("%s?%s", endpoint, plugin.QueryString)
 				}
 				fullURL := fmt.Sprintf("%s%s", url, endpoint)
-				log.Info("Testing full url : ", fullURL)
 
-				wg.Add(1)
-				go func(plugin *Plugin) {
-					defer wg.Done()
-					select {
-					case <-ctx.Done():
-						return
-					default:
-						resp, err := s.fetch(fullURL, plugin.FollowRedirects)
-						if err != nil {
-							log.Debug(err)
-							return
-						}
-						swg := new(sync.WaitGroup)
-						for _, check := range plugin.Checks {
-							swg.Add(1)
-							go func(check *Check) {
-								defer swg.Done()
-								select {
-								case <-ctx.Done():
-									return
-								default:
-									if check.Match(resp) {
-										o := Output{
-											URL:         url,
-											Name:        check.Name,
-											Endpoint:    endpoint,
-											Severity:    check.Severity,
-											Remediation: check.Remediation,
-										}
-										s.safeData.Add(o)
-									}
-								}
-							}(check)
-						}
-						swg.Wait()
-					}
-				}(plugin)
+				w := workerJob{url: fullURL, endpoint: endpoint, plugin: plugin}
+				select {
+				case <-ctx.Done():
+					break
+				case jobs <- w:
+				}
 			}
 		}
 	}
+
+	close(jobs)
 	wg.Wait()
 
 	return s.safeData.out, nil
