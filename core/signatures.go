@@ -76,7 +76,7 @@ func (s *Signatures) FilterByNames(names []string) {
 
 //Match analyses the HTTP Request
 func (check *Check) Match(resp *internal.HTTPResponse) bool {
-
+	// status code must match
 	if check.StatusCode != nil {
 		if int32(resp.StatusCode) != *check.StatusCode {
 			return false
@@ -149,5 +149,95 @@ func (check *Check) Match(resp *internal.HTTPResponse) bool {
 		}
 	}
 
+	return true
+}
+
+func (self *Signatures) Equals(signatures *Signatures) bool {
+	if len(self.Plugins) != len(signatures.Plugins) {
+		return false
+	}
+	for i, plugin := range self.Plugins {
+		if !plugin.Equals(signatures.Plugins[i]) {
+			return false
+		}
+	}
+	return true
+}
+
+func (self *Plugin) Equals(plugin *Plugin) bool {
+	if !sliceStringEqual(self.Endpoints, plugin.Endpoints) {
+		return false
+	}
+	if self.Endpoint != plugin.Endpoint {
+		return false
+	}
+	if self.QueryString != plugin.QueryString {
+		return false
+	}
+	if self.FollowRedirects != plugin.FollowRedirects {
+		return false
+	}
+	for _, check := range self.Checks {
+		equals := true
+		for _, c_check := range plugin.Checks {
+			if !equals {
+				break
+			}
+			if !check.Equals(c_check) {
+				equals = false
+			}
+		}
+		if !equals {
+			return false
+		}
+	}
+	return true
+}
+
+func (self *Check) Equals(check *Check) bool {
+	if !sliceStringEqual(self.MustMatchOne, check.MustMatchOne) {
+		return false
+	}
+	if !sliceStringEqual(self.MustMatchAll, check.MustMatchAll) {
+		return false
+	}
+	if !sliceStringEqual(self.MustNotMatch, check.MustNotMatch) {
+		return false
+	}
+	if self.StatusCode != nil && check.StatusCode != nil {
+		if *self.StatusCode != *check.StatusCode {
+			return false
+		}
+	}
+	if self.Name != check.Name {
+		return false
+	}
+	if self.Remediation != check.Remediation {
+		return false
+	}
+	if self.Severity != check.Severity {
+		return false
+	}
+	if self.Description != check.Description {
+		return false
+	}
+	if !sliceStringEqual(self.Headers, check.Headers) {
+		return false
+	}
+	if !sliceStringEqual(self.NoHeaders, check.NoHeaders) {
+		return false
+	}
+	return true
+}
+
+func sliceStringEqual(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, v := range a {
+		if v != b[i] {
+			return false
+		}
+	}
 	return true
 }

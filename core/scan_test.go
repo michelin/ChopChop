@@ -6,11 +6,8 @@ import (
 	"gochopchop/core"
 	"gochopchop/internal"
 	"net/http"
-	"reflect"
 	"testing"
 )
-
-var FakeUrl string = "http://testing"
 
 type FakeFetcher map[string]*internal.HTTPResponse
 
@@ -22,15 +19,19 @@ func (f FakeFetcher) Fetch(url string) (*internal.HTTPResponse, error) {
 }
 
 var MyFakeFetcher = FakeFetcher{
-	"http://testing/200": &internal.HTTPResponse{
+	"http://problems/": &internal.HTTPResponse{
 		StatusCode: 200,
-		Body:       "",
-		Header:     http.Header{},
+		Body:       "MATCHONE lorem ipsum MATCHTWO",
+		Header: http.Header{
+			"Header": []string{"ok"},
+		},
 	},
-	"http://testing/404": &internal.HTTPResponse{
-		StatusCode: 404,
-		Body:       "",
-		Header:     http.Header{},
+	"http://noproblem/": &internal.HTTPResponse{
+		StatusCode: 500,
+		Body:       "NOTMATCH",
+		Header: http.Header{
+			"NoHeader": []string{"ok"},
+		},
 	},
 }
 
@@ -39,9 +40,8 @@ func TestScanURL(t *testing.T) {
 		urls   []string
 		output []core.Output
 	}{
-		"url 200 exists": {urls: []string{FakeUrl}, output: FakeOutput200},
-		"url 404 exists":        {urls: []string{FakeUrl}, output: FakeOutput404},
-		"url cannot be reached": {urls: []string{FakeUrl}, output: []core.Output{}},
+		"noproblem": {urls: []string{"http://noproblem"}, output: []core.Output{}},
+		"problems":  {urls: []string{"http://problems"}, output: FakeOutput},
 	}
 
 	scanner := core.NewScanner(MyFakeFetcher, MyFakeFetcher, FakeSignatures, 1)
@@ -52,8 +52,19 @@ func TestScanURL(t *testing.T) {
 			ctx := context.Background()
 			output, _ := scanner.Scan(ctx, tc.urls)
 
-			if !reflect.DeepEqual(output, tc.output) {
-				t.Errorf("expected: %v, got: %v", tc.output, output)
+			for _, haveOutput := range tc.output {
+				found := false
+				for _, wantOutput := range output {
+					if found {
+						break
+					}
+					if wantOutput.Name == haveOutput.Name {
+						found = true
+					}
+				}
+				if !found {
+					t.Errorf("expected: %v, got: %v", tc.output, output)
+				}
 			}
 		})
 	}

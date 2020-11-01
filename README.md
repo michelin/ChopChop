@@ -81,9 +81,10 @@ docker run -v ./:/app chopchop scan -c /app/chopchop.yml https://foobar.com
 
 The Golang rewrite took place a couple of months ago but there's so much to do, still. Here are some features we are planning to integrate :
 [x] Threading for better performance
+[x] Ability to specify the number of concurrent threads
 [x] Colors and better formatting
 [x] Ability to filter checks/signatures to search for
-[ ] Mock and unit tests
+[x] Mock and unit tests
 [ ] Github CI
 And much more!
 
@@ -104,7 +105,8 @@ You can find the available flags available for the `scan` command :
 || `--export-filename` | Specify the filename for the export file(s) |
 | `-t` | `--timeout` | Timeout for the HTTP requests |
 || `--severity-filter` | Filter Plugins by severity |
-|| `--plugin-filter` | Filter Plugins by name of plugin | 
+|| `--plugin-filter` | Filter Plugins by name of plugin |
+|| `--threads` | Number of concurrent threads | 
 
 ## Advanced usage
 
@@ -127,6 +129,12 @@ $ ./gochopchop scan https://foobar.com --insecure --signature test_config.yml
 
 ```bash
 $ ./gochopchop plugins --severity High
+```
+
+- Ability to specify number of concurrent threads : `--threads 4` for 4 workers
+
+```bash
+$ ./gochopchop plugins --threads 4
 ```
 
 - Ability to block the CI pipeline by severity level (equal or over specified severity) : `--max-severity Medium`

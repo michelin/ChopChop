@@ -37,8 +37,9 @@ type Scanner struct {
 	Threads  int
 }
 
+// NewScanner returns a pointer to a initialized Scanner
 func NewScanner(fetcher IFetcher, noRedirectFetcher IFetcher, signatures *Signatures, threads int) *Scanner {
-	safeData := new(SafeData)
+	safeData := &SafeData{out: make([]Output, 0)}
 	return &Scanner{
 		Signatures:        signatures,
 		Fetcher:           fetcher,
@@ -85,7 +86,6 @@ func (s Scanner) Scan(ctx context.Context, urls []string) ([]Output, error) {
 								return
 							default:
 								if check.Match(resp) {
-									log.Debug("matching check detected")
 									o := Output{
 										URL:         job.url,
 										Name:        check.Name,

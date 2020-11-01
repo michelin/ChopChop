@@ -1,48 +1,94 @@
 package core_test
 
-import "gochopchop/core"
+import (
+	"gochopchop/core"
+	"testing"
+)
 
 func createInt32(x int32) *int32 {
 	return &x
 }
 
-var fakeCheckStatus200 = &core.Check{
-	StatusCode: createInt32(200),
+// Checks
+
+var fakeCheckStatusCode = &core.Check{
+	Name:        "StatusCode",
+	Severity:    "Medium",
+	Remediation: "uninstall",
+	StatusCode:  createInt32(200),
 }
 
-var fakeCheckStatus404 = &core.Check{
-	StatusCode: createInt32(404),
+var fakeCheckNoHeaders = &core.Check{
+	Name:        "NoHeaders",
+	Severity:    "Medium",
+	Remediation: "uninstall",
+	NoHeaders:   []string{"NoHeader:ok"},
 }
 
-var fakeCheckStatus500 = &core.Check{
-	StatusCode: createInt32(500),
+var fakeCheckHeaders = &core.Check{
+	Name:        "Headers",
+	Severity:    "Medium",
+	Remediation: "uninstall",
+	Headers:     []string{"Header:ok"},
 }
 
-var fakePlugin200 = &core.Plugin{
-	Endpoint: "/200",
+var fakeCheckMatchOne = &core.Check{
+	Name:         "MustMatchOne",
+	Severity:     "Medium",
+	Remediation:  "uninstall",
+	MustMatchOne: []string{"MATCHONE", "MATCHTWO"},
+}
+
+var fakeCheckMatchAll = &core.Check{
+	Name:         "MustMatchAll",
+	Severity:     "Medium",
+	Remediation:  "uninstall",
+	MustMatchAll: []string{"MATCHONE", "MATCHTWO"},
+}
+
+var fakeCheckNotMatch = &core.Check{
+	Name:         "MustNotMatch",
+	Severity:     "Medium",
+	Remediation:  "uninstall",
+	MustNotMatch: []string{"NOTMATCH"},
+}
+
+// Plugins
+
+var fakePlugin = &core.Plugin{
+	Endpoint: "/",
 	Checks: []*core.Check{
-		fakeCheckStatus200,
+		fakeCheckStatusCode,
+		fakeCheckHeaders,
+		fakeCheckNoHeaders,
+		fakeCheckMatchAll,
+		fakeCheckMatchOne,
+		fakeCheckNotMatch,
 	},
 }
 
-var fakePlugin404 = &core.Plugin{
-	Endpoint: "/404",
-	Checks: []*core.Check{
-		fakeCheckStatus404,
-	},
-}
-
-var fakePlugin500 = &core.Plugin{
-	Endpoint: "/500",
-	Checks: []*core.Check{
-		fakeCheckStatus500,
-	},
-}
+// Signatures
 
 var FakeSignatures = &core.Signatures{
 	Plugins: []*core.Plugin{
-		fakePlugin200,
-		fakePlugin404,
-		fakePlugin500,
+		fakePlugin,
 	},
+}
+
+func TestFilterBySeverity(t *testing.T) {
+	want := &core.Signatures{}
+	have := FakeSignatures
+	have.FilterBySeverity("High")
+	if !want.Equals(have) {
+		t.Errorf("expected: %v, got: %v", want, have)
+	}
+}
+
+func TestFilterByNames(t *testing.T) {
+	want := &core.Signatures{}
+	have := FakeSignatures
+	have.FilterByNames([]string{"UnknownCheck"})
+	if !want.Equals(have) {
+		t.Errorf("expected: %v, got: %v", want, have)
+	}
 }

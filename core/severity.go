@@ -17,22 +17,22 @@ func SeveritiesAsString() string {
 	return strings.Join(severities[:], ", ")
 }
 
-func SeverityReached(max string, sv string) bool {
+func SeverityReached(max string, severity string) bool {
 	switch max {
 	case "High":
-		if sv == "High" {
+		if severity == "High" {
 			return true
 		}
 	case "Medium":
-		if sv == "High" || sv == "Medium" {
+		if severity == "High" || severity == "Medium" {
 			return true
 		}
 	case "Low":
-		if sv == "High" || sv == "Medium" || sv == "Low" {
+		if severity == "High" || severity == "Medium" || severity == "Low" {
 			return true
 		}
 	case "Informational":
-		if sv == "High" || sv == "Medium" || sv == "Low" || sv == "Informational" {
+		if severity == "High" || severity == "Medium" || severity == "Low" || severity == "Informational" {
 			return true
 		}
 	}
