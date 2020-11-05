@@ -74,7 +74,7 @@ func (s Scanner) Scan(ctx context.Context, urls []string) ([]Output, error) {
 					resp, err := s.fetch(job.url, job.plugin.FollowRedirects)
 					if err != nil {
 						log.Error(err)
-						return
+						break
 					}
 					swg := new(sync.WaitGroup)
 					for _, check := range job.plugin.Checks {

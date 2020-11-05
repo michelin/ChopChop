@@ -1,7 +1,6 @@
-package core_test
+package core
 
 import (
-	"gochopchop/core"
 	"testing"
 )
 
@@ -11,42 +10,48 @@ func createInt32(x int32) *int32 {
 
 // Checks
 
-var fakeCheckStatusCode = &core.Check{
+var FakeCheckStatusCode = &Check{
+	Name:        "StatusCode",
+	Severity:    "Medium",
+	Remediation: "uninstall",
+	StatusCode:  createInt32(200),
+}
+var FakeCheckStatusCode2 = &Check{
 	Name:        "StatusCode",
 	Severity:    "Medium",
 	Remediation: "uninstall",
 	StatusCode:  createInt32(200),
 }
 
-var fakeCheckNoHeaders = &core.Check{
+var FakeCheckNoHeaders = &Check{
 	Name:        "NoHeaders",
 	Severity:    "Medium",
 	Remediation: "uninstall",
 	NoHeaders:   []string{"NoHeader:ok"},
 }
 
-var fakeCheckHeaders = &core.Check{
+var FakeCheckHeaders = &Check{
 	Name:        "Headers",
 	Severity:    "Medium",
 	Remediation: "uninstall",
 	Headers:     []string{"Header:ok"},
 }
 
-var fakeCheckMatchOne = &core.Check{
+var FakeCheckMatchOne = &Check{
 	Name:         "MustMatchOne",
 	Severity:     "Medium",
 	Remediation:  "uninstall",
 	MustMatchOne: []string{"MATCHONE", "MATCHTWO"},
 }
 
-var fakeCheckMatchAll = &core.Check{
+var FakeCheckMatchAll = &Check{
 	Name:         "MustMatchAll",
 	Severity:     "Medium",
 	Remediation:  "uninstall",
 	MustMatchAll: []string{"MATCHONE", "MATCHTWO"},
 }
 
-var fakeCheckNotMatch = &core.Check{
+var FakeCheckNotMatch = &Check{
 	Name:         "MustNotMatch",
 	Severity:     "Medium",
 	Remediation:  "uninstall",
@@ -55,28 +60,46 @@ var fakeCheckNotMatch = &core.Check{
 
 // Plugins
 
-var fakePlugin = &core.Plugin{
+var FakePlugin = &Plugin{
 	Endpoint: "/",
-	Checks: []*core.Check{
-		fakeCheckStatusCode,
-		fakeCheckHeaders,
-		fakeCheckNoHeaders,
-		fakeCheckMatchAll,
-		fakeCheckMatchOne,
-		fakeCheckNotMatch,
+	Checks: []*Check{
+		FakeCheckStatusCode,
+		FakeCheckHeaders,
+		FakeCheckNoHeaders,
+		FakeCheckMatchAll,
+		FakeCheckMatchOne,
+		FakeCheckNotMatch,
 	},
 }
 
-// Signatures
+var FakeQueryPlugin = &Plugin{
+	Endpoint:    "/",
+	QueryString: "query=test",
+	Checks: []*Check{
+		FakeCheckStatusCode,
+	},
+}
 
-var FakeSignatures = &core.Signatures{
-	Plugins: []*core.Plugin{
-		fakePlugin,
+var FakeFollowRedirectPlugin = &Plugin{
+	Endpoint: "/",
+	Checks: []*Check{
+		FakeCheckStatusCode2,
+	},
+	FollowRedirects: true,
+}
+
+// Signatures
+//TODO FIXME signatures ne prends pas plus d'un seul plugin sinon plante
+var FakeSignatures = &Signatures{
+	Plugins: []*Plugin{
+		FakePlugin,
+		//FakeQueryPlugin,
+		FakeFollowRedirectPlugin,
 	},
 }
 
 func TestFilterBySeverity(t *testing.T) {
-	want := &core.Signatures{}
+	want := NewSignatures()
 	have := FakeSignatures
 	have.FilterBySeverity("High")
 	if !want.Equals(have) {
@@ -85,10 +108,93 @@ func TestFilterBySeverity(t *testing.T) {
 }
 
 func TestFilterByNames(t *testing.T) {
-	want := &core.Signatures{}
+	// TODO faire et traiter tous les cas
+	want := NewSignatures()
 	have := FakeSignatures
 	have.FilterByNames([]string{"UnknownCheck"})
 	if !want.Equals(have) {
 		t.Errorf("expected: %v, got: %v", want, have)
+	}
+}
+
+func TestPluginEquals(t *testing.T) {
+	// TODO faire et traiter tous les cas
+	// TODO faire et traiter tous les cas (verifier avec go tool que ca passe dans tous les if)
+	var tests = map[string]struct {
+		plugin1 *Plugin
+		plugin2 *Plugin
+		want    bool
+	}{
+		"MustMatchOne": {
+			plugin1: &Plugin{},
+			plugin2: &Plugin{},
+			want:    true,
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			have := tc.plugin1.Equals(tc.plugin2)
+			if have != tc.want {
+				t.Errorf("expected: %v, got: %v", tc.want, have)
+			}
+		})
+	}
+}
+
+func TestCheckEquals(t *testing.T) {
+	// TODO faire et traiter tous les cas (verifier avec go tool que ca passe dans tous les if)
+	var tests = map[string]struct {
+		check1 *Check
+		check2 *Check
+		want   bool
+	}{
+		"MustMatchOne": {
+			check1: &Check{},
+			check2: &Check{},
+			want:   true,
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			have := tc.check1.Equals(tc.check2)
+			if have != tc.want {
+				t.Errorf("expected: %v, got: %v", tc.want, have)
+			}
+		})
+	}
+}
+
+func TestSliceStringEqual(t *testing.T) {
+	var tests = map[string]struct {
+		slice1 []string
+		slice2 []string
+		want   bool
+	}{
+		"Same slices": {
+			slice1: []string{"a", "b"},
+			slice2: []string{"a", "b"},
+			want:   true,
+		},
+		"Different slices with same length": {
+			slice1: []string{"a", "b"},
+			slice2: []string{"x", "b"},
+			want:   false,
+		},
+		"Different slices with different length": {
+			slice1: []string{"a", "b"},
+			slice2: []string{"a", "b", "c"},
+			want:   false,
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			have := sliceStringEqual(tc.slice1, tc.slice2)
+			if have != tc.want {
+				t.Errorf("expected: %v, got: %v", tc.want, have)
+			}
+		})
 	}
 }

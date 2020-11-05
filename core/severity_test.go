@@ -1,7 +1,6 @@
-package core_test
+package core
 
 import (
-	"gochopchop/core"
 	"testing"
 )
 
@@ -19,7 +18,7 @@ func TestValidSeverity(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			have := core.ValidSeverity(tc.severity)
+			have := ValidSeverity(tc.severity)
 			if tc.want != have {
 				t.Errorf("expected: %v, got: %v", tc.want, have)
 			}
@@ -29,7 +28,7 @@ func TestValidSeverity(t *testing.T) {
 
 func TestSeveritiesAsString(t *testing.T) {
 	want := "High, Medium, Low, Informational"
-	have := core.SeveritiesAsString()
+	have := SeveritiesAsString()
 	if have != want {
 		t.Errorf("expected: %v, got: %v", want, have)
 	}
@@ -41,13 +40,18 @@ func TestSeverityReached(t *testing.T) {
 		severity string
 		want     bool
 	}{
-		"High": {max: "High", severity: "Informational", want: false},
-		"Info": {max: "Informational", severity: "Informational", want: true},
+		"HighNotReached":       {max: "High", severity: "Informational", want: false},
+		"HighReached":          {max: "High", severity: "High", want: true},
+		"MediumReached":        {max: "Medium", severity: "High", want: true},
+		"MediumNotReached":     {max: "Medium", severity: "Low", want: false},
+		"LowReached":           {max: "Low", severity: "High", want: true},
+		"LowNotReached":        {max: "Low", severity: "Informational", want: false},
+		"InformationalReached": {max: "Informational", severity: "Informational", want: true},
 	}
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			have := core.SeverityReached(tc.max, tc.severity)
+			have := SeverityReached(tc.max, tc.severity)
 			if tc.want != have {
 				t.Errorf("want: %v, have: %v", tc.want, have)
 			}
