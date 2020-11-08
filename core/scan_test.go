@@ -36,6 +36,7 @@ var MyFakeFetcher = FakeFetcher{
 			"NoHeader": []string{"ok"},
 		},
 	},
+	"http://nohttpresponse/": nil,
 	"http://noproblem/?query=test": &internal.HTTPResponse{
 		StatusCode: 500,
 	},
@@ -51,6 +52,7 @@ func TestScan(t *testing.T) {
 		"multiple vulnerabilities found": {ctx: context.Background(), urls: []string{"http://problems"}, output: FakeOutput},
 		"context is done":                {ctx: context.Background(), urls: []string{"http://noproblem"}, output: []Output{}},
 		"fetcher problem":                {ctx: context.Background(), urls: []string{"http://unknown"}, output: []Output{}},
+		"no HTTP Response":               {ctx: context.Background(), urls: []string{"http://nohttpresponse/"}, output: []Output{}},
 	}
 
 	for name, tc := range tests {
@@ -67,11 +69,9 @@ func TestScan(t *testing.T) {
 			for _, haveOutput := range tc.output {
 				found := false
 				for _, wantOutput := range output {
-					if found {
-						break
-					}
 					if wantOutput.Name == haveOutput.Name {
 						found = true
+						break
 					}
 				}
 				if !found {

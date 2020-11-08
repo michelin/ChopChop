@@ -37,12 +37,12 @@ func NewSignatures() *Signatures {
 	return &Signatures{}
 }
 
-func (s *Signatures) FilterBySeverity(severityFilter string) {
+func (s *Signatures) FilterBySeverity(severity string) {
 	filteredPlugins := s.Plugins[:0]
 	for _, plugin := range s.Plugins {
 		filteredChecks := plugin.Checks[:0]
 		for _, check := range plugin.Checks {
-			if check.Severity == severityFilter {
+			if check.Severity == severity {
 				filteredChecks = append(filteredChecks, check)
 			}
 		}
@@ -156,8 +156,15 @@ func (self *Signatures) Equals(signatures *Signatures) bool {
 	if len(self.Plugins) != len(signatures.Plugins) {
 		return false
 	}
-	for i, plugin := range self.Plugins {
-		if !plugin.Equals(signatures.Plugins[i]) {
+	for _, plugin := range self.Plugins {
+		found := false
+		for _, oplugin := range signatures.Plugins {
+			if plugin.Equals(oplugin) {
+				found = true
+				break
+			}
+		}
+		if !found {
 			return false
 		}
 	}
@@ -178,16 +185,14 @@ func (self *Plugin) Equals(plugin *Plugin) bool {
 		return false
 	}
 	for _, check := range self.Checks {
-		equals := true
-		for _, c_check := range plugin.Checks {
-			if !equals {
+		found := false
+		for _, pcheck := range plugin.Checks {
+			if check.Equals(pcheck) {
+				found = true
 				break
 			}
-			if !check.Equals(c_check) {
-				equals = false
-			}
 		}
-		if !equals {
+		if !found {
 			return false
 		}
 	}

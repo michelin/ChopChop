@@ -3,9 +3,9 @@ package core
 var FakeOutputStatusCode = Output{
 	URL:         "http://problems",
 	Endpoint:    FakePlugin.Endpoint,
-	Name:        FakeCheckStatusCode.Name,
-	Severity:    FakeCheckStatusCode.Severity,
-	Remediation: FakeCheckStatusCode.Remediation,
+	Name:        FakeCheckStatusCode200.Name,
+	Severity:    FakeCheckStatusCode200.Severity,
+	Remediation: FakeCheckStatusCode200.Remediation,
 }
 
 var FakeOutputMatchOne = Output{
