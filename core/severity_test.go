@@ -1,7 +1,8 @@
-package core
+package core_test
 
 import (
 	"testing"
+	"gochopchop/core"
 )
 
 func TestValidSeverity(t *testing.T) {
@@ -18,7 +19,7 @@ func TestValidSeverity(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			have := ValidSeverity(tc.severity)
+			have := core.ValidSeverity(tc.severity)
 			if tc.want != have {
 				t.Errorf("expected: %v, got: %v", tc.want, have)
 			}
@@ -28,7 +29,7 @@ func TestValidSeverity(t *testing.T) {
 
 func TestSeveritiesAsString(t *testing.T) {
 	want := "High, Medium, Low, Informational"
-	have := SeveritiesAsString()
+	have := core.SeveritiesAsString()
 	if have != want {
 		t.Errorf("expected: %v, got: %v", want, have)
 	}
@@ -51,7 +52,7 @@ func TestSeverityReached(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			have := SeverityReached(tc.max, tc.severity)
+			have := core.SeverityReached(tc.max, tc.severity)
 			if tc.want != have {
 				t.Errorf("want: %v, have: %v", tc.want, have)
 			}

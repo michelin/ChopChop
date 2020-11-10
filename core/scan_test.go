@@ -1,58 +1,31 @@
-package core
+package core_test
 
 import (
 	"context"
-	"fmt"
-	"gochopchop/internal"
-	"net/http"
+	"gochopchop/core"
+	"gochopchop/mock"
 	"testing"
 	"time"
 )
 
-// TODO pas passer les signatures au new
-var FakeScanner = NewScanner(MyFakeFetcher, MyFakeFetcher, FakeSignatures, 1)
-
-type FakeFetcher map[string]*internal.HTTPResponse
-
-func (f FakeFetcher) Fetch(url string) (*internal.HTTPResponse, error) {
-	if res, ok := f[url]; ok {
-		return res, nil
-	}
-	return nil, fmt.Errorf("could not fetch : %s", url)
-}
-
-var MyFakeFetcher = FakeFetcher{
-	"http://problems/": &internal.HTTPResponse{
-		StatusCode: 200,
-		Body:       "MATCHONE lorem ipsum MATCHTWO",
-		Header: http.Header{
-			"Header": []string{"ok"},
-		},
-	},
-	"http://noproblem/": &internal.HTTPResponse{
-		StatusCode: 500,
-		Body:       "NOTMATCH",
-		Header: http.Header{
-			"NoHeader": []string{"ok"},
-		},
-	},
-	"http://nohttpresponse/": nil,
-	"http://noproblem/?query=test": &internal.HTTPResponse{
-		StatusCode: 500,
-	},
-}
+// TODO : Tester PKG HTTP
+// TODO : Refactor separation entre signatures et config
+// TODO : Refactor scan mal decoupe au niveau du metier
+// TODO : Pas passer les signatures au newScanner
+// TODO : Test fonctionnels
+// TODO : integrer tests unitaires dans la CI (voir github workflows avec go test)
 
 func TestScan(t *testing.T) {
 	var tests = map[string]struct {
 		ctx    context.Context
 		urls   []string
-		output []Output
+		output []core.Output
 	}{
-		"no vulnerabilities found":       {ctx: context.Background(), urls: []string{"http://noproblem"}, output: []Output{}},
-		"multiple vulnerabilities found": {ctx: context.Background(), urls: []string{"http://problems"}, output: FakeOutput},
-		"context is done":                {ctx: context.Background(), urls: []string{"http://noproblem"}, output: []Output{}},
-		"fetcher problem":                {ctx: context.Background(), urls: []string{"http://unknown"}, output: []Output{}},
-		"no HTTP Response":               {ctx: context.Background(), urls: []string{"http://nohttpresponse/"}, output: []Output{}},
+		"no vulnerabilities found":  {ctx: context.Background(), urls: []string{"http://noproblem"}, output: []core.Output{}},
+		"all vulnerabilities found": {ctx: context.Background(), urls: []string{"http://problems"}, output: mock.FakeOutput},
+		"context is done":           {ctx: context.Background(), urls: []string{"http://noproblem"}, output: []core.Output{}},
+		"fetcher problem":           {ctx: context.Background(), urls: []string{"http://unknown"}, output: []core.Output{}},
+		"no HTTP Response":          {ctx: context.Background(), urls: []string{"http://nohttpresponse"}, output: []core.Output{}},
 	}
 
 	for name, tc := range tests {
@@ -64,7 +37,7 @@ func TestScan(t *testing.T) {
 				cancel()
 			}
 
-			output, _ := FakeScanner.Scan(tc.ctx, tc.urls)
+			output, _ := mock.FakeScanner.Scan(tc.ctx, tc.urls)
 
 			for _, haveOutput := range tc.output {
 				found := false

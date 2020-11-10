@@ -1,120 +1,20 @@
-package core
+package core_test
 
 import (
+	"gochopchop/core"
+	"gochopchop/mock"
 	"testing"
 )
 
-func createInt32(x int32) *int32 {
-	return &x
-}
-
-// Checks
-
-var FakeCheckStatusCode200 = &Check{
-	Name:        "StatusCode200",
-	Severity:    "Medium",
-	Remediation: "uninstall",
-	StatusCode:  createInt32(200),
-}
-
-var FakeCheckStatusCode500 = &Check{
-	Name:        "StatusCode500",
-	Severity:    "High",
-	Remediation: "uninstall",
-	StatusCode:  createInt32(500),
-}
-
-var FakeCheckNoHeaders = &Check{
-	Name:        "NoHeaders",
-	Severity:    "Medium",
-	Remediation: "uninstall",
-	NoHeaders:   []string{"NoHeader:ok"},
-}
-
-var FakeCheckHeaders = &Check{
-	Name:        "Headers",
-	Severity:    "Medium",
-	Remediation: "uninstall",
-	Headers:     []string{"Header:ok"},
-}
-
-var FakeCheckMatchOne = &Check{
-	Name:         "MustMatchOne",
-	Severity:     "Medium",
-	Remediation:  "uninstall",
-	MustMatchOne: []string{"MATCHONE", "MATCHTWO"},
-}
-
-var FakeCheckMatchAll = &Check{
-	Name:         "MustMatchAll",
-	Severity:     "Medium",
-	Remediation:  "uninstall",
-	MustMatchAll: []string{"MATCHONE", "MATCHTWO"},
-}
-
-var FakeCheckNotMatch = &Check{
-	Name:         "MustNotMatch",
-	Severity:     "Medium",
-	Remediation:  "uninstall",
-	MustNotMatch: []string{"NOTMATCH"},
-}
-
-// Plugins
-
-var FakePlugin = &Plugin{
-	Endpoint: "/",
-	Checks: []*Check{
-		FakeCheckStatusCode200,
-		FakeCheckHeaders,
-		FakeCheckNoHeaders,
-		FakeCheckMatchAll,
-		FakeCheckMatchOne,
-		FakeCheckNotMatch,
-	},
-}
-
-var FakeQueryPlugin = &Plugin{
-	Endpoint:    "/",
-	QueryString: "query=test",
-	Checks: []*Check{
-		FakeCheckStatusCode200,
-	},
-}
-
-var FakePlugin2 = &Plugin{
-	Endpoint:    "/fake",
-	QueryString: "query=test",
-	Checks: []*Check{
-		FakeCheckStatusCode500,
-	},
-}
-
-var FakeFollowRedirectPlugin = &Plugin{
-	Endpoint: "/",
-	Checks: []*Check{
-		FakeCheckStatusCode200,
-	},
-	FollowRedirects: true,
-}
-
-// Signatures
-var FakeSignatures = &Signatures{
-	Plugins: []*Plugin{
-		FakePlugin,
-		FakeQueryPlugin,
-		FakeFollowRedirectPlugin,
-	},
-}
-
 func TestFilterBySeverity(t *testing.T) {
 	var tests = map[string]struct {
-		have     *Signatures
-		want     *Signatures
+		have     *core.Signatures
+		want     *core.Signatures
 		severity string
 	}{
 		"Filter nothing": {
-			have:     &Signatures{Plugins: []*Plugin{FakePlugin}},
-			want:     &Signatures{Plugins: []*Plugin{FakePlugin}},
+			have:     &core.Signatures{Plugins: []*core.Plugin{mock.FakePlugin}},
+			want:     &core.Signatures{Plugins: []*core.Plugin{mock.FakePlugin}},
 			severity: "Medium",
 		},
 	}
@@ -131,18 +31,18 @@ func TestFilterBySeverity(t *testing.T) {
 
 func TestFilterByNames(t *testing.T) {
 	var tests = map[string]struct {
-		have  *Signatures
-		want  *Signatures
+		have  *core.Signatures
+		want  *core.Signatures
 		names []string
 	}{
 		"Filter nothing": {
-			have:  &Signatures{Plugins: []*Plugin{FakeQueryPlugin}},
-			want:  &Signatures{Plugins: []*Plugin{FakeQueryPlugin}},
-			names: []string{FakeCheckStatusCode200.Name},
+			have:  &core.Signatures{Plugins: []*core.Plugin{mock.FakeQueryPlugin}},
+			want:  &core.Signatures{Plugins: []*core.Plugin{mock.FakeQueryPlugin}},
+			names: []string{mock.FakeCheckStatusCode200.Name},
 		},
 		"Filter one element": {
-			have:  &Signatures{Plugins: []*Plugin{FakeQueryPlugin}},
-			want:  &Signatures{},
+			have:  &core.Signatures{Plugins: []*core.Plugin{mock.FakeQueryPlugin}},
+			want:  &core.Signatures{},
 			names: []string{"check's name that is not in the signatures"},
 		},
 	}
@@ -159,37 +59,37 @@ func TestFilterByNames(t *testing.T) {
 
 func TestPluginEquals(t *testing.T) {
 	var tests = map[string]struct {
-		plugin1 *Plugin
-		plugin2 *Plugin
+		plugin1 *core.Plugin
+		plugin2 *core.Plugin
 		want    bool
 	}{
 		"Different Endpoints": {
-			plugin1: &Plugin{
+			plugin1: &core.Plugin{
 				Endpoint: "/endpoint1",
 			},
-			plugin2: &Plugin{
+			plugin2: &core.Plugin{
 				Endpoint: "/endpoint2",
 			},
 			want: false,
 		},
 		"Different Query String": {
-			plugin1: &Plugin{
+			plugin1: &core.Plugin{
 				Endpoint:    "/endpoint1",
 				QueryString: "query=test1",
 			},
-			plugin2: &Plugin{
+			plugin2: &core.Plugin{
 				Endpoint:    "/endpoint1",
 				QueryString: "query=test2",
 			},
 			want: false,
 		},
 		"Different Follow Redirects Bool": {
-			plugin1: &Plugin{
+			plugin1: &core.Plugin{
 				Endpoint:        "/endpoint1",
 				QueryString:     "query=test1",
 				FollowRedirects: true,
 			},
-			plugin2: &Plugin{
+			plugin2: &core.Plugin{
 				Endpoint:        "/endpoint1",
 				QueryString:     "query=test1",
 				FollowRedirects: false,
@@ -197,41 +97,41 @@ func TestPluginEquals(t *testing.T) {
 			want: false,
 		},
 		"Equals Checks": {
-			plugin1: &Plugin{
+			plugin1: &core.Plugin{
 				Endpoint:        "/endpoint1",
 				QueryString:     "query=test1",
 				FollowRedirects: true,
-				Checks: []*Check{
-					FakeCheckStatusCode200,
+				Checks: []*core.Check{
+					mock.FakeCheckStatusCode200,
 				},
 			},
-			plugin2: &Plugin{
+			plugin2: &core.Plugin{
 				Endpoint:        "/endpoint1",
 				QueryString:     "query=test1",
 				FollowRedirects: true,
-				Checks: []*Check{
-					FakeCheckStatusCode200,
+				Checks: []*core.Check{
+					mock.FakeCheckStatusCode200,
 				},
 			},
 			want: true,
 		},
 		"Not Equals Checks": {
-			plugin1: &Plugin{
+			plugin1: &core.Plugin{
 				Endpoint:        "/endpoint1",
 				QueryString:     "query=test1",
 				FollowRedirects: true,
-				Checks: []*Check{
-					FakeCheckStatusCode200,
-					FakeCheckMatchAll,
+				Checks: []*core.Check{
+					mock.FakeCheckStatusCode200,
+					mock.FakeCheckMatchAll,
 				},
 			},
-			plugin2: &Plugin{
+			plugin2: &core.Plugin{
 				Endpoint:        "/endpoint1",
 				QueryString:     "query=test1",
 				FollowRedirects: true,
-				Checks: []*Check{
-					FakeCheckStatusCode500,
-					FakeCheckMatchAll,
+				Checks: []*core.Check{
+					mock.FakeCheckStatusCode500,
+					mock.FakeCheckMatchAll,
 				},
 			},
 			want: false,
@@ -250,30 +150,30 @@ func TestPluginEquals(t *testing.T) {
 
 func TestSignaturesEquals(t *testing.T) {
 	var tests = map[string]struct {
-		signatures1 *Signatures
-		signatures2 *Signatures
+		signatures1 *core.Signatures
+		signatures2 *core.Signatures
 		want        bool
 	}{
 		"Different Length": {
-			signatures1: &Signatures{Plugins: []*Plugin{
-				FakePlugin,
-				FakeQueryPlugin,
-				FakeFollowRedirectPlugin,
+			signatures1: &core.Signatures{Plugins: []*core.Plugin{
+				mock.FakePlugin,
+				mock.FakeQueryPlugin,
+				mock.FakeFollowRedirectPlugin,
 			}},
-			signatures2: NewSignatures(),
+			signatures2: core.NewSignatures(),
 			want:        false,
 		},
 
 		"Not the same plugin content": {
-			signatures1: &Signatures{Plugins: []*Plugin{
-				FakePlugin2,
-				FakeQueryPlugin,
-				FakeFollowRedirectPlugin,
+			signatures1: &core.Signatures{Plugins: []*core.Plugin{
+				mock.FakePlugin2,
+				mock.FakeQueryPlugin,
+				mock.FakeFollowRedirectPlugin,
 			}},
-			signatures2: &Signatures{Plugins: []*Plugin{
-				FakePlugin,
-				FakeQueryPlugin,
-				FakeFollowRedirectPlugin,
+			signatures2: &core.Signatures{Plugins: []*core.Plugin{
+				mock.FakePlugin,
+				mock.FakeQueryPlugin,
+				mock.FakeFollowRedirectPlugin,
 			}},
 			want: false,
 		},
@@ -289,55 +189,54 @@ func TestSignaturesEquals(t *testing.T) {
 	}
 }
 func TestCheckEquals(t *testing.T) {
-	// TODO faire et traiter tous les cas (verifier avec go tool que ca passe dans tous les if)
 	var tests = map[string]struct {
-		check1 *Check
-		check2 *Check
+		check1 *core.Check
+		check2 *core.Check
 		want   bool
 	}{
 		"MustMatchOne not Equals": {
-			check1: &Check{MustMatchOne: []string{"MATCHONE", "MATCHTWO"}},
-			check2: &Check{MustMatchOne: []string{"MATCHFOUR", "MATCHTHREE"}},
+			check1: &core.Check{MustMatchOne: []string{"MATCHONE", "MATCHTWO"}},
+			check2: &core.Check{MustMatchOne: []string{"MATCHFOUR", "MATCHTHREE"}},
 			want:   false,
 		},
 		"MustMatchAll not Equals": {
-			check1: &Check{MustMatchAll: []string{"MATCHONE", "MATCHTWO"}},
-			check2: &Check{MustMatchAll: []string{"MATCHONE", "MATCHTHREE"}},
+			check1: &core.Check{MustMatchAll: []string{"MATCHONE", "MATCHTWO"}},
+			check2: &core.Check{MustMatchAll: []string{"MATCHONE", "MATCHTHREE"}},
 			want:   false,
 		},
 		"MustNotMatch Equals": {
-			check1: &Check{MustNotMatch: []string{"MATCHONE", "MATCHTWO"}},
-			check2: &Check{MustNotMatch: []string{"MATCHONE", "MATCHTHREE"}},
+			check1: &core.Check{MustNotMatch: []string{"MATCHONE", "MATCHTWO"}},
+			check2: &core.Check{MustNotMatch: []string{"MATCHONE", "MATCHTHREE"}},
 			want:   false,
 		},
 		"Name not Equals": {
-			check1: &Check{Name: "Name1"},
-			check2: &Check{Name: "Name2"},
+			check1: &core.Check{Name: "Name1"},
+			check2: &core.Check{Name: "Name2"},
 			want:   false,
 		},
 		"Remediation not Equals": {
-			check1: &Check{Remediation: "ಠ_ಠ"},
-			check2: &Check{Remediation: "(°_o)"},
+			check1: &core.Check{Remediation: "ಠ_ಠ"},
+			check2: &core.Check{Remediation: "(°_o)"},
 			want:   false,
 		},
 		"Severity not Equals": {
-			check1: &Check{Severity: "High"},
-			check2: &Check{Severity: "Medium"},
+			check1: &core.Check{Severity: "High"},
+			check2: &core.Check{Severity: "Medium"},
 			want:   false,
 		},
 		"Description not Equals": {
-			check1: &Check{Description: "ಠ_ಠ"},
-			check2: &Check{Description: "(°_o)"},
+			check1: &core.Check{Description: "ಠ_ಠ"},
+			check2: &core.Check{Description: "(°_o)"},
 			want:   false,
 		},
 		"Headers not Equals": {
-			check1: &Check{Headers: []string{"Header:OK"}},
-			check2: &Check{Headers: []string{"Header:notOK"}},
+			check1: &core.Check{Headers: []string{"Header:OK"}},
+			check2: &core.Check{Headers: []string{"Header:notOK"}},
 			want:   false,
 		},
-		"noHeaders not Equals": {
-			check1: &Check{NoHeaders: []string{"NoHeader:OK"}},
-			check2: &Check{NoHeaders: []string{"NoHeader:notOK"}},
+		"NoHeaders not Equals": {
+			check1: &core.Check{NoHeaders: []string{"NoHeader:OK"}},
+			check2: &core.Check{NoHeaders: []string{"NoHeader:notOK"}},
 			want:   false,
 		},
 	}
@@ -377,7 +276,7 @@ func TestSliceStringEqual(t *testing.T) {
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			have := sliceStringEqual(tc.slice1, tc.slice2)
+			have := core.SliceStringEqual(tc.slice1, tc.slice2)
 			if have != tc.want {
 				t.Errorf("expected: %v, got: %v", tc.want, have)
 			}

@@ -145,9 +145,5 @@ func (s Scanner) fetch(url string, followRedirects bool) (*internal.HTTPResponse
 	if err != nil {
 		return nil, err
 	}
-	// weird case when both the error and the response are nil, caused by the server refusing the connection
-	if httpResponse == nil {
-		return nil, fmt.Errorf("Server refused the connection for : %s", url)
-	}
 	return httpResponse, nil
 }

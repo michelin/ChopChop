@@ -5,6 +5,7 @@ import (
 	"gochopchop/core"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
@@ -60,21 +61,26 @@ func parseSignatures(cmd *cobra.Command) (*core.Signatures, error) {
 	for _, plugin := range signatures.Plugins {
 		if plugin.Endpoint == "" {
 			if len(plugin.Endpoints) > 0 {
-				return nil, fmt.Errorf("URI and URIs can't be set at the same time in plugin checks. Stopping execution.")
+				return nil, fmt.Errorf("URI and URIs can't be set at the same time in plugin checks. Stopping execution")
 			}
 		}
 		for _, check := range plugin.Checks {
 			if check.Description == "" {
-				return nil, fmt.Errorf("Missing or empty description field in %s plugin checks. Stopping execution.", check.Name)
+				return nil, fmt.Errorf("Missing or empty description field in %s plugin checks. Stopping execution", check.Name)
 			}
 			if check.Remediation == "" {
-				return nil, fmt.Errorf("Missing or empty remediation field in %s plugin checks. Stopping execution.", check.Name)
+				return nil, fmt.Errorf("Missing or empty remediation field in %s plugin checks. Stopping execution", check.Name)
 			}
 			if check.Severity == "" {
-				return nil, fmt.Errorf("Missing severity field in %s plugin checks. Stopping execution.", check.Name)
+				return nil, fmt.Errorf("Missing severity field in %s plugin checks. Stopping execution", check.Name)
 			}
 			if !core.ValidSeverity(check.Severity) {
 				return nil, fmt.Errorf("Invalid severity : %s. Please use : %s", check.Severity, core.SeveritiesAsString())
+			}
+			for _, header := range check.Headers {
+				if len(strings.Split(header, ":")) < 2 {
+					return nil, fmt.Errorf("Invalid header format : %s. Format should be KEY:VALUE", header)
+				}
 			}
 		}
 	}

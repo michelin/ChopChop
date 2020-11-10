@@ -75,6 +75,7 @@ func (s *Signatures) FilterByNames(names []string) {
 }
 
 //Match analyses the HTTP Request
+// a match means that one of the criteria has been met
 func (check *Check) Match(resp *internal.HTTPResponse) bool {
 	// status code must match
 	if check.StatusCode != nil {
@@ -82,6 +83,7 @@ func (check *Check) Match(resp *internal.HTTPResponse) bool {
 			return false
 		}
 	}
+
 	// all element must be found
 	for _, match := range check.MustMatchAll {
 		if !strings.Contains(resp.Body, match) {
@@ -112,43 +114,46 @@ func (check *Check) Match(resp *internal.HTTPResponse) bool {
 	}
 
 	// must contain all these headers
-	if len(check.Headers) > 0 {
-		for _, header := range check.Headers {
-			pHeaders := strings.Split(header, ":")
-			if v, kFound := resp.Header[pHeaders[0]]; kFound {
-				vFound := false
-				for _, n := range v {
-					if strings.Contains(n, pHeaders[1]) {
-						vFound = true
-					}
+	for _, header := range check.Headers {
+		pHeaders := strings.Split(header, ":")
+		pHeadersKey := pHeaders[0]
+		pHeadersValue := pHeaders[1]
+		if respHeaderValues, kFound := resp.Header[pHeadersKey]; kFound {
+			vFound := false
+			for _, respHeaderValue := range respHeaderValues {
+				if strings.Contains(respHeaderValue, pHeadersValue) {
+					vFound = true
+					break
 				}
-				if !vFound {
-					return false
-				}
-			} else {
+			}
+			if !vFound {
 				return false
 			}
+		} else {
+			return false
 		}
 	}
 
 	// must not contain these headers
-	if len(check.NoHeaders) > 0 {
-		for _, header := range check.NoHeaders {
-			pNoHeaders := strings.Split(header, ":")
-			if v, kFound := resp.Header[pNoHeaders[0]]; kFound {
-				return false
-			} else if kFound && len(pNoHeaders) == 1 { // if the header has not been specified.
-				return false
-			} else {
-				for _, n := range v {
-					if strings.Contains(n, pNoHeaders[1]) {
-						return false
+	for _, header := range check.NoHeaders {
+		pNoHeaders := strings.Split(header, ":")
+		pNoHeadersKey := pNoHeaders[0]
+		if respHeaderValues, kFound := resp.Header[pNoHeadersKey]; kFound {
+			if len(pNoHeaders) > 1 {
+				pHeadersValue := pNoHeaders[1]
+				vFound := false
+				for _, respHeaderValue := range respHeaderValues {
+					if strings.Contains(respHeaderValue, pHeadersValue) {
+						vFound = true
+						break
 					}
+				}
+				if vFound {
+					return false
 				}
 			}
 		}
 	}
-
 	return true
 }
 
@@ -172,7 +177,7 @@ func (self *Signatures) Equals(signatures *Signatures) bool {
 }
 
 func (self *Plugin) Equals(plugin *Plugin) bool {
-	if !sliceStringEqual(self.Endpoints, plugin.Endpoints) {
+	if !SliceStringEqual(self.Endpoints, plugin.Endpoints) {
 		return false
 	}
 	if self.Endpoint != plugin.Endpoint {
@@ -200,13 +205,13 @@ func (self *Plugin) Equals(plugin *Plugin) bool {
 }
 
 func (self *Check) Equals(check *Check) bool {
-	if !sliceStringEqual(self.MustMatchOne, check.MustMatchOne) {
+	if !SliceStringEqual(self.MustMatchOne, check.MustMatchOne) {
 		return false
 	}
-	if !sliceStringEqual(self.MustMatchAll, check.MustMatchAll) {
+	if !SliceStringEqual(self.MustMatchAll, check.MustMatchAll) {
 		return false
 	}
-	if !sliceStringEqual(self.MustNotMatch, check.MustNotMatch) {
+	if !SliceStringEqual(self.MustNotMatch, check.MustNotMatch) {
 		return false
 	}
 	if self.StatusCode != nil && check.StatusCode != nil {
@@ -226,16 +231,16 @@ func (self *Check) Equals(check *Check) bool {
 	if self.Description != check.Description {
 		return false
 	}
-	if !sliceStringEqual(self.Headers, check.Headers) {
+	if !SliceStringEqual(self.Headers, check.Headers) {
 		return false
 	}
-	if !sliceStringEqual(self.NoHeaders, check.NoHeaders) {
+	if !SliceStringEqual(self.NoHeaders, check.NoHeaders) {
 		return false
 	}
 	return true
 }
 
-func sliceStringEqual(a, b []string) bool {
+func SliceStringEqual(a, b []string) bool {
 	if len(a) != len(b) {
 		return false
 	}
