@@ -45,7 +45,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
+      - name: Unit Tests
+        uses: go test ./...
       - name: Build image
         run: docker build . --file Dockerfile --tag $IMAGE_NAME
 

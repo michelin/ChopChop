@@ -85,9 +85,16 @@ The Golang rewrite took place a couple of months ago but there's so much to do, 
 [x] Colors and better formatting
 [x] Ability to filter checks/signatures to search for
 [x] Mock and unit tests
-[ ] Github CI
+[x] Github CI
 And much more!
 
+## Testing
+
+To launch a functionnal test, you have an example of web server available under `tests/server.go` that will launch a web server listening on http://localhost:8000.
+You can then launch a scan on this dummy web server : `./gochopchop scan http://localhost:8000 --verbosity Debug`.
+
+There are also unit test that you can launch with `go test -v ./...`.
+These tests are integrated in the github CI workflow.
 
 ## Available flags
 

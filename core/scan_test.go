@@ -8,11 +8,7 @@ import (
 	"time"
 )
 
-// TODO : Tester PKG HTTP
-// TODO : Refactor separation entre signatures et config
-// TODO : Refactor scan mal decoupe au niveau du metier
-// TODO : Pas passer les signatures au newScanner
-// TODO : Test fonctionnels
+// TODO : Test fonctionnel
 // TODO : integrer tests unitaires dans la CI (voir github workflows avec go test)
 
 func TestScan(t *testing.T) {
