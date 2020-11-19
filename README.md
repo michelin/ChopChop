@@ -1,4 +1,4 @@
-<p align="center"><img src="/docs/img/chopchop_logo.png" width="180" height="110"/></p>
+<p align="center"><img src="/docs/img/chopchop_logo.png" width="180" height="150"/></p>
 
 [![Build Status](https://github.com/michelin/ChopChop/workflows/Build%20ChopChop/badge.svg)](https://github.com/michelin/ChopChop/actions)
 [![License](https://img.shields.io/badge/license-Apache-green.svg)](https://opensource.org/licenses/Apache-2.0)
