@@ -90,8 +90,9 @@ And much more!
 
 ## Testing
 
-To launch a functionnal test, you have an example of web server available under `tests/server.go` that will launch a web server listening on http://localhost:8000.
-You can then launch a scan on this dummy web server : `./gochopchop scan http://localhost:8000 --verbosity Debug`.
+To quickly end-to-end test chopchop, we provided a web-server in `tests/server.go`.
+To try it, please run `go run tests/server.go` then run chopchop with the following command `./gochopchop scan http://localhost:8000 --verbosity Debug`.
+ChopChop should print "no vulnerabilities found".
 
 There are also unit test that you can launch with `go test -v ./...`.
 These tests are integrated in the github CI workflow.
