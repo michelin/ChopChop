@@ -755,3 +755,28 @@ plugins:
         status_code: 200
         severity: "Low"
         tested: true
+  - uri: "/spip.php?page=login"
+    checks:
+      - name : SPIP admin interface
+        match:
+          - 'content="SPIP'
+        remediation: Make sure that SPIP admin interface access is restricted & monitored
+        description: SPIP admin interface is accessible
+        status_code: 200
+        severity: "Informational"
+        tested: true
+  - uri: "/spip.php?page=login"
+    checks:
+      - name : SPIP vulnerable version
+        match:
+          - 'content="SPIP'
+        no_match :
+          - '3.2.4-1+deb10u3'
+          - '3.2.8'
+          - '3.1.14'
+          - '3.1.4-4~deb9u3build0.18.04.1'
+        remediation: Upgrade SPIP in latest version
+        description: SPIP vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
