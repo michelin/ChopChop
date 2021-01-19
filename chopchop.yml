@@ -814,3 +814,48 @@ plugins:
         status_code: 200
         severity: "High"
         tested: true
+  - uri: "/"
+    checks:
+      - name: AudioCodes SIP Gateway
+        match:
+        - 'AudioCodes'
+        - '<H2>Web Login</H2>'
+        remediation: Make sure that AudioCodes SIP Gateway access is restricted & monitored
+        description: AudioCodes SIP Gateway detected
+        severity: "Informational"
+        tested: true
+  - uri: "/support/support.php"
+    checks:
+      - name : Xerox Printer
+        headers:
+          - "Server:Apache"
+        match:
+          - 'Xerox Corporation'
+        remediation: Make sure that Xerox Printer access is restricted & monitored
+        description: Xerox Printer is accessible
+        status_code: 200
+        severity: "Low"
+        tested: true
+  - uri: "/cgi-bin/dynamic/topbar.html"
+    checks:
+      - name : Lexmark Printer
+        match:
+          - '<span class="top_prodname">Lexmark'
+          
+        remediation: Make sure that Lexmark Printer access is restricted & monitored
+        description: Lexmark Printer is accessible
+        status_code: 200
+        severity: "Low"
+        tested: true
+  - uri: "/felia/user/signin?source="
+    checks:
+      - name : Aklia Lisis - traçabilité patients
+        match:
+        - 'images/logos/logo-aklia-screen.png'
+        - 'utilisateur</label>'
+        - 'LISIS</title>'
+        remediation: Make sure that Aklia Lisis access is restricted & monitored
+        description: Aklia Lisis is accessible
+        status_code: 200
+        severity: "Low"
+        tested: true
