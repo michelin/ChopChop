@@ -11,7 +11,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
     - name: Unit Tests
-      uses: go test ./...
+      run: go test ./...
     - name: Install gox
       run: go get github.com/mitchellh/gox
     - name: Build using gox
