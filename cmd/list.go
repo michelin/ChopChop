@@ -2,53 +2,66 @@ package cmd
 
 import (
 	"fmt"
-	"gochopchop/app"
-	"log"
+	"gochopchop/core"
 	"os"
-	"strings"
 
+	"github.com/jedib0t/go-pretty/table"
 	"github.com/spf13/cobra"
 )
 
+type listOptions struct {
+	Severity string
+}
+
 func init() {
+	pluginCmd := &cobra.Command{
+		Use:   "plugins",
+		Short: "list checks of configuration file",
+		RunE:  runList,
+	}
+	addSignaturesFlag(pluginCmd)
+	pluginCmd.Flags().StringP("severity", "s", "", "severity option for list tag") // --severity ou -s
+
 	rootCmd.AddCommand(pluginCmd)
-	pluginCmd.Flags().StringP("config-file", "c", "chopchop.yml", "path to config/data file") // --config-file ou -c
-	pluginCmd.Flags().StringP("severity", "s", "", "severity option for list tag")            // --severity ou -s
 }
 
-var pluginCmd = &cobra.Command{
-	Use:   "plugins",
-	Short: "list checks of configuration file",
-	Args:  pluginCheckArgsAndFlags,
-	Run:   app.List,
-}
-
-func pluginCheckArgsAndFlags(cmd *cobra.Command, args []string) error {
-	//validate config filepath
-	configFile, err := cmd.Flags().GetString("config-file")
+func runList(cmd *cobra.Command, args []string) error {
+	signatures, err := parseSignatures(cmd)
 	if err != nil {
-		return fmt.Errorf("invalid value for configFile: %v", err)
+		return err
 	}
-	if _, err := os.Stat(configFile); os.IsNotExist(err) {
-		log.Fatal("Filepath of config file is not valid")
-	}
-	if !strings.HasSuffix(configFile, ".yml") {
-		log.Fatal("Config file needs to be a yaml file")
-	}
-	//Validate severity input
-	severity, err := cmd.Flags().GetString("severity")
+	options, err := parseOptions(cmd)
 	if err != nil {
-		return fmt.Errorf("invalid value for severity: %v", err)
+		return err
 	}
-	if severity != "" {
-		if severity == "High" || severity == "Medium" || severity == "Low" || severity == "Informational" {
-			fmt.Println("Display only check of severity : " + severity)
-		} else {
-			log.Fatal(" ------ Unknown severity type : " + severity + " . Only Informational / Low / Medium / High are valid severity types.")
+	cpt := 0
+	t := table.NewWriter()
+	t.SetOutputMirror(os.Stdout)
+	t.AppendHeader(table.Row{"URL", "Plugin Name", "Severity", "Description"})
+	for _, plugin := range signatures.Plugins {
+		for _, check := range plugin.Checks {
+			if options.Severity == "" || options.Severity == string(check.Severity) {
+				t.AppendRow([]interface{}{plugin.Endpoint, check.Name, check.Severity, check.Description})
+				cpt++
+			}
 		}
 	}
-	if err := cmd.Flags().Set("config-file", configFile); err != nil {
-		return fmt.Errorf("error while setting filepath of config file")
-	}
+	t.AppendFooter(table.Row{"", "", "Total Checks", cpt})
+	t.Render()
 	return nil
+}
+
+func parseOptions(cmd *cobra.Command) (*listOptions, error) {
+	options := new(listOptions)
+	severity, err := cmd.Flags().GetString("severity")
+	if err != nil {
+		return nil, fmt.Errorf("invalid value for severity: %v", err)
+	}
+	if severity != "" {
+		if !core.ValidSeverity(severity) {
+			return nil, fmt.Errorf("Invalid severity level : %s. Please use : %s", severity, core.SeveritiesAsString())
+		}
+		options.Severity = severity
+	}
+	return options, nil
 }

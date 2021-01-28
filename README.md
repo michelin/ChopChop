@@ -1,4 +1,4 @@
-<p align="center"><img src="/img/chopchop_logo.png" width="180" height="110"/></p>
+<p align="center"><img src="/docs/img/chopchop_logo.png" width="180" height="150"/></p>
 
 [![Build Status](https://github.com/michelin/ChopChop/workflows/Build%20ChopChop/badge.svg)](https://github.com/michelin/ChopChop/actions)
 [![License](https://img.shields.io/badge/license-Apache-green.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -11,7 +11,7 @@
 Its goal is to scan several endpoints and identify exposition of services/files/folders through the webroot.
 Checks/Signatures are declared in a config file (by default: `chopchop.yml`), fully configurable, and especially by developers.
 
-<p align="center"><img src="/img/demo.gif?raw=true"/></p>
+<p align="center"><img src="/docs/img/demo.gif?raw=true"/></p>
 
 > "Chop chop" is a phrase rooted in Cantonese. "Chop chop" means "hurry" and suggests that something should be done now and **without delay**.
 
@@ -46,7 +46,7 @@ There should be a resulting `gochopchop` binary in the folder.
 Thanks to [Github Container Registry](https://github.blog/2020-09-01-introducing-github-container-registry/), we are able to provide you some freshly-build Docker images!
 
 ```
-docker run ghcr.io/michelin/gochopchop scan -u https://foobar.com --verbose
+docker run ghcr.io/michelin/gochopchop scan https://foobar.com -v debug
 ```
 
 But if you prefer, you can also build it locally, see below: 
@@ -62,29 +62,40 @@ docker build -t gochopchop .
 We are continuously trying to make `goChopChop` as easy as possible. Scanning a host with this utility is as simple as : 
 
 ```bash
-$ ./gochopchop scan --url https://foobar.com
+$ ./gochopchop scan https://foobar.com
 ```
 
 ### Using Docker
 
 ```bash
-docker run gochopchop scan --url https://foobar.com
+docker run gochopchop scan https://foobar.com
 ```
 
 #### Custom configuration file
 
 ```bash
-docker run -v ./:/app chopchop scan -c /app/chopchop.yml --url https://foobar.com
+docker run -v ./:/app chopchop scan -c /app/chopchop.yml https://foobar.com
 ```
 
 ## What's next
 
 The Golang rewrite took place a couple of months ago but there's so much to do, still. Here are some features we are planning to integrate :
-* Threading for better performance
-* Colors and better formatting
-* Ability to filter checks/signatures to search for
-* And much more!
+[x] Threading for better performance
+[x] Ability to specify the number of concurrent threads
+[x] Colors and better formatting
+[x] Ability to filter checks/signatures to search for
+[x] Mock and unit tests
+[x] Github CI
+And much more!
 
+## Testing
+
+To quickly end-to-end test chopchop, we provided a web-server in `tests/server.go`.
+To try it, please run `go run tests/server.go` then run chopchop with the following command `./gochopchop scan http://localhost:8000 --verbosity Debug`.
+ChopChop should print "no vulnerabilities found".
+
+There are also unit test that you can launch with `go test -v ./...`.
+These tests are integrated in the github CI workflow.
 
 ## Available flags
 
@@ -92,20 +103,18 @@ You can find the available flags available for the `scan` command :
 
 | Flag | Full flag | Description |
 |---|---|---|
-| `-b` | `--block <string>` | Block pipeline if severity is over or equal specified flag|
 | `-h` | `--help` | Help wizard |
-| `-u` | `--url <string>` | Set the target URL |
-| `-i` | `--insecure` | Disable SSL Verification |
-| `-c` | `--config-file <string>` | Set a custom configuration file |
-| `-f` | `--url-file <string>` | Set a file containing a list of URLs |
-| `-p` | `--prefix <string>` | Add prefix to urls when flag url-file is specified |
-| `-s` | `--suffix <string>` | Add suffix to urls when flag url-file is specified |
-| `-t` | `--timeout <integer>` | Timeout for the HTTP requests (default: 10s) |
-| `-v` | `--verbose` | Verbose mode |
-| | `--csv` | Export results in CSV | 
-| | `--json` | Export results in JSON | 
-| | `--csv-file <string>` | Filename for the CSV export | 
-| | `--json-file <string>` | Filename for the JSON export | 
+| `-v` | `--verbosity` | Verbose level of logging |
+| `-c` | `--signature` | Path of custom signature file |
+| `-k` | `--insecure` | Disable SSL Verification |
+| `-u` | `--url-file` | Path to a specified file containing urls to test |
+| `-b` | `--max-severity` | Block the CI pipeline if severity is over or equal specified flag |
+| `-e` | `--export` | Export type of the output (csv and/or json) |
+|| `--export-filename` | Specify the filename for the export file(s) |
+| `-t` | `--timeout` | Timeout for the HTTP requests |
+|| `--severity-filter` | Filter Plugins by severity |
+|| `--plugin-filter` | Filter Plugins by name of plugin |
+|| `--threads` | Number of concurrent threads | 
 
 ## Advanced usage
 
@@ -115,13 +124,13 @@ Note: Redirectors like `>` for post processing can be used.
 - Ability to scan and disable SSL verification
 
 ```bash
-$ ./gochopchop scan --url https://foobar.com --insecure
+$ ./gochopchop scan https://foobar.com --insecure
 ```
 
 - Ability to scan with a custom configuration file (including custom plugins)
 
 ```bash
-$ ./gochopchop scan --url https://foobar.com --insecure --config-file test_config.yml
+$ ./gochopchop scan https://foobar.com --insecure --signature test_config.yml
 ```
 
 - Ability to list all the plugins or by severity : `plugins` or  ` plugins --severity High`
@@ -130,16 +139,22 @@ $ ./gochopchop scan --url https://foobar.com --insecure --config-file test_confi
 $ ./gochopchop plugins --severity High
 ```
 
-- Ability to block the CI pipeline by severity level (equal or over specified severity) : `--block Medium`
+- Ability to specify number of concurrent threads : `--threads 4` for 4 workers
 
 ```bash
-$ ./gochopchop scan --url https://foobar.com --insecure --block Medium
+$ ./gochopchop plugins --threads 4
+```
+
+- Ability to block the CI pipeline by severity level (equal or over specified severity) : `--max-severity Medium`
+
+```bash
+$ ./gochopchop scan https://foobar.com --max-severity Medium
 ```
 
 - Ability to specify specific signatures to be checked 
 
 ```bash
-./gochopchop scan -u https://foobar.com --timeout 1 --verbose --csv --csv-file boo.csv --signature-name "Git,Zimbra,Jenkins"
+./gochopchop scan https://foobar.com --timeout 1 --verbosity --export=csv,json --export-filename boo --plugin-filters=Git,Zimbra,Jenkins
 ```
 
 - Ability to list all the plugins
@@ -163,7 +178,7 @@ $ ./gochopchop scan --url-file url_file.txt
 - Export GoChopChop results in CSV and JSON format
 
 ```bash
-$ ./gochopchop  scan --url https://foobar.com --json --csv --csv-file results.csv --json-file results.json
+$ ./gochopchop scan https://foobar.com  --export=csv,json --export-filename results
 ```
 
 ## Creating a new check
@@ -171,7 +186,7 @@ $ ./gochopchop  scan --url https://foobar.com --json --csv --csv-file results.cs
 Writing a new check is as simple as : 
 
 ```yaml
-  - uri: "/.git/config"
+  - endpoint: "/.git/config"
     checks:
       - name: Git exposed
         match:
@@ -181,7 +196,7 @@ Writing a new check is as simple as :
         severity: "High"
 ```
 
-An URI (eg. ```/.git/config```) is mapped to multiple checks which avoids sending X requests for X checks. Multiple checks can be done through a single HTTP request.
+An endpoint (eg. ```/.git/config```) is mapped to multiple checks which avoids sending X requests for X checks. Multiple checks can be done through a single HTTP request.
 Each check needs those fields:
 
 | Attribute | Type | Description | Optional ? | Example | 
@@ -192,6 +207,7 @@ Each check needs those fields:
 | severity | Enum("High", "Medium", "Low", "Informational") | Rate the criticity if it triggers in your environment| No | High |
 | status_code | integer | The HTTP status code that should be returned | Yes | 200 |
 | headers | List of string | List of headers there should be in the HTTP response | Yes | N/A |
+| no_headers | List of string | List of headers there should NOT be in the HTTP response | Yes | N/A |
 | match | List of string| List the strings there should be in the HTTP response  | Yes |  "[branch" |
 | no_match | List of string | List the strings there should NOT be in the HTTP response | Yes | N/A |
 | query_string | GET parameters that have to be passed to the endpoint | String | Yes | `query_string: "id=FOO-chopchoptest"` |

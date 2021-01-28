@@ -10,6 +10,8 @@ jobs:
         go-version: 1.14.x
     - name: Checkout code
       uses: actions/checkout@v2
+    - name: Unit Tests
+      uses: go test ./...
     - name: Install gox
       run: go get github.com/mitchellh/gox
     - name: Build using gox
