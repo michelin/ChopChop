@@ -1,7 +1,7 @@
 package mock
 
 import (
-	"gochopchop/core"
+	"github.com/michelin/gochopchop/core"
 )
 
 func createInt32(x int32) *int32 {

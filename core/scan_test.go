@@ -2,10 +2,11 @@ package core_test
 
 import (
 	"context"
-	"gochopchop/core"
-	"gochopchop/mock"
 	"testing"
 	"time"
+
+	"github.com/michelin/gochopchop/core"
+	"github.com/michelin/gochopchop/mock"
 )
 
 // TODO : Test fonctionnel

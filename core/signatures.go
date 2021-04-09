@@ -1,8 +1,9 @@
 package core
 
 import (
-	"gochopchop/internal"
 	"strings"
+
+	"github.com/michelin/gochopchop/internal"
 )
 
 // Signature struct to load the plugins/rules from the YAML file

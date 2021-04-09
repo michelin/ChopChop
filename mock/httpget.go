@@ -3,9 +3,10 @@ package mock
 import (
 	"bytes"
 	"fmt"
-	"gochopchop/internal/httpget"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/michelin/gochopchop/internal/httpget"
 )
 
 type FakeNetClient map[string]*http.Response

@@ -2,8 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"gochopchop/core"
 	"os"
+
+	"github.com/michelin/gochopchop/core"
 
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/spf13/cobra"

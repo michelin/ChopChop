@@ -1,9 +1,10 @@
 package core_test
 
 import (
-	"gochopchop/core"
-	"gochopchop/mock"
 	"testing"
+
+	"github.com/michelin/gochopchop/core"
+	"github.com/michelin/gochopchop/mock"
 )
 
 func TestFilterBySeverity(t *testing.T) {

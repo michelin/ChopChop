@@ -2,10 +2,11 @@ package httpget
 
 import (
 	"crypto/tls"
-	"gochopchop/internal"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/michelin/gochopchop/internal"
 )
 
 type IHTTPClient interface {

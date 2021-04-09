@@ -2,10 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"gochopchop/core"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"github.com/michelin/gochopchop/core"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"

@@ -2,7 +2,8 @@ package core_test
 
 import (
 	"testing"
-	"gochopchop/core"
+
+	"github.com/michelin/gochopchop/core"
 )
 
 func TestValidSeverity(t *testing.T) {

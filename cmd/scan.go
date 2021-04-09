@@ -3,13 +3,14 @@ package cmd
 import (
 	"bufio"
 	"fmt"
-	"gochopchop/core"
-	"gochopchop/internal/export"
-	"gochopchop/internal/formatting"
-	"gochopchop/internal/httpget"
 	"net/url"
 	"os"
 	"time"
+
+	"github.com/michelin/gochopchop/core"
+	"github.com/michelin/gochopchop/internal/export"
+	"github.com/michelin/gochopchop/internal/formatting"
+	"github.com/michelin/gochopchop/internal/httpget"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"

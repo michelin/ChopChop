@@ -1,9 +1,10 @@
 package export
 
 import (
-	"gochopchop/core"
-	"gochopchop/mock"
 	"testing"
+
+	"github.com/michelin/gochopchop/core"
+	"github.com/michelin/gochopchop/mock"
 
 	"github.com/spf13/afero"
 )

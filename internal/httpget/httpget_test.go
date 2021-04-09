@@ -2,8 +2,9 @@ package httpget_test
 
 import (
 	"fmt"
-	"gochopchop/mock"
 	"testing"
+
+	"github.com/michelin/gochopchop/mock"
 )
 
 func TestFetch(t *testing.T) {

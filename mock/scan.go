@@ -2,9 +2,10 @@ package mock
 
 import (
 	"fmt"
-	"gochopchop/core"
-	"gochopchop/internal"
 	"net/http"
+
+	"github.com/michelin/gochopchop/core"
+	"github.com/michelin/gochopchop/internal"
 )
 
 var FakeScanner = core.NewScanner(MyFakeFetcher, MyFakeFetcher, FakeSignatures, 1)

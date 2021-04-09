@@ -3,8 +3,9 @@ package export
 import (
 	"encoding/json"
 	"fmt"
-	"gochopchop/core"
 	"os"
+
+	"github.com/michelin/gochopchop/core"
 
 	log "github.com/sirupsen/logrus"
 )

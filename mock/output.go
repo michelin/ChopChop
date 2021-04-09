@@ -1,7 +1,7 @@
 package mock
 
 import (
-	"gochopchop/core"
+	"github.com/michelin/gochopchop/core"
 )
 
 var FakeOutputStatusCode = core.Output{

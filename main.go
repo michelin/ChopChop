@@ -1,6 +1,6 @@
 package main
 
-import "gochopchop/cmd"
+import "github.com/michelin/gochopchop/cmd"
 
 func main() {
 	cmd.Execute()

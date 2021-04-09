@@ -2,9 +2,10 @@ package formatting_test
 
 import (
 	"bytes"
-	"gochopchop/internal/formatting"
-	"gochopchop/mock"
 	"testing"
+
+	"github.com/michelin/gochopchop/internal/formatting"
+	"github.com/michelin/gochopchop/mock"
 )
 
 func TestFormatOutputTable(t *testing.T) {

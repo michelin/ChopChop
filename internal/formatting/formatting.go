@@ -2,8 +2,9 @@ package formatting
 
 import (
 	"fmt"
-	"gochopchop/core"
 	"io"
+
+	"github.com/michelin/gochopchop/core"
 
 	"github.com/jedib0t/go-pretty/table"
 )

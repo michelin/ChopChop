@@ -3,8 +3,9 @@ package core
 import (
 	"context"
 	"fmt"
-	"gochopchop/internal"
 	"sync"
+
+	"github.com/michelin/gochopchop/internal"
 
 	log "github.com/sirupsen/logrus"
 )
