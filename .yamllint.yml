@@ -1,3 +1,2 @@
----
-  rules:
-    line-length: disable
+rules:
+  line-length: disable
