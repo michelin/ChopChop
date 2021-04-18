@@ -1,6 +1,6 @@
 package internal
 
-// Result wraps result for each finding
+// Result wraps result for each finding of the scan.
 type Result struct {
 	URL         string `json:"url"`
 	Endpoint    string `json:"endpoint"`

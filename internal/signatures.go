@@ -19,8 +19,6 @@ type Signatures struct {
 }
 
 // Plugin means an entry to test for during scan.
-//
-// XXX endpoints should only be used, not endpoint.
 type Plugin struct {
 	Endpoints       []string `yaml:"endpoints"`
 	QueryString     string   `yaml:"query_string"`
@@ -33,7 +31,7 @@ type Check struct {
 	MustMatchOne []string `yaml:"match"`
 	MustMatchAll []string `yaml:"all_match"`
 	MustNotMatch []string `yaml:"no_match"`
-	StatusCode   *int32   `yaml:"status_code"`
+	StatusCode   *int     `yaml:"status_code"`
 	Name         string   `yaml:"name"`
 	Remediation  string   `yaml:"remediation"`
 	Severity     string   `yaml:"severity"`
@@ -43,88 +41,96 @@ type Check struct {
 }
 
 // Match analyses the HTTP Response. A match means that
-// one of the criteria has been met.
-//
-// TODO improve this.
-func (check *Check) Match(resp *HTTPResponse) bool {
-	// status code must match
-	if check.StatusCode != nil {
-		if int32(resp.StatusCode) != *check.StatusCode {
-			return false
-		}
+// one of the criteria has been met (through the strategies
+// of MatchAll/MatchOne/NotMatch, and Headers/NotHeaders).
+func (check *Check) Match(resp *HTTPResponse) (bool, error) {
+	// Test status code
+	if check.StatusCode == nil {
+		return false, &ErrNilParameter{"check.StatusCode"}
+	}
+	if resp.StatusCode != *check.StatusCode {
+		return false, nil
 	}
 
-	// all element must be found
+	// Check for MatchAll
 	for _, match := range check.MustMatchAll {
 		if !bytes.Contains(resp.Body, []byte(match)) {
-			return false
+			return false, nil
 		}
 	}
 
-	// one element must be found
-	if len(check.MustMatchOne) > 0 {
-		found := false
-		for _, match := range check.MustMatchOne {
-			if bytes.Contains(resp.Body, []byte(match)) {
+	// Check for MatchOne
+	found := false
+	for _, match := range check.MustMatchOne {
+		if bytes.Contains(resp.Body, []byte(match)) {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return false, nil
+	}
+
+	// Check for NotMatch
+	for _, match := range check.MustNotMatch {
+		if bytes.Contains(resp.Body, []byte(match)) {
+			return false, nil
+		}
+	}
+
+	// Check for headers
+	for _, header := range check.Headers {
+		hs := strings.Split(header, ":")
+		if len(hs) != 2 {
+			return false, &ErrInvalidHeaderFormat{header}
+		}
+		hKey := hs[0]
+		hVal := hs[1]
+
+		// Check for header in the HTTPResponse by its key
+		respHVal, ok := resp.Header[hKey]
+		if !ok {
+			return false, nil
+		}
+
+		// Look for a match
+		found = false
+		for _, respHeaderValue := range respHVal {
+			if strings.Contains(respHeaderValue, hVal) {
 				found = true
+				break
 			}
 		}
 		if !found {
-			return false
+			return false, nil
 		}
 	}
 
-	// no element should match
-	if len(check.MustNotMatch) > 0 {
-		for _, match := range check.MustNotMatch {
-			if bytes.Contains(resp.Body, []byte(match)) {
-				return false
-			}
+	// Check for NoHeaders
+	for _, header := range check.NoHeaders {
+		pNH := strings.Split(header, ":")
+		if len(pNH) != 2 {
+			return false, &ErrInvalidHeaderFormat{header}
 		}
-	}
 
-	// must contain all these headers
-	for _, header := range check.Headers {
-		pHeaders := strings.Split(header, ":")
-		pHeadersKey := pHeaders[0]
-		pHeadersValue := pHeaders[1]
-		if respHeaderValues, kFound := resp.Header[pHeadersKey]; kFound {
+		nhKey := pNH[0]
+		nhVal := pNH[1]
+		if respHeaderValues, kFound := resp.Header[nhKey]; kFound {
 			vFound := false
 			for _, respHeaderValue := range respHeaderValues {
-				if strings.Contains(respHeaderValue, pHeadersValue) {
+				if strings.Contains(respHeaderValue, nhVal) {
 					vFound = true
 					break
 				}
 			}
-			if !vFound {
-				return false
+			if vFound {
+				return false, nil
 			}
-		} else {
-			return false
 		}
 	}
 
-	// must not contain these headers
-	for _, header := range check.NoHeaders {
-		pNoHeaders := strings.Split(header, ":")
-		pNoHeadersKey := pNoHeaders[0]
-		if respHeaderValues, kFound := resp.Header[pNoHeadersKey]; kFound {
-			if len(pNoHeaders) > 1 {
-				pHeadersValue := pNoHeaders[1]
-				vFound := false
-				for _, respHeaderValue := range respHeaderValues {
-					if strings.Contains(respHeaderValue, pHeadersValue) {
-						vFound = true
-						break
-					}
-				}
-				if vFound {
-					return false
-				}
-			}
-		}
-	}
-	return true
+	// If matches everything, then it's fine
+	return true, nil
 }
 
 // ErrCheckInvalidField is an error meaning a check
@@ -158,12 +164,12 @@ var ErrBothEndpointSet = errors.New("URI and URIs can't be set at the same time 
 
 // ParseSignatures parses and returns the signatures
 // from the path of the file containg those.
-func ParseSignatures(signatures string) (*Signatures, error) {
+func ParseSignatures(path string) (*Signatures, error) {
 	// Check signature file exists
-	if _, err := os.Stat(signatures); os.IsNotExist(err) {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return nil, ErrInvalidPathSignaturesFile
 	}
-	signFile, err := os.Open(signatures)
+	signFile, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}

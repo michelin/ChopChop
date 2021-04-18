@@ -255,7 +255,7 @@ func cmdPlugins(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	sevStr := sev.String()
+	sevStr, _ := sev.String()
 
 	// TODO find what it does and do it properly (in internal ?)
 	cpt := 0

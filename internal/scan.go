@@ -1,17 +1,15 @@
 package internal
 
 import (
-	"errors"
 	"fmt"
 	"sync"
 	"time"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
-// SafeData stores a Result slice.
-//
-// Supports concurrency.
+// SafeData stores a Result slice. It should
+// support concurrency.
 type SafeData struct {
 	mux sync.Mutex
 	res []*Result
@@ -55,13 +53,11 @@ type workerJob struct {
 	plugin   *Plugin
 }
 
-var ErrNilScaner = errors.New("given scanner is nil")
-
 // RunScan scans the urls until job is completed or
-// a done signal is sent throuh the chan
+// a done signal is sent throuh the chan.
 func RunScan(scanner *Scanner, urls []string, doneChan <-chan struct{}) ([]*Result, error) {
 	if scanner == nil {
-		return nil, ErrNilScaner
+		return nil, &ErrNilParameter{"scanner"}
 	}
 
 	wgJobs := new(sync.WaitGroup)
@@ -88,7 +84,7 @@ func RunScan(scanner *Scanner, urls []string, doneChan <-chan struct{}) ([]*Resu
 					// Fetch the HTTP response from url
 					resp, err := scanner.Fetch(job.url, job.plugin.FollowRedirects)
 					if err != nil {
-						log.Error(err)
+						logrus.Error(err)
 						break
 					}
 
@@ -101,7 +97,11 @@ func RunScan(scanner *Scanner, urls []string, doneChan <-chan struct{}) ([]*Resu
 							case <-doneChan:
 								return
 							default:
-								if check.Match(resp) {
+								match, err := check.Match(resp)
+								if err != nil {
+									// TODO do something.
+								}
+								if match {
 									scanner.safeData.Add(&Result{
 										URL:         job.url,
 										Name:        check.Name,
@@ -127,7 +127,7 @@ func RunScan(scanner *Scanner, urls []string, doneChan <-chan struct{}) ([]*Resu
 					endpoint = fmt.Sprintf("%s?%s", endpoint, plugin.QueryString)
 				}
 				fullURL := fmt.Sprintf("%s%s", url, endpoint)
-				log.Info("Testing url : ", fullURL)
+				logrus.Info("Testing url : ", fullURL)
 
 				w := workerJob{url: fullURL, endpoint: endpoint, plugin: plugin}
 				select {
@@ -146,6 +146,8 @@ func RunScan(scanner *Scanner, urls []string, doneChan <-chan struct{}) ([]*Resu
 	return scanner.safeData.res, nil
 }
 
+// Fetch fetches content from an URL from its fetchers
+// with or without redirection.
 func (s Scanner) Fetch(url string, followRedirects bool) (*HTTPResponse, error) {
 	var httpResponse *HTTPResponse
 	var err error
@@ -162,14 +164,11 @@ func (s Scanner) Fetch(url string, followRedirects bool) (*HTTPResponse, error) 
 	return httpResponse, nil
 }
 
-type ErrNilParameter struct {
-	Name string
-}
-
-func (e ErrNilParameter) Error() string {
-	return "parameter " + e.Name + " is nil"
-}
-
+// Scan scans a set of URLs through the given config and
+// builds the results according to the given signatures.
+// It stops execution on a signal through "doneChan".
+//
+// It returns the results and the duration of the scan.
 func Scan(config *Config, signatures *Signatures, doneChan <-chan struct{}) ([]*Result, time.Duration, error) {
 	// Validate parameters
 	if config == nil {

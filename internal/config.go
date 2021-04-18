@@ -2,6 +2,7 @@ package internal
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"net/url"
 	"os"
@@ -30,19 +31,11 @@ type HTTPConfig struct {
 }
 
 // ErrNoURL is an error meaning no url is provided.
-type ErrNoURL struct{}
-
-func (e ErrNoURL) Error() string {
-	return "no urls provided neither with the flag --url-list, -u neither in args"
-}
+var ErrNoURL = errors.New("no urls provided neither with the flag --url-list, -u neither in args")
 
 // ErrBothURLAndURLList is an error meaning both args
 // and url-file are provided.
-type ErrBothURLAndURLList struct{}
-
-func (e ErrBothURLAndURLList) Error() string {
-	return "urls provided either with the flag --url-list, -u either in args"
-}
+var ErrBothURLAndURLList = errors.New("urls provided either with the flag --url-list, -u either in args")
 
 // ErrInvalidURLs is an error meaning url(s) is(are)
 // invalid.
@@ -80,6 +73,8 @@ func (e ErrInvalidExport) Error() string {
 	return s
 }
 
+// ErrNegativeField is an error meaning a field has a
+// stricly negative value.
 type ErrNegativeField struct {
 	Field string
 }
@@ -99,7 +94,7 @@ func BuildConfig(insecure bool, export, pluginFilters []string, exportFilename, 
 	if urlFile == "" {
 		if nArg == 0 {
 			// There are no args (urls) to chopchop
-			return nil, &ErrNoURL{}
+			return nil, ErrNoURL
 		}
 
 		// Check URLs validity
@@ -114,7 +109,7 @@ func BuildConfig(insecure bool, export, pluginFilters []string, exportFilename, 
 	} else {
 		// Check there are not args (urls) and an url-file to chopchop
 		if nArg != 0 {
-			return nil, &ErrBothURLAndURLList{}
+			return nil, ErrBothURLAndURLList
 		}
 
 		// Open the file containing urls

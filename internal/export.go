@@ -4,10 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"os"
-	"strconv"
 
 	"github.com/jedib0t/go-pretty/table"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 )
 
 // ExporterFunc is a func type exporting the results
@@ -20,15 +19,37 @@ var exportersMap = map[string]ExporterFunc{
 	"stdout": exportStdout,
 }
 
+// ErrEmptyResults is an error meaning the results are empty.
 var ErrEmptyResults = errors.New("no result found")
-var ErrNilConfig = errors.New("given config is nil")
-var ErrMaxSeverityReached = errors.New("max severity reached")
-var ErrUnsupportedExporter = errors.New("unsupported exporter")
 
+// ErrMaxSeverityReached is an error meaning a result severity
+// has been reached.
+type ErrMaxSeverityReached struct {
+	Max, Sev Severity
+}
+
+func (e ErrMaxSeverityReached) Error() string {
+	maxStr, _ := e.Max.String()
+	sevStr, _ := e.Sev.String()
+	return "max severity (" + maxStr + ") reached (" + sevStr + ")"
+}
+
+// ErrUnsupportedExporter is an error meaning an exporter in
+// a Config is not supported.
+type ErrUnsupportedExporter struct {
+	Exporter string
+}
+
+func (e ErrUnsupportedExporter) Error() string {
+	return "unsupported exporter: " + e.Exporter
+}
+
+// ExportResults exports the results given a config, to a filename
+// if the exporter needs it.
 func ExportResults(results []*Result, config *Config, filename string) error {
 	// Check parameters
 	if config == nil {
-		return ErrNilConfig
+		return &ErrNilParameter{"config"}
 	}
 	if len(results) == 0 {
 		return ErrEmptyResults
@@ -42,7 +63,7 @@ func ExportResults(results []*Result, config *Config, filename string) error {
 			return err
 		}
 		if sevRes > maxSevStr {
-			return ErrMaxSeverityReached
+			return ErrMaxSeverityReached{Max: maxSevStr, Sev: sevRes}
 		}
 	}
 
@@ -54,7 +75,7 @@ func ExportResults(results []*Result, config *Config, filename string) error {
 
 			f, ok := exportersMap[format]
 			if !ok {
-				return ErrUnsupportedExporter
+				return ErrUnsupportedExporter{format}
 			}
 			if err := f(results, filename); err != nil {
 				return err
@@ -65,7 +86,6 @@ func ExportResults(results []*Result, config *Config, filename string) error {
 	return nil
 }
 
-// exportJSON exports the results to a JSON file
 func exportJSON(results []*Result, filename string) error {
 	// Open CSV file to write in
 	f, err := os.OpenFile(filename+".json", os.O_CREATE|os.O_WRONLY, 0644)
@@ -85,11 +105,10 @@ func exportJSON(results []*Result, filename string) error {
 		return err
 	}
 
-	log.Info("Results were exported as json in: ", filename)
+	logrus.Info("Results were exported as json in: ", filename)
 	return nil
 }
 
-// exportCSV exports the results to a CSV file
 func exportCSV(results []*Result, filename string) error {
 	// Open CSV file to write in
 	f, err := os.OpenFile(filename+".csv", os.O_CREATE|os.O_WRONLY, 0644)
@@ -113,7 +132,7 @@ func exportCSV(results []*Result, filename string) error {
 		}
 	}
 
-	log.Info("Results were exported as csv in: ", filename)
+	logrus.Info("Results were exported as csv in: ", filename)
 	return nil
 }
 
@@ -125,15 +144,6 @@ const (
 	colorCyan   = "\033[36m"
 )
 
-type ErrUnsupportedSeverity struct {
-	Severity Severity
-}
-
-func (e ErrUnsupportedSeverity) Error() string {
-	return "unsupported severity " + strconv.Itoa(int(e.Severity))
-}
-
-// exportStdout export the results in os.Stdout
 func exportStdout(results []*Result, filename string) error {
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
