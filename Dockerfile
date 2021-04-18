@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:1.13 AS builder
+FROM golang:1.16 AS builder
 WORKDIR /go/src
 COPY go.mod go.sum ./
 RUN go mod download
@@ -13,4 +13,4 @@ RUN go build -o /go/bin/gochopchop main.go
 FROM alpine:3.8
 COPY --from=builder /go/bin/gochopchop /bin/gochopchop
 COPY chopchop.yml /etc/chopchop.yml
-ENTRYPOINT ["/bin/gochopchop"]
+ENTRYPOINT [ "/bin/gochopchop" ]
