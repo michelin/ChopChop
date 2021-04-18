@@ -55,11 +55,13 @@ type workerJob struct {
 	plugin   *Plugin
 }
 
+var ErrNilScaner = errors.New("given scanner is nil")
+
 // RunScan scans the urls until job is completed or
 // a done signal is sent throuh the chan
 func RunScan(scanner *Scanner, urls []string, doneChan <-chan struct{}) ([]*Result, error) {
 	if scanner == nil {
-		return nil, errors.New("given scanner is nil")
+		return nil, ErrNilScaner
 	}
 
 	wgJobs := new(sync.WaitGroup)

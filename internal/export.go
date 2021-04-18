@@ -23,6 +23,7 @@ var exportersMap = map[string]ExporterFunc{
 var ErrEmptyResults = errors.New("no result found")
 var ErrNilConfig = errors.New("given config is nil")
 var ErrMaxSeverityReached = errors.New("max severity reached")
+var ErrUnsupportedExporter = errors.New("unsupported exporter")
 
 func ExportResults(results []*Result, config *Config, filename string) error {
 	// Check parameters
@@ -53,7 +54,7 @@ func ExportResults(results []*Result, config *Config, filename string) error {
 
 			f, ok := exportersMap[format]
 			if !ok {
-				return errors.New("unsupported exporter")
+				return ErrUnsupportedExporter
 			}
 			if err := f(results, filename); err != nil {
 				return err
