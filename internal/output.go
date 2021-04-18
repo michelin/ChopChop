@@ -1,6 +1,7 @@
-package core
+package internal
 
-// Output structure for each findings
+// Output wraps result for each finding
+// TODO rename
 type Output struct {
 	URL         string `json:"url"`
 	Endpoint    string `json:"endpoint"`

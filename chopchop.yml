@@ -1,14 +1,16 @@
 insecure: false
 plugins:
-  - endpoint: "/status.shtml"
+  - endpoints:
+      - "/status.shtml"
     checks:
       - name: GENEREX UPS
         match:
           - 'UPS Status:'
         remediation: Make sure that GENEREX UPS access is restricted & monitored
         description: GENEREX UPS is accessible | don't move this rule to avoid client timeout
-        severity: "Medium"
-  - endpoint: "/"
+        severity: Medium
+  - endpoints:
+      - "/"
     checks:
       - name : GLPI vulnerable version
         match:
@@ -19,129 +21,129 @@ plugins:
         remediation: Upgrade GLPI in latest version
         description: GLPI vulnerable version detected
         status_code: 200
-        severity: "High"
+        severity: High
       - name : PACS NGI GXD5
         match:
           - '<title>GXD5 Pacs Connexion utilisateur</title>'
         remediation: Make sure that PACS NGI GXD5 access is restricted & monitored
         description: PACS NGI GXD5 detected
         status_code: 200
-        severity: "High"
+        severity: High
       - name: AudioCodes SIP Gateway
         match:
         - 'AudioCodes'
         - '<H2>Web Login</H2>'
         remediation: Make sure that AudioCodes SIP Gateway access is restricted & monitored
         description: AudioCodes SIP Gateway detected
-        severity: "Informational"    
+        severity: Informational
       - name: HP Printer
         headers:
           - "Server:Virata-EmWeb/R6_2_1"
         remediation: Make sure that HP Printer access is restricted & monitored
         description: HP Printer is accessible
         status_code: 200
-        severity: "Low"
+        severity: Low
       - name: Printer (Lexmark, Dell, Toshiba, Sindoh)
         headers:
           - "Server:Lexmark_Web_Server"
         remediation: Make sure that Printer access is restricted & monitored
         description: Printer (Lexmark, Dell, Toshiba, Sindoh) is accessible
         status_code: 200
-        severity: "Low"
+        severity: Low
       - name: Microsoft-IIS/7.0 - Windows Server 2003/2008
         headers:
           - "Server:Microsoft-IIS/7.0"
         remediation: Upgrade to maintened version
         description: Microsoft-IIS/7.0 - Windows Server 2003/2008
-        severity: "Informational"
+        severity: Informational
       - name: Microsoft-IIS/7.5 - Windows Server 2003/2008
         headers:
           - "Server:Microsoft-IIS/7.5"
         remediation: Upgrade to maintened version
         description: Microsoft-IIS/7.5 - Windows Server 2003/2008
-        severity: "Informational"
+        severity: Informational
       - name: GE ViewPoint
         match:
           - '<title>ViewPoint System Status'
         remediation: Make sure that GE ViewPoint System Status access is restricted & monitored
         description: GE ViewPoint System Status is accessible / sensitive information leaking
         status_code: 200
-        severity: "Low"
+        severity: Low
       - name: Ascom IP-DECT Base Station
         match:
           - '<select product="Ascom IP-DECT Base Station"'
         remediation: Make sure that Ascom IP-DECT Base Station access is restricted & monitored
         description: Ascom IP-DECT Base Station is accessible
         status_code: 200
-        severity: "Informational"
+        severity: Informational
       - name: EMC Unisphere
         match:
           - 'Unisphere<br>'
         remediation: Make sure that EMC Unisphere access is restricted & monitored
         description: EMC Unisphere is accessible
         status_code: 200
-        severity: "Low"
+        severity: Low
       - name: F-Secure Policy Manager Server
         match:
           - '<title>F-Secure Policy Manager Server</title>'
         remediation: Make sure that F-Secure Policy Manager Server access is monitored
         description: F-Secure Policy Manager Server is accessible
         status_code: 200
-        severity: "Informational"
+        severity: Informational
       - name: Apache2 Debian Default Page
         match:
           - '<title>Apache2 Debian Default Page: It works</title>'
         remediation: Remove the symbolic link from the Apache default configuration
         description: Detects the presence of a default Apache page
-        severity: "Informational"
+        severity: Informational
       - name: Cisco IOS
         headers:
           - "Server:cisco-IOS"
         remediation: Make sure that Cisco IOS access is restricted & monitored
         description: Cisco IOS is accessible
-        severity: "Low"
+        severity: Low
       - name: Odin
         match:
           - '<h1 title="Operations Automation">'
         remediation: Make sure that Odin service automation access is restricted & monitored
         description: Odin service automation is accessible
-        severity: "Informational"
+        severity: Informational
       - name: Nordex Control
         headers:
           - "Server:Jetty/3.1.8 (Windows 2000 5.0 x86)"
         remediation: Make sure that Nordex Control access is restricted & monitored
         description: Nordex Control is accessible
-        severity: "Low"
+        severity: Low
       - name: EIG GaugeTech Electricity Meter
         headers:
           - "Server:EIG Embedded Web Server"
         remediation: Make sure that EIG GaugeTech Electricity Meter access is restricted & monitored
         description: EIG GaugeTech Electricity Meter is accessible
-        severity: "Low"
+        severity: Low
       - name: Weave Scope
         match:
           - '<title>Weave Scope</title>'
         remediation: Make sure that Weave Scope access is restricted & monitored
         description: Weave Scope is accessible
-        severity: "Medium"
+        severity: Medium
       - name: NETAVIS Observer
         match:
           - '<title>NETAVIS Observer'
         remediation: Make sure that NETAVIS Observer access is restricted & monitored
         description: NETAVIS Observer is accessible
-        severity: "Informational"
+        severity: Informational
       - name: Jenkins
         match:
           - "hudson"
         remediation: Monitor access to your jenkins instance.
         description: Checks that the domain is not a Jenkins instance
-        severity: "Informational"
+        severity: Informational
         headers:
           - "Cache-Control:no-cache,no-store,must-revalidate"
       - name: BigIPServer
         remediation: Encrypt sticky cookie to avoid leaking internal IPs
         description: Detects the presence of unencrypted sticky cookies that allow to retrieve internal Ips
-        severity: "Medium"
+        severity: Medium
         headers:
           - "Set-Cookie:BIGipServer"
       - name: TakeOver
@@ -169,19 +171,19 @@ plugins:
           - ".asmx"
         remediation: Monitor that webservices are well monitored.
         description: Checks the presence of webservices in the page
-        severity: "Informational"
+        severity: Informational
       - name: Gitlab instance
         match:
           - "GitLab</title>"
         remediation: Make sure that access to Gitlab is properly monitored
         description: Checks if a Gitlab instance exists
-        severity: "Low"
+        severity: Low
       - name: Apache2 Ubuntu Default Page
         match:
           - "Apache2 Ubuntu Default Page"
         remediation: Remove the symbolic link from the Apache default configuration
         description: Detects the presence of a default Apache page
-        severity: "Informational"
+        severity: Informational
       - name: Drupal CMS
         match:
           - "drupal"
@@ -189,62 +191,63 @@ plugins:
           - '"core/'
         remediation: Check that the version is the last one available on the vendor's website
         description: Get the Drupal version of the site
-        severity: "Low"
+        severity: Low
       - name: Status Code 500
         status_code: 500
         remediation: Check that the server has not completely fallen into error
         description: Check return code 500
-        severity: "Low"
+        severity: Low
       - name: Iis
         headers:
           - "Server:Microsoft-IIS/6.0"
         remediation: Patch the server as soon as possible
         description: Checks that the server is an IIS 6.0
-        severity: "Informational"
+        severity: Informational
       - name: Indexof
         match:
           - "Index of"
         remediation: Implementing rules at the application server level to prevent directory listing
         description: Checks that the domain root does not return a file/folder list
-        severity: "Low"
+        severity: Low
       - name: IndexOf2
         match:
           - "&lt;dir&gt;"
         remediation: Implementing rules at the application server level to prevent directory listing
         description: Checks that the domain root does not return a file/folder list (simple encoding)
-        severity: "Low"
+        severity: Low
       - name: MySQLError
         match:
           - 'You have an error in your SQL syntax'
         remediation: Do not display MySQL errors on web pages
         description: Checks that MySQL errors are not displayed
-        severity: "Medium"
+        severity: Medium
       - name: NginxDefaultPage
         match:
           - 'Welcome to nginx!'
         remediation: Delete symbolic link from Nginx default configuration
         description: Checks that the default Nginx site is not accessible
-        severity: "Low"
+        severity: Low
       - name: Osticket
         match:
           - 'Helpdesk software - powered by osTicket'
         remediation: Check that the passwords used are robust
         description: Checks that the domain is not an OS Ticket instance
-        severity: "Informational"
+        severity: Informational
       - name: PHP open code
         match:
           - '<?php'
         remediation: Delete unused code and check that PHP is correctly configured
         description: Checks for the presence of code not interpreted by PHP
         status_code: 200
-        severity: "Medium"
+        severity: Medium
       - name: PHP fopen function error
         match:
           - 'failed to open stream'
         remediation: Check that the application is running correctly
         description: Detects the presence of php errors via the fopen call
-        severity: "Low"
-  - endpoint: "/.git/config"
+        severity: Low
+  - endpoints:
+      - "/.git/config"
     checks:
       - name: Git exposed
         status_code: 200
@@ -255,35 +258,39 @@ plugins:
           - "[user]"
         remediation: Do not deploy .git folder on production servers
         description: Checks that the GIT repository is accessible from the site
-        severity: "High"
-  - endpoint: "/crossdomain.xml"
+        severity: High
+  - endpoints:
+      - "/crossdomain.xml"
     checks:
       - name: wildcard
         match:
           - 'domain="*" />'
         remediation: Delete wildcards from xml files
         description: Checks for the presence of a crossdomain.xml file with a wildcard for the domain
-        severity: "High"
-  - endpoint: "/manager/html"
+        severity: High
+  - endpoints:
+      - "/manager/html"
     checks:
       - name: tomcat manager
         status_code: 401
         remediation: Disable this interface in production
         description: Checks that under /manager/html the Tomcat administration interface is not accessible
-        severity: "Medium"
-  - endpoint: "/.htpasswd"
+        severity: Medium
+  - endpoints:
+      - "/.htpasswd"
     checks:
       - name: .htpasswd not interpreted
         match:
           - ":"
         remediation: Delete file and reset leaky passwords
         description: Checks for the presence of an .htpasswd file at the root of the domain
-        severity: "Medium"
+        severity: Medium
         status_code: 200
         no_match:
           - "<a"
           - "</"
-  - endpoint: "/.htaccess"
+  - endpoints:
+      - "/.htaccess"
     checks:
       - name: .htaccess not interpreted
         match:
@@ -291,8 +298,9 @@ plugins:
         remediation: Check that no sensitive information is present on the .htaccess
         description: Checks the presence of an .htaccess file at the root of the domain
         status_code: 200
-        severity: "Low"
-  - endpoint: "/idontexist"
+        severity: Low
+  - endpoints:
+      - "/idontexist"
     checks:
       - name: detailed 404 page
         match:
@@ -300,95 +308,106 @@ plugins:
         status_code: 404
         remediation: Delete the verbose mode on the whole application
         description: Detects the presence of the verbose mode when in error
-        severity: "Low"
-  - endpoint: "/cgi-bin/test/test.cgi"
+        severity: Low
+  - endpoints:
+      - "/cgi-bin/test/test.cgi"
     checks:
       - name: standard test.cgi page
         match:
           - "HTTP_ACCEPT"
         remediation: Delete the basic files of a Tomcat installation
         description: Checks for the presence of a test.cgi file
-        severity: "Low"
+        severity: Low
         status_code: 200
-  - endpoint: "/adminer.php"
+  - endpoints:
+      - "/adminer.php"
     checks:
       - name: Adminer php file
         match:
           - "Authentification - Adminer"
         remediation: Check that only a person with a strong password can use this file
         description: Discovery of a PHP file to administer the database
-        severity: "Low"
-  - endpoint: "/login"
+        severity: Low
+  - endpoints:
+      - "/login"
     checks:
       - name: Login Page Apostrophe
         match:
           - '<form action="/login" method="post">'
         remediation: Check that the administration interfaces are well protected
         description: Detects the presence of a login page using the Apostrophe Framework (from Digital Factory)
-        severity: "Informational"
+        severity: Informational
       - name: Grafana
         match:
           - "isGrafanaAdmin"
         remediation: Check that the passwords used are robust
         description: Check access to Grafana administration
-        severity: "Informational"
-  - endpoint: "/user/login"
+        severity: Informational
+  - endpoints:
+      - "/user/login"
     checks:
       - name: eZ Publish Admin Panel
         match:
           - "Log in to the Administration Interface of eZ Publish"
         remediation: Check that the passwords used are robust
         description: Check access to the eZ Publish administration
-        severity: "Low"
-  - endpoint: "/fckeditor/editor/filemanager/browser/default/browser.html"
+        severity: Low
+  - endpoints:
+      - "/fckeditor/editor/filemanager/browser/default/browser.html"
     checks:
       - name: FckEditor
         match:
           - "Resources Browser"
         remediation: Put authentication on this form
         description: Check access to a wysiwyg fckeditor
-        severity: "High"
-  - endpoint: "/.idea/workspace.xml"
+        severity: High
+  - endpoints:
+      - "/.idea/workspace.xml"
     checks:
       - name: Idea WorkSpace
         match:
           - "<project"
         remediation: Delete file
         description: Checks the access of some developer's settings
-        severity: "High"
-  - endpoint: "/install.php"
+        severity: High
+  - endpoints:
+      - "/install.php"
     checks:
       - name: Install Script PHP
         match:
           - "To start over"
         remediation: Delete install.php file
         description: Checks the presence of a PHP installation script
-        severity: "Low"
-  - endpoint: "/administrator"
+        severity: Low
+  - endpoints:
+      - "/administrator"
     checks:
       - name: Joomla admin interface
         match:
           - 'action="/administrator/index.php"'
         remediation: Check that the passwords used are robust
         description: Check access to Joomla's administration interface
-        severity: "Informational"
-  - endpoint: "/https://example.com//"
+        severity: Informational
+  - endpoints:
+      - "/https://example.com//"
     checks:
       - name: OpenRedirect
         match:
           - 'Example Domain'
         remediation: Patch open redirect vulnerability
         description: Detects the presence of Open Redirect type vulnerabilities
-        severity: "Low"
-  - endpoint: "/phpinfo.php"
+        severity: Low
+  - endpoints:
+      - "/phpinfo.php"
     checks:
       - name: PHPInfo
         match:
           - 'phpinfo()'
         remediation: Disable phpinfo() in PHP.ini
         description: Checks that the phpinfo() function is accessible
-        severity: "Low"
-  - endpoint: "/phpmyadmin"
+        severity: Low
+  - endpoints:
+      - "/phpmyadmin"
     checks:
       - name: PHPMyAdmin
         match:
@@ -396,24 +415,27 @@ plugins:
         remediation: Make sure that PHPMyAdmin access is monitored
         description: Checks that under /phpmyadmin a PHPMyAdmin instance is not accessible
         status_code: 200
-        severity: "Low"
-  - endpoint: "/server-status"
+        severity: Low
+  - endpoints:
+      - "/server-status"
     checks:
       - name: Server Status
         match:
           - 'Waiting for Connection'
         remediation: Disable this feature in Apache
         description: Checks that under /server-status of Apache information is accessible
-        severity: "Low"
-  - endpoint: "/examples/jsp/snp/snoop.jsp"
+        severity: Low
+  - endpoints:
+      - "/examples/jsp/snp/snoop.jsp"
     checks:
       - name: Snoop
         match:
           - 'Request Information'
         remediation: Delete basic files of a Tomcat installation
         description: Detects the presence of snoop.jsp files (default files in a Tomcat install)
-        severity: "Informational"
-  - endpoint: "/actuator/health"
+        severity: Informational
+  - endpoints:
+      - "/actuator/health"
     checks:
       - name: SPringbootActuator
         match:
@@ -422,9 +444,10 @@ plugins:
           - "Content-Type:application/json"
         remediation: Disable this feature or protect access
         description: Checks that under /actuator/health information is not disclosed by Springboot
-        severity: "Low"
+        severity: Low
         status_code: 200
-  - endpoint: "/health"
+  - endpoints:
+      - "/health"
     checks:
       - name: SpringbootActuator
         match:
@@ -433,9 +456,10 @@ plugins:
           - "Content-Type:application/json"
         remediation: Disable this feature or protect access
         description: Checks that under /health information is not disclosed by Springboot
-        severity: "Low"
+        severity: Low
         status_code: 200
-  - endpoint: "/.svn/wc.db"
+  - endpoints:
+      - "/.svn/wc.db"
     checks:
       - name: SVN db
         headers:
@@ -443,8 +467,9 @@ plugins:
         remediation: Do not deploy .svn on production servers
         description: Checks if an SVN database is publicly accessible
         status_code: 200
-        severity: "High"
-  - endpoint: "/.svn/entries"
+        severity: High
+  - endpoints:
+      - "/.svn/entries"
     checks:
       - name: SVN db
         headers:
@@ -452,16 +477,18 @@ plugins:
         remediation: Do not deploy .svn on production servers
         description: Checks if an SVN database is publicly accessible
         status_code: 200
-        severity: "High"
-  - endpoint: "/web.config"
+        severity: High
+  - endpoints:
+      - "/web.config"
     checks:
       - name: Web Config
         match:
           - '<configuration>'
         remediation: Check that no sensitive information is present in the web.config
         description: Checks that the web.config configuration file of the ASP.net server is not accessible
-        severity: "Low"
-  - endpoint: "/wp-login.php"
+        severity: Low
+  - endpoints:
+      - "/wp-login.php"
     checks:
       - name: Wordpress Login Page
         all_match:
@@ -469,24 +496,27 @@ plugins:
           - '<body class="login login-action-login wp-core-ui'
         remediation: Set up an.htaccess to avoid exposing the admin interface unnecessarily
         description: Checks that under /wp-login the Worpress connection interface is not accessible
-        severity: "Informational"
-  - endpoint: "/wp-links-opml.php"
+        severity: Informational
+  - endpoints:
+      - "/wp-links-opml.php"
     checks:
       - name: WpLinksOpml
         match:
           - 'generator="WordPress'
         remediation: Be sure the wordpress uses the latest version
         description: Retrieves the Wordpress version of the site
-        severity: "Informational"
-  - endpoint: "/jmx-console/"
+        severity: Informational
+  - endpoints:
+      - "/jmx-console/"
     checks:
       - name: JMX Console
         match:
           - "service=MainDeployer"
         remediation: Alter configurations to deny external access.
         description: JMX Console displays an index with all available services. Authentication can be bypassed by intruder.
-        severity: "Medium"
-  - endpoint: "/tmui/login.jsp/..;/tmui/locallb/workspace/fileRead.jsp?fileName=/config/bigip.license"
+        severity: Medium
+  - endpoints:
+      - "/tmui/login.jsp/..;/tmui/locallb/workspace/fileRead.jsp?fileName=/config/bigip.license"
     checks:
       - name: F5 BIG-IP - CVE-2020-5902
         match:
@@ -494,16 +524,18 @@ plugins:
         remediation: Apply patch - F5 K52145254
         description: Remote Code Execution on Administration Web interface TMUI.
         status_code: 200
-        severity: "High"
-  - endpoint: "/tmui/login.jsp"
+        severity: High
+  - endpoints:
+      - "/tmui/login.jsp"
     checks:
       - name: F5 BIG-IP - TMUI
         match:
           - "<title>BIG-IP"
         remediation: Make sure that F5 BIG-IP - TMUI access is monitored
         description: Checks that under /tmui a F5 BIG-IP TMUI is not accessible
-        severity: "Low"
-  - endpoint: "/images/imgpaper.png"
+        severity: Low
+  - endpoints:
+      - "/images/imgpaper.png"
     checks:
       - name: Possible Trickbot Trojan Payload hosting imgpaper.png on Apache
         headers:
@@ -511,15 +543,16 @@ plugins:
         remediation: Make sure your system isn't compromised
         description: Possible Trickbot Trojan Payload hosting in /images/imgpaper.png
         status_code: 200
-        severity: "High"
+        severity: High
       - name: Trickbot Trojan Payload hosting imgpaper.png on Nginx
         headers:
           - 'Content-Type:application/octet-stream'
         remediation: Make sure your system isn't compromised
         description: Possible Trickbot Trojan Payload hosting in /images/imgpaper.png
         status_code: 200
-        severity: "High"
-  - endpoint: "/images/cursor.png"
+        severity: High
+  - endpoints:
+      - "/images/cursor.png"
     checks:
       - name: Possible Trickbot Trojan Payload hosting cursor.png on Apache
         headers:
@@ -527,15 +560,16 @@ plugins:
         remediation: Make sure your system isn't compromised
         description: Possible Trickbot Trojan Payload hosting in /images/cursor.png
         status_code: 200
-        severity: "High"
+        severity: High
       - name: Trickbot Trojan Payload hosting cursor.png on Nginx
         headers:
           - 'Content-Type:application/octet-stream'
         remediation: Make sure your system isn't compromised
         description: Possible Trickbot Trojan Payload hosting in /images/cursor.png
         status_code: 200
-        severity: "High"
-  - endpoint: "/images/redcar.png"
+        severity: High
+  - endpoints:
+      - "/images/redcar.png"
     checks:
       - name: Possible Trickbot Trojan Payload hosting redcar.png on Apache
         headers:
@@ -543,15 +577,16 @@ plugins:
         remediation: Make sure your system isn't compromised
         description: Possible Trickbot Trojan Payload hosting in /images/redcar.png
         status_code: 200
-        severity: "High"
+        severity: High
       - name: Trickbot Trojan Payload hosting redcar.png on Nginx
         headers:
           - 'Content-Type:application/octet-stream'
         remediation: Make sure your system isn't compromised
         description: Possible Trickbot Trojan Payload hosting in /images/redcar.png
         status_code: 200
-        severity: "High"
-  - endpoint: "/ico/VidT6cErs"
+        severity: High
+  - endpoints:
+      - "/ico/VidT6cErs"
     checks:
       - name: Possible Trickbot Trojan Payload hosting VidT6cErs
         no_match:
@@ -562,8 +597,9 @@ plugins:
         remediation: Make sure your system isn't compromised
         description: Possible Trickbot Trojan Payload hosting in /ico/VidT6cErs
         status_code: 200
-        severity: "High"
-  - endpoint: "/admin/libs/prettify-4-Mar-2013/prettify.css"
+        severity: High
+  - endpoints:
+      - "/admin/libs/prettify-4-Mar-2013/prettify.css"
     checks:
       - name: Stormshield SNS Web Admin Console
         headers:
@@ -571,8 +607,9 @@ plugins:
         remediation: Make sure that Stormshield SNS Web Admin Console access is restricted & monitored
         description: Stormshield SNS Web Admin Console is accessible
         status_code: 200
-        severity: "Low"
-  - endpoint: "/auth"
+        severity: Low
+  - endpoints:
+      - "/auth"
     checks:
       - name: Stormshield Web Portal
         match:
@@ -581,8 +618,9 @@ plugins:
         remediation: Make sure that Stormshield Web Portal access is restricted & monitored
         description: Stormshield Web Portal is accessible
         status_code: 200
-        severity: "Informational"
-  - endpoint: "/ui"
+        severity: Informational
+  - endpoints:
+      - "/ui"
     checks:
       - name: VMware ESXi
         match:
@@ -590,8 +628,9 @@ plugins:
         remediation: Make sure that VMware ESXi access is restricted & monitored
         description: VMware ESXi is accessible
         status_code: 200
-        severity: "Low"
-  - endpoint: "/vsphere-client"
+        severity: Low
+  - endpoints:
+      - "/vsphere-client"
     checks:
       - name: VMware vCenter
         match:
@@ -599,8 +638,9 @@ plugins:
         remediation: Make sure that VMware vCenter access is restricted & monitored
         description: VMware vCenter is accessible
         status_code: 200
-        severity: "Low"
-  - endpoint: "/eai/index.html"
+        severity: Low
+  - endpoints:
+      - "/eai/index.html"
     checks:
       - name: Enovacom Suite V2
         match:
@@ -608,8 +648,9 @@ plugins:
         remediation: Make sure that EAI Enovacom Suite V2 access is restricted & monitored
         description: EAI Enovacom Suite V2 is accessible
         status_code: 200
-        severity: "Low"
-  - endpoint: "/mailscanner/login.php"
+        severity: Low
+  - endpoints:
+      - "/mailscanner/login.php"
     checks:
       - name: MailWatch
         match:
@@ -617,8 +658,9 @@ plugins:
         remediation: Make sure that MailWatch access is monitored
         description: MailWatch is accessible
         status_code: 200
-        severity: "Low"
-  - endpoint: "/fog/management/index.php"
+        severity: Low
+  - endpoints:
+      - "/fog/management/index.php"
     checks:
       - name: FOG Project
         match:
@@ -627,8 +669,9 @@ plugins:
         remediation: Make sure that FOG Project access is monitored
         description: FOG Project is accessible
         status_code: 200
-        severity: "Low"
-  - endpoint: "/.well-known/security.txt"
+        severity: Low
+  - endpoints:
+      - "/.well-known/security.txt"
     checks:
       - name: Security.txt
         match:
@@ -636,24 +679,27 @@ plugins:
         remediation: Great ! A Security.txt file for contact is present
         description: Detects the presence of Security.txt file
         status_code: 200
-        severity: "Informational"
-  - endpoint: "/XsEXPL"
+        severity: Informational
+  - endpoints:
+      - "/XsEXPL"
     checks:
       - name: Xplore Web RIS
         match:
           - '<title>Xplore Exploitation</title>'
         remediation: Make sure that Xplore Web RIS access is restricted & monitored
         description: Xplore Web RIS is accessible
-        severity: "Informational"
-  - endpoint: "/zimbraAdmin"
+        severity: Informational
+  - endpoints:
+      - "/zimbraAdmin"
     checks:
       - name: Zimbra Administration
         match:
           - 'Zimbra Collaboration Suite Web Client'
         remediation: Make sure that Zimbra Administration access is restricted & monitored
         description: Zimbra Administration is accessible
-        severity: "Low"
-  - endpoint: "/public/img/mongo-express-logo.png"
+        severity: Low
+  - endpoints:
+      - "/public/img/mongo-express-logo.png"
     checks:
       - name: Mongo Express
         headers:
@@ -661,8 +707,9 @@ plugins:
         remediation: Make sure that Mongo Express access is restricted & monitored
         description: Mongo Express is accessible
         status_code: 200
-        severity: "High"
-  - endpoint: "/login.html"
+        severity: High
+  - endpoints:
+      - "/login.html"
     checks:
       - name: Polycom
         headers:
@@ -672,8 +719,9 @@ plugins:
         remediation: Make sure that Polycom access is restricted & monitored
         description: Polycom Video Conferencing is accessible
         status_code: 200
-        severity: "Informational"
-  - endpoint: "/securityRealm/user/admin/search/index?q=a"
+        severity: Informational
+  - endpoints:
+      - "/securityRealm/user/admin/search/index?q=a"
     checks:
       - name: Jenkins CVE-2018-1000861 (RCE)
         match:
@@ -683,8 +731,9 @@ plugins:
           - 'HTTP ERROR 404 Not Found'
         remediation: Patch the server as soon as possible
         description: Jenkins server is vulnerable to RCE CVE-2018-1000861
-        severity: "High"
-  - endpoint: "/?MAIN=TOPACCESS"
+        severity: High
+  - endpoints:
+      - "/?MAIN=TOPACCESS"
     checks:
       - name: TopAccess Toshiba MFP
         match:
@@ -692,8 +741,9 @@ plugins:
         remediation: Make sure that TopAccess access is restricted & monitored
         description: TopAccess Toshiba MFP is accessible
         status_code: 200
-        severity: "Low"
-  - endpoint: "/ePrint/ePrintConfigDyn.xml"
+        severity: Low
+  - endpoints:
+      - "/ePrint/ePrintConfigDyn.xml"
     checks:
       - name: HP Printer
         headers:
@@ -701,8 +751,9 @@ plugins:
         remediation: Make sure that HP Printer access is restricted & monitored
         description: HP Printer is accessible
         status_code: 200
-        severity: "Low"
-  - endpoint: "/config.html"
+        severity: Low
+  - endpoints:
+      - "/config.html"
     checks:
       - name: Zebra Label Printer
         match:
@@ -710,8 +761,9 @@ plugins:
         remediation: Make sure that Zebra Label Printer access is restricted & monitored
         description: Zebra Label Printer is accessible
         status_code: 200
-        severity: "Low"
-  - endpoint: "/spip.php?page=login"
+        severity: Low
+  - endpoints:
+      - "/spip.php?page=login"
     checks:
       - name : SPIP admin interface
         match:
@@ -719,7 +771,7 @@ plugins:
         remediation: Make sure that SPIP admin interface access is restricted & monitored
         description: SPIP admin interface is accessible
         status_code: 200
-        severity: "Informational"
+        severity: Informational
       - name : SPIP vulnerable version
         match:
           - 'content="SPIP'
@@ -731,8 +783,9 @@ plugins:
         remediation: Upgrade SPIP in latest version
         description: SPIP vulnerable version detected
         status_code: 200
-        severity: "High"
-  - endpoint: "/support/support.php"
+        severity: High
+  - endpoints:
+      - "/support/support.php"
     checks:
       - name : Xerox Printer
         headers:
@@ -742,18 +795,19 @@ plugins:
         remediation: Make sure that Xerox Printer access is restricted & monitored
         description: Xerox Printer is accessible
         status_code: 200
-        severity: "Low"
-  - endpoint: "/cgi-bin/dynamic/topbar.html"
+        severity: Low
+  - endpoints:
+      - "/cgi-bin/dynamic/topbar.html"
     checks:
       - name : Lexmark Printer
         match:
           - '<span class="top_prodname">Lexmark'
-          
         remediation: Make sure that Lexmark Printer access is restricted & monitored
         description: Lexmark Printer is accessible
         status_code: 200
-        severity: "Low"
-  - endpoint: "/felia/user/signin?source="
+        severity: Low
+  - endpoints:
+      - "/felia/user/signin?source="
     checks:
       - name : Aklia Lisis - traçabilité patients
         match:
@@ -763,4 +817,4 @@ plugins:
         remediation: Make sure that Aklia Lisis access is restricted & monitored
         description: Aklia Lisis is accessible
         status_code: 200
-        severity: "Low"
+        severity: Low
