@@ -7,7 +7,7 @@ COPY . .
 ENV GOOS=linux
 ENV GOARCH=amd64
 ENV CGO_ENABLED=0
-RUN go build -o /go/bin/gochopchop main.go
+RUN go build -o /go/bin/gochopchop cmd/main.go
 
 # Prod stage
 FROM alpine:3.8
