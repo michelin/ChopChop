@@ -9,19 +9,19 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// SafeData stores an Output slice.
+// SafeData stores a Result slice.
 //
 // Supports concurrency.
 type SafeData struct {
 	mux sync.Mutex
-	out []*Output
+	res []*Result
 }
 
-// Add adds an Output to the existing ones. Does not
+// Add adds a Result to the existing ones. Does not
 // check for duplications.
-func (s *SafeData) Add(out *Output) {
+func (s *SafeData) Add(res *Result) {
 	s.mux.Lock()
-	s.out = append(s.out, out)
+	s.res = append(s.res, res)
 	s.mux.Unlock()
 }
 
@@ -31,10 +31,10 @@ type IFetcher interface {
 	Fetch(url string) (*HTTPResponse, error)
 }
 
-// IScanner defines the method to fetch Outputs from a slice
+// IScanner defines the method to fetch Results from a slice
 // of URLs.
 type IScanner interface {
-	Scan(urls []string) ([]Output, error)
+	Scan(urls []string) ([]Result, error)
 }
 
 // Scanner wraps the Signatures and the fetchers.
@@ -57,7 +57,7 @@ type workerJob struct {
 
 // RunScan scans the urls until job is completed or
 // a done signal is sent throuh the chan
-func RunScan(scanner *Scanner, urls []string, doneChan <-chan struct{}) ([]*Output, error) {
+func RunScan(scanner *Scanner, urls []string, doneChan <-chan struct{}) ([]*Result, error) {
 	if scanner == nil {
 		return nil, errors.New("given scanner is nil")
 	}
@@ -100,7 +100,7 @@ func RunScan(scanner *Scanner, urls []string, doneChan <-chan struct{}) ([]*Outp
 								return
 							default:
 								if check.Match(resp) {
-									scanner.safeData.Add(&Output{
+									scanner.safeData.Add(&Result{
 										URL:         job.url,
 										Name:        check.Name,
 										Endpoint:    job.endpoint,
@@ -141,7 +141,7 @@ func RunScan(scanner *Scanner, urls []string, doneChan <-chan struct{}) ([]*Outp
 	close(jobs)
 	wgJobs.Wait()
 
-	return scanner.safeData.out, nil
+	return scanner.safeData.res, nil
 }
 
 func (s Scanner) Fetch(url string, followRedirects bool) (*HTTPResponse, error) {
@@ -168,7 +168,7 @@ func (e ErrNilParameter) Error() string {
 	return "parameter " + e.Name + " is nil"
 }
 
-func Scan(config *Config, signatures *Signatures, doneChan <-chan struct{}) ([]*Output, time.Duration, error) {
+func Scan(config *Config, signatures *Signatures, doneChan <-chan struct{}) ([]*Result, time.Duration, error) {
 	// Validate parameters
 	if config == nil {
 		return nil, time.Duration(0), &ErrNilParameter{"config"}
@@ -187,7 +187,7 @@ func Scan(config *Config, signatures *Signatures, doneChan <-chan struct{}) ([]*
 		Fetcher:           fetcher,
 		NoRedirectFetcher: noRdrFetcher,
 		safeData: &SafeData{
-			out: []*Output{},
+			res: []*Result{},
 			mux: sync.Mutex{},
 		},
 		Goroutines: config.Goroutines,

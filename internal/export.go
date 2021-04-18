@@ -10,9 +10,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// ExporterFunc is a func type exporting the outputs
+// ExporterFunc is a func type exporting the results
 // to a file given its filename.
-type ExporterFunc func([]*Output, string) error
+type ExporterFunc func([]*Result, string) error
 
 var exportersMap = map[string]ExporterFunc{
 	"csv":    exportCSV,
@@ -20,20 +20,20 @@ var exportersMap = map[string]ExporterFunc{
 	"stdout": exportStdout,
 }
 
-var ErrRemptyResults = errors.New("no output found")
+var ErrEmptyResults = errors.New("no result found")
 var ErrNilConfig = errors.New("given config is nil")
 var ErrMaxSeverityReached = errors.New("max severity reached")
 
-func ExportResults(results []*Output, config *Config, filename string) error {
+func ExportResults(results []*Result, config *Config, filename string) error {
 	// Check parameters
 	if config == nil {
 		return ErrNilConfig
 	}
 	if len(results) == 0 {
-		return ErrRemptyResults
+		return ErrEmptyResults
 	}
 
-	// Check output severities are valid
+	// Check results severities are valid
 	maxSevStr := config.MaxSeverity
 	for _, res := range results {
 		sevRes, err := StringToSeverity(res.Severity)
@@ -64,8 +64,8 @@ func ExportResults(results []*Output, config *Config, filename string) error {
 	return nil
 }
 
-// exportJSON exports the output to a JSON file
-func exportJSON(output []*Output, filename string) error {
+// exportJSON exports the results to a JSON file
+func exportJSON(results []*Result, filename string) error {
 	// Open CSV file to write in
 	f, err := os.OpenFile(filename+".json", os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
@@ -73,8 +73,8 @@ func exportJSON(output []*Output, filename string) error {
 	}
 	defer f.Close()
 
-	// Marshal output in JSON
-	jsonbytes, err := json.Marshal(output)
+	// Marshal results in JSON
+	jsonbytes, err := json.Marshal(results)
 	if err != nil {
 		return err
 	}
@@ -88,8 +88,8 @@ func exportJSON(output []*Output, filename string) error {
 	return nil
 }
 
-// exportCSV exports the output to a CSV file
-func exportCSV(out []*Output, filename string) error {
+// exportCSV exports the results to a CSV file
+func exportCSV(results []*Result, filename string) error {
 	// Open CSV file to write in
 	f, err := os.OpenFile(filename+".csv", os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
@@ -104,8 +104,8 @@ func exportCSV(out []*Output, filename string) error {
 	}
 
 	// Write content
-	for _, output := range out {
-		entry := output.URL + "," + output.Endpoint + "," + output.Severity + "," + output.Name + "," + output.Remediation + "\n"
+	for _, result := range results {
+		entry := result.URL + "," + result.Endpoint + "," + result.Severity + "," + result.Name + "," + result.Remediation + "\n"
 		_, err := f.WriteString(entry)
 		if err != nil {
 			return err
@@ -132,14 +132,14 @@ func (e ErrUnsupportedSeverity) Error() string {
 	return "unsupported severity " + strconv.Itoa(int(e.Severity))
 }
 
-// exportStdout export the output in os.Stdout
-func exportStdout(outputs []*Output, filename string) error {
+// exportStdout export the results in os.Stdout
+func exportStdout(results []*Result, filename string) error {
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"URL", "Endpoint", "Severity", "Plugin", "Remediation"})
-	for _, output := range outputs {
+	for _, result := range results {
 		// Convert and check severity
-		sev, err := StringToSeverity(output.Severity)
+		sev, err := StringToSeverity(result.Severity)
 		if err != nil {
 			return err
 		}
@@ -162,11 +162,11 @@ func exportStdout(outputs []*Output, filename string) error {
 
 		// Append the content row
 		t.AppendRow([]interface{}{
-			output.URL,
-			output.Endpoint,
+			result.URL,
+			result.Endpoint,
 			severity,
-			output.Name,
-			output.Remediation,
+			result.Name,
+			result.Remediation,
 		})
 	}
 	t.SortBy([]table.SortBy{
