@@ -91,7 +91,7 @@ jobs:
         uses: ibiqlik/action-yamllint@v3
         with:
           file_or_dir: chopchop.yml
-          config_file: .yamllint.yml
+          config_file: .github/.yamllint.yml
 
   build-and-publish:
     runs-on: ubuntu-latest
