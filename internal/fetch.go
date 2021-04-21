@@ -2,22 +2,10 @@ package internal
 
 import (
 	"crypto/tls"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"time"
 )
-
-// IHTTPClient is the interface defining a struct that
-// get a *http.Response from an URL.
-type IHTTPClient interface {
-	Get(url string) (*http.Response, error)
-}
-
-// HTTPClient wraps the HTTP Client parameters to use.
-type HTTPClient struct {
-	Transport http.RoundTripper
-	Timeout   time.Duration
-}
 
 // HTTPResponse wraps the status code, body and header
 // of a http.Response (it is a simplified version of
@@ -28,21 +16,27 @@ type HTTPResponse struct {
 	Header     http.Header
 }
 
-// Fetcher wraps an IHTTPClient and defines a method to
-// fetch an URL.
-type Fetcher struct {
-	Netclient IHTTPClient
+// Fetcher defines the method a http fetcher should define.
+type Fetcher interface {
+	// Get takes an URL and returns a *http.Response from it.
+	Get(url string) (*http.Response, error)
 }
 
-// NewFetcher builds and returns a new fetcher.
-func NewFetcher(insecure bool, timeout int64) *Fetcher {
+// Fetcher wraps an IHTTPClient and defines a method to
+// fetch an URL.
+type NetFetcher struct {
+	Client http.Client
+}
+
+// NewNetFetcher builds and returns a new fetcher.
+func NewNetFetcher(insecure bool, timeout int64) NetFetcher {
 	var tlsCfg *tls.Config
 	if insecure {
 		tlsCfg = &tls.Config{InsecureSkipVerify: true}
 	}
 
-	return &Fetcher{
-		Netclient: &http.Client{
+	return NetFetcher{
+		Client: http.Client{
 			Transport: &http.Transport{
 				TLSClientConfig: tlsCfg,
 			},
@@ -52,15 +46,15 @@ func NewFetcher(insecure bool, timeout int64) *Fetcher {
 }
 
 // NewNoRedirectFetcher builds and returns a new
-// fetcher that does not redirect.
-func NewNoRedirectFetcher(insecure bool, timeout int64) *Fetcher {
+// fetcher that does not follow redirection.
+func NewNoRedirectNetFetcher(insecure bool, timeout int64) NetFetcher {
 	var tlsCfg *tls.Config
 	if insecure {
 		tlsCfg = &tls.Config{InsecureSkipVerify: true}
 	}
 
-	return &Fetcher{
-		Netclient: &http.Client{
+	return NetFetcher{
+		Client: http.Client{
 			Transport: &http.Transport{
 				TLSClientConfig: tlsCfg,
 			},
@@ -72,16 +66,19 @@ func NewNoRedirectFetcher(insecure bool, timeout int64) *Fetcher {
 	}
 }
 
-// Fetch fetches a *http.Response from an URL and returns
-// a *HTTPResponse from it.
-func (f Fetcher) Fetch(url string) (*HTTPResponse, error) {
-	resp, err := f.Netclient.Get(url)
+func (nf NetFetcher) Get(url string) (*http.Response, error) {
+	return nf.Client.Get(url)
+}
+
+// Fetch takes a Fetcher and an URL to return a *HTTPResponse from.
+func Fetch(fetcher Fetcher, url string) (*HTTPResponse, error) {
+	resp, err := fetcher.Get(url)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}

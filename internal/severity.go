@@ -39,7 +39,7 @@ type ErrUnsupportedSeverity struct {
 }
 
 func (e ErrUnsupportedSeverity) Error() string {
-	return "unsupported severity " + strconv.Itoa(int(e.Severity))
+	return "unsupported severity: " + strconv.Itoa(int(e.Severity))
 }
 
 func (s Severity) String() (string, error) {

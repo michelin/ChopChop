@@ -8,54 +8,81 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// SafeData stores a Result slice. It should
+// SafeResults stores a Result slice. It should
 // support concurrency.
-type SafeData struct {
+type SafeResults struct {
 	mux sync.Mutex
-	res []*Result
+	Res []*Result
 }
 
 // Add adds a Result to the existing ones. Does not
 // check for duplications.
-func (s *SafeData) Add(res *Result) {
+func (s *SafeResults) Add(res *Result) {
 	s.mux.Lock()
-	s.res = append(s.res, res)
-	s.mux.Unlock()
+	defer s.mux.Unlock()
+
+	s.Res = append(s.Res, res)
 }
 
-// IFetcher defines the method to fetch a HTTP response
-// from an URL.
-type IFetcher interface {
-	Fetch(url string) (*HTTPResponse, error)
+// Scanner defines the method a scanner must implement.
+type Scanner interface {
+	Run(urls []string, doneChan <-chan struct{}) ([]*Result, error)
 }
 
-// IScanner defines the method to fetch Results from a slice
-// of URLs.
-type IScanner interface {
-	Scan(urls []string) ([]Result, error)
+// Scan is the entrypoint of the scan process.
+func Scan(scanner Scanner, urls []string, doneChan <-chan struct{}) ([]*Result, time.Duration, error) {
+	begin := time.Now()
+	res, err := scanner.Run(urls, doneChan)
+	if err != nil {
+		return nil, time.Duration(0), err
+	}
+
+	return res, time.Since(begin), nil
 }
 
 // Scanner wraps the Signatures and the fetchers.
 //
-// TODO refactor this shit...
 // XXX Two fetchers are needed because we can't use the same http client to follow redirects
-type Scanner struct {
+type CoreScanner struct {
 	Signatures        *Signatures
-	Fetcher           IFetcher
-	NoRedirectFetcher IFetcher
-	safeData          *SafeData
+	Fetcher           Fetcher
+	NoRedirectFetcher Fetcher
 	Goroutines        int64
+	SafeResults       *SafeResults
+}
+
+var _ = (Scanner)(&CoreScanner{})
+
+func NewCoreScanner(config *Config, signatures *Signatures) (*CoreScanner, error) {
+	// Validate parameters
+	if config == nil {
+		return nil, &ErrNilParameter{"config"}
+	}
+	if signatures == nil {
+		return nil, &ErrNilParameter{"signatures"}
+	}
+
+	return &CoreScanner{
+		Signatures:        signatures,
+		Fetcher:           NewNetFetcher(config.HTTP.Insecure, config.HTTP.Timeout),
+		NoRedirectFetcher: NewNoRedirectNetFetcher(config.HTTP.Insecure, config.HTTP.Timeout),
+		SafeResults: &SafeResults{
+			Res: []*Result{},
+			mux: sync.Mutex{},
+		},
+		Goroutines: config.Goroutines,
+	}, nil
 }
 
 type workerJob struct {
 	url      string
 	endpoint string
-	plugin   *Plugin
+	plugin   Plugin
 }
 
 // RunScan scans the urls until job is completed or
 // a done signal is sent throuh the chan.
-func RunScan(scanner *Scanner, urls []string, doneChan <-chan struct{}) ([]*Result, error) {
+func (scanner *CoreScanner) Run(urls []string, doneChan <-chan struct{}) ([]*Result, error) {
 	if scanner == nil {
 		return nil, &ErrNilParameter{"scanner"}
 	}
@@ -91,7 +118,7 @@ func RunScan(scanner *Scanner, urls []string, doneChan <-chan struct{}) ([]*Resu
 					swg := new(sync.WaitGroup)
 					for _, check := range job.plugin.Checks {
 						swg.Add(1)
-						go func(check *Check) {
+						go func(check Check) {
 							defer swg.Done()
 							select {
 							case <-doneChan:
@@ -102,7 +129,7 @@ func RunScan(scanner *Scanner, urls []string, doneChan <-chan struct{}) ([]*Resu
 									// TODO do something.
 								}
 								if match {
-									scanner.safeData.Add(&Result{
+									scanner.SafeResults.Add(&Result{
 										URL:         job.url,
 										Name:        check.Name,
 										Endpoint:    job.endpoint,
@@ -143,61 +170,14 @@ func RunScan(scanner *Scanner, urls []string, doneChan <-chan struct{}) ([]*Resu
 	close(jobs)
 	wgJobs.Wait()
 
-	return scanner.safeData.res, nil
+	return scanner.SafeResults.Res, nil
 }
 
 // Fetch fetches content from an URL from its fetchers
 // with or without redirection.
-func (s Scanner) Fetch(url string, followRedirects bool) (*HTTPResponse, error) {
-	var httpResponse *HTTPResponse
-	var err error
-
-	if !followRedirects {
-		httpResponse, err = s.NoRedirectFetcher.Fetch(url)
-	} else {
-		httpResponse, err = s.Fetcher.Fetch(url)
+func (s CoreScanner) Fetch(url string, followRedirects bool) (*HTTPResponse, error) {
+	if followRedirects {
+		return Fetch(s.Fetcher, url)
 	}
-
-	if err != nil {
-		return nil, err
-	}
-	return httpResponse, nil
-}
-
-// Scan scans a set of URLs through the given config and
-// builds the results according to the given signatures.
-// It stops execution on a signal through "doneChan".
-//
-// It returns the results and the duration of the scan.
-func Scan(config *Config, signatures *Signatures, doneChan <-chan struct{}) ([]*Result, time.Duration, error) {
-	// Validate parameters
-	if config == nil {
-		return nil, time.Duration(0), &ErrNilParameter{"config"}
-	}
-	if signatures == nil {
-		return nil, time.Duration(0), &ErrNilParameter{"signatures"}
-	}
-
-	// Build fetchers
-	fetcher := NewFetcher(config.HTTP.Insecure, config.HTTP.Timeout)
-	noRdrFetcher := NewNoRedirectFetcher(config.HTTP.Insecure, config.HTTP.Timeout)
-
-	// Run the scan
-	scanner := &Scanner{
-		Signatures:        signatures,
-		Fetcher:           fetcher,
-		NoRedirectFetcher: noRdrFetcher,
-		safeData: &SafeData{
-			res: []*Result{},
-			mux: sync.Mutex{},
-		},
-		Goroutines: config.Goroutines,
-	}
-	begin := time.Now()
-	res, err := RunScan(scanner, config.Urls, doneChan)
-	if err != nil {
-		return nil, time.Duration(0), err
-	}
-
-	return res, time.Since(begin), nil
+	return Fetch(s.NoRedirectFetcher, url)
 }

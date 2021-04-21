@@ -13,16 +13,18 @@ import (
 // Signatures represents the plugins/rules from the
 // .yaml configuration file. It's the root of a config
 // file.
+//
+// TODO change insecure to bool type
 type Signatures struct {
-	Insecure string    `yaml:"insecure"`
-	Plugins  []*Plugin `yaml:"plugins"`
+	Insecure string   `yaml:"insecure"`
+	Plugins  []Plugin `yaml:"plugins"`
 }
 
 // Plugin means an entry to test for during scan.
 type Plugin struct {
 	Endpoints       []string `yaml:"endpoints"`
 	QueryString     string   `yaml:"query_string"`
-	Checks          []*Check `yaml:"checks"`
+	Checks          []Check  `yaml:"checks"`
 	FollowRedirects bool     `yaml:"follow_redirects"`
 }
 
@@ -40,14 +42,32 @@ type Check struct {
 	NoHeaders    []string `yaml:"no_headers"`
 }
 
+// ErrInvalidHeaderFormat is an error meaning an header
+// format is invalid.
+type ErrInvalidHeaderFormat struct {
+	Header string
+}
+
+func (e ErrInvalidHeaderFormat) Error() string {
+	return "invalid header format: " + e.Header + " should be \"KEY:VALUE\""
+}
+
 // Match analyses the HTTP Response. A match means that
 // one of the criteria has been met (through the strategies
 // of MatchAll/MatchOne/NotMatch, and Headers/NotHeaders).
 func (check *Check) Match(resp *HTTPResponse) (bool, error) {
-	// Test status code
+	// Test nils
+	if check == nil {
+		return false, &ErrNilParameter{"check"}
+	}
 	if check.StatusCode == nil {
 		return false, &ErrNilParameter{"check.StatusCode"}
 	}
+	if resp == nil {
+		return false, &ErrNilParameter{"resp"}
+	}
+
+	// Test status code
 	if resp.StatusCode != *check.StatusCode {
 		return false, nil
 	}
@@ -144,16 +164,6 @@ func (e ErrCheckInvalidField) Error() string {
 	return "missing or empty " + e.Field + " in " + e.Check + " plugin checks."
 }
 
-// ErrInvalidHeaderFormat is an error meaning an header
-// format is invalid.
-type ErrInvalidHeaderFormat struct {
-	Header string
-}
-
-func (e ErrInvalidHeaderFormat) Error() string {
-	return "invalid header format: " + e.Header + " should be \"KEY:VALUE\""
-}
-
 // ErrInvalidPathSignaturesFile is an error meaning
 // that the path to the signatures file is invalid.
 var ErrInvalidPathSignaturesFile = errors.New("path of signatures file is not valid")
@@ -162,31 +172,38 @@ var ErrInvalidPathSignaturesFile = errors.New("path of signatures file is not va
 // endpoints are set at same time.
 var ErrBothEndpointSet = errors.New("URI and URIs can't be set at the same time in plugin checks")
 
-// ParseSignatures parses and returns the signatures
-// from the path of the file containg those.
-func ParseSignatures(path string) (*Signatures, error) {
+func ReaderFromFile(path string) (io.Reader, error) {
 	// Check signature file exists
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return nil, ErrInvalidPathSignaturesFile
 	}
+
+	// Open file
 	signFile, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
-	defer signFile.Close()
 
+	return signFile, nil
+}
+
+// ParseSignatures parses and returns the signatures
+// from the path of the file containg those.
+func ParseSignatures(r io.Reader) (*Signatures, error) {
 	// Read its content
-	signData, err := io.ReadAll(signFile)
+	signData, err := io.ReadAll(r)
 	if err != nil {
 		return nil, err
 	}
+
+	// Build signatures
 	var sign Signatures
 	err = yaml.Unmarshal(signData, &sign)
 	if err != nil {
 		return nil, err
 	}
 
-	// Build signatures
+	// Validate plugins
 	for _, plugin := range sign.Plugins {
 		// Ensure the plugin's checks content are valid
 		for _, check := range plugin.Checks {

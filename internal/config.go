@@ -4,11 +4,10 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"io"
 	"net/url"
-	"os"
+	"strconv"
 	"time"
-
-	"github.com/urfave/cli/v2"
 )
 
 // Config wraps all the parameters to configure
@@ -40,14 +39,14 @@ var ErrBothURLAndURLList = errors.New("urls provided either with the flag --url-
 // ErrInvalidURLs is an error meaning url(s) is(are)
 // invalid.
 type ErrInvalidURLs struct {
-	urls []string
+	URLs []string
 }
 
 func (e ErrInvalidURLs) Error() string {
-	s := "invalid urls: "
-	l := len(e.urls)
+	s := "invalid URLs: "
+	l := len(e.URLs)
 	for i := 0; i < l; i++ {
-		s += e.urls[i]
+		s += e.URLs[i]
 		if i != l-1 {
 			s += ", "
 		}
@@ -58,14 +57,14 @@ func (e ErrInvalidURLs) Error() string {
 // ErrInvalidExport is an error meaning export(s) is(are)
 // not matching allowed exports.
 type ErrInvalidExport struct {
-	exports []string
+	Exports []string
 }
 
 func (e ErrInvalidExport) Error() string {
 	s := "invalid exports: "
-	l := len(e.exports)
+	l := len(e.Exports)
 	for i := 0; i < l; i++ {
-		s += e.exports[i]
+		s += e.Exports[i]
 		if i != l-1 {
 			s += ", "
 		}
@@ -73,84 +72,24 @@ func (e ErrInvalidExport) Error() string {
 	return s
 }
 
-// ErrNegativeField is an error meaning a field has a
-// stricly negative value.
-type ErrNegativeField struct {
-	Field string
+// ErrFailedOperationOnField is an error meaning
+// a field has failed to pass an operation on a value.
+type ErrFailedOperationOnField struct {
+	Field     string
+	Operation string
+	Value     int64
 }
 
-func (e ErrNegativeField) Error() string {
-	return e.Field + " cannot be negative"
+func (e ErrFailedOperationOnField) Error() string {
+	return e.Field + " failed to be " + e.Operation + " (specified " + strconv.FormatInt(e.Value, 10) + ")"
 }
 
 // BuildConfig builds the core.Config from provided values.
 // Those are supposed to come from the "scan" command flags.
-func BuildConfig(insecure bool, export, pluginFilters []string, exportFilename, maxSeverity, severityFilter, urlFile string, threads, timeout int64, args cli.Args) (*Config, error) {
-	nArg := args.Len()
+func BuildConfig(insecure bool, export, pluginFilters []string, exportFilename, maxSeverity, severityFilter string, urlFile io.Reader, threads, timeout int64, args []string) (*Config, error) {
+	nArg := len(args)
 
-	// Check url conditions
-	var urls []string
-	var invalidUrls []string
-	if urlFile == "" {
-		if nArg == 0 {
-			// There are no args (urls) to chopchop
-			return nil, ErrNoURL
-		}
-
-		// Check URLs validity
-		for i := 0; i < nArg; i++ {
-			arg := args.Get(i)
-			if !isValidUrl(arg) {
-				invalidUrls = append(invalidUrls, arg)
-				continue
-			}
-			urls = append(urls, arg)
-		}
-	} else {
-		// Check there are not args (urls) and an url-file to chopchop
-		if nArg != 0 {
-			return nil, ErrBothURLAndURLList
-		}
-
-		// Open the file containing urls
-		c, err := os.Open(urlFile)
-		if err != nil {
-			return nil, err
-		}
-
-		// Read content and add if is a valid url
-		scanner := bufio.NewScanner(c)
-		for scanner.Scan() {
-			url := scanner.Text()
-			if !isValidUrl(url) {
-				invalidUrls = append(invalidUrls, url)
-				continue
-			}
-			urls = append(urls, url)
-		}
-
-		if err := c.Close(); err != nil {
-			return nil, err
-		}
-
-		// Ensure there were no issues while scanning
-		if err := scanner.Err(); err != nil {
-			return nil, err
-		}
-	}
-	if len(invalidUrls) != 0 {
-		return nil, &ErrInvalidURLs{invalidUrls}
-	}
-
-	// Check severities
-	sevFilter, err := StringToSeverity(severityFilter)
-	if err != nil {
-		return nil, err
-	}
-	maxSev, err := StringToSeverity(maxSeverity)
-	if err != nil {
-		return nil, err
-	}
+	// Check insecure       => always fine
 
 	// Check export
 	var invalidExport []string
@@ -169,18 +108,69 @@ func BuildConfig(insecure bool, export, pluginFilters []string, exportFilename, 
 		exportFilename = fmt.Sprintf("gochopchop_%s", now)
 	}
 
-	// Check timeout
-	if timeout < 0 {
-		return nil, &ErrNegativeField{"timeout"}
+	// Check severities
+	sevFilter, err := StringToSeverity(severityFilter)
+	if err != nil {
+		return nil, err
+	}
+	maxSev, err := StringToSeverity(maxSeverity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check url conditions
+	var urls []string
+	var invalidUrls []string
+	if urlFile == nil {
+		if nArg == 0 {
+			// There are no args (urls) to chopchop
+			return nil, ErrNoURL
+		}
+
+		// Check URLs validity
+		for i := 0; i < nArg; i++ {
+			arg := args[i]
+			if !isValidUrl(arg) {
+				invalidUrls = append(invalidUrls, arg)
+				continue
+			}
+			urls = append(urls, arg)
+		}
+	} else {
+		// Check there are not args (urls) and an url-file to chopchop
+		if nArg != 0 {
+			return nil, ErrBothURLAndURLList
+		}
+
+		// Read content and add if is a valid url
+		scanner := bufio.NewScanner(urlFile)
+		for scanner.Scan() {
+			url := scanner.Text()
+			if !isValidUrl(url) {
+				invalidUrls = append(invalidUrls, url)
+				continue
+			}
+			urls = append(urls, url)
+		}
+
+		// Ensure there were no issues while scanning
+		if err := scanner.Err(); err != nil {
+			return nil, err
+		}
+	}
+	if len(invalidUrls) != 0 {
+		return nil, &ErrInvalidURLs{invalidUrls}
 	}
 
 	// Check threads
-	if threads < 0 {
-		return nil, &ErrNegativeField{"threads"}
+	if threads <= 0 {
+		return nil, &ErrFailedOperationOnField{"threads", "<=0", threads}
 	}
 
-	// Check insecure       => always fine
-	// Check plugin-filters => always fine ?
+	// Check timeout
+	if timeout < 0 {
+		return nil, &ErrFailedOperationOnField{"timeout", "<0", timeout}
+	}
 
 	// Build config
 	config := &Config{

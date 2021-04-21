@@ -105,7 +105,7 @@ func main() {
 					&cli.StringSliceFlag{
 						Name:    "export",
 						Aliases: []string{"e"},
-						Usage:   "export of the output (i.e stdout, csv, json)",
+						Usage:   "export of the output (" + internal.ExportersList() + ")",
 						Value:   &cli.StringSlice{},
 					},
 					&cli.StringFlag{
@@ -204,7 +204,16 @@ func cmdScan(c *cli.Context) error {
 	threads := c.Int64("threads")
 	args := c.Args()
 
-	config, err := internal.BuildConfig(insecure, exprt, pluginFilters, exportFilename, maxSeverity, severityFilter, urlFile, threads, timeout, args)
+	var urlFileReader io.Reader
+	if urlFile != "" {
+		var err error
+		urlFileReader, err = os.Open(urlFile)
+		if err != nil {
+			return err
+		}
+	}
+
+	config, err := internal.BuildConfig(insecure, exprt, pluginFilters, exportFilename, maxSeverity, severityFilter, urlFileReader, threads, timeout, args.Slice())
 	if err != nil {
 		return err
 	}
@@ -212,13 +221,23 @@ func cmdScan(c *cli.Context) error {
 	// Parse signatures
 	signatures := c.String("signatures")
 
-	sign, err := internal.ParseSignatures(signatures)
+	signFile, err := internal.ReaderFromFile(signatures)
+	if err != nil {
+		return err
+	}
+	sign, err := internal.ParseSignatures(signFile)
+	if err != nil {
+		return err
+	}
+
+	// Build the CoreScanner
+	scanner, err := internal.NewCoreScanner(config, sign)
 	if err != nil {
 		return err
 	}
 
 	// Start the scan
-	results, dur, err := internal.Scan(config, sign, c.Done())
+	results, dur, err := internal.Scan(scanner, config.Urls, c.Done())
 	if err != nil {
 		return err
 	}
@@ -243,7 +262,11 @@ func cmdPlugins(c *cli.Context) error {
 	// Parse signatures
 	signatures := c.String("signatures")
 
-	sign, err := internal.ParseSignatures(signatures)
+	signFile, err := internal.ReaderFromFile(signatures)
+	if err != nil {
+		return err
+	}
+	sign, err := internal.ParseSignatures(signFile)
 	if err != nil {
 		return err
 	}
