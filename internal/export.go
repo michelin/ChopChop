@@ -125,7 +125,10 @@ func ExportResults(results []*Result, config *Config, filename string) error {
 			}
 			defer f.Close()
 
-			d.ExporterFunc(results, f)
+			err = d.ExporterFunc(results, f)
+			if err != nil {
+				return err
+			}
 		}
 	}
 

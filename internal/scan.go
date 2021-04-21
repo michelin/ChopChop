@@ -124,10 +124,10 @@ func (scanner *CoreScanner) Run(urls []string, doneChan <-chan struct{}) ([]*Res
 							case <-doneChan:
 								return
 							default:
-								match, err := check.Match(resp)
-								if err != nil {
-									// TODO do something.
-								}
+								match, _ := check.Match(resp)
+								// if err != nil {
+								// 	// TODO do something.
+								// }
 								if match {
 									scanner.SafeResults.Add(&Result{
 										URL:         job.url,
