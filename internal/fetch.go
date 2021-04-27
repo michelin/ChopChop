@@ -29,7 +29,7 @@ type NetFetcher struct {
 }
 
 // NewNetFetcher builds and returns a new fetcher.
-func NewNetFetcher(insecure bool, timeout int64) NetFetcher {
+func NewNetFetcher(insecure bool, timeout int) NetFetcher {
 	var tlsCfg *tls.Config
 	if insecure {
 		tlsCfg = &tls.Config{InsecureSkipVerify: true}
@@ -47,7 +47,7 @@ func NewNetFetcher(insecure bool, timeout int64) NetFetcher {
 
 // NewNoRedirectFetcher builds and returns a new
 // fetcher that does not follow redirection.
-func NewNoRedirectNetFetcher(insecure bool, timeout int64) NetFetcher {
+func NewNoRedirectNetFetcher(insecure bool, timeout int) NetFetcher {
 	var tlsCfg *tls.Config
 	if insecure {
 		tlsCfg = &tls.Config{InsecureSkipVerify: true}

@@ -20,13 +20,13 @@ type Config struct {
 	PluginFilter   []string
 	Urls           []string
 	ExportFilename string
-	Goroutines     int64
+	Goroutines     int
 }
 
 // HTTPConfig wraps HTTP configurations parameters.
 type HTTPConfig struct {
 	Insecure bool
-	Timeout  int64
+	Timeout  int
 }
 
 // ErrNoURL is an error meaning no url is provided.
@@ -77,16 +77,16 @@ func (e ErrInvalidExport) Error() string {
 type ErrFailedOperationOnField struct {
 	Field     string
 	Operation string
-	Value     int64
+	Value     int
 }
 
 func (e ErrFailedOperationOnField) Error() string {
-	return e.Field + " failed to be " + e.Operation + " (specified " + strconv.FormatInt(e.Value, 10) + ")"
+	return e.Field + " failed to be " + e.Operation + " (specified " + strconv.Itoa(e.Value) + ")"
 }
 
 // BuildConfig builds the core.Config from provided values.
 // Those are supposed to come from the "scan" command flags.
-func BuildConfig(insecure bool, export, pluginFilters []string, exportFilename, maxSeverity, severityFilter string, urlFile io.Reader, threads, timeout int64, args []string) (*Config, error) {
+func BuildConfig(insecure bool, export, pluginFilters []string, exportFilename, maxSeverity, severityFilter string, urlFile io.Reader, threads, timeout int, args []string) (*Config, error) {
 	nArg := len(args)
 
 	// Check insecure       => always fine

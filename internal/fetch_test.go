@@ -17,7 +17,7 @@ func TestNewFetcher(t *testing.T) {
 
 	var tests = map[string]struct {
 		Insecure        bool
-		Timeout         int64
+		Timeout         int
 		ExpectedFetcher internal.NetFetcher
 	}{
 		"secure": {
@@ -65,7 +65,7 @@ func TestNewNoRedirectNetFetcher(t *testing.T) {
 
 	var tests = map[string]struct {
 		Insecure        bool
-		Timeout         int64
+		Timeout         int
 		ExpectedFetcher internal.NetFetcher
 	}{
 		"secure": {

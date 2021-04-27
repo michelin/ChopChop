@@ -58,7 +58,7 @@ Flags:
 func newFlags(flags []cli.Flag) []cli.Flag {
 	// Build shared flags
 	f := []cli.Flag{
-		&cli.Int64Flag{
+		&cli.IntFlag{
 			Name:  "threads",
 			Usage: "number of threads (goroutines to be exact)",
 			Value: 1,
@@ -141,7 +141,7 @@ func main() {
 						Usage:   "path to signature file",
 						Value:   "chopchop.yml",
 					},
-					&cli.Int64Flag{
+					&cli.IntFlag{
 						Name:    "timeout",
 						Aliases: []string{"t"},
 						Usage:   "timeout (in s) for the HTTP requests",
@@ -166,7 +166,7 @@ func main() {
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 	defer func() {
 		signal.Stop(sigs)
-		cancel()
+		cancel() // Triggers the <-ctx.Done() in the following goroutine
 	}()
 	go func() {
 		select {
@@ -200,8 +200,8 @@ func cmdScan(c *cli.Context) error {
 	maxSeverity := c.String("max-severity")
 	severityFilter := c.String("severity-filter")
 	urlFile := c.String("url-file")
-	timeout := c.Int64("timeout")
-	threads := c.Int64("threads")
+	timeout := c.Int("timeout")
+	threads := c.Int("threads")
 	args := c.Args()
 
 	var urlFileReader io.Reader

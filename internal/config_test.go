@@ -45,8 +45,8 @@ func TestBuildConfig(t *testing.T) {
 		MaxSeverity    string
 		SeverityFilter string
 		URLFile        io.Reader
-		Threads        int64
-		Timeout        int64
+		Threads        int
+		Timeout        int
 		Args           []string
 		ExpectedConfig *internal.Config
 		ExpectedErr    error

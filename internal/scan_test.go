@@ -8,11 +8,11 @@ import (
 	"github.com/michelin/gochopchop/internal"
 )
 
-func TestSafeResultsAdd(t *testing.T) {
+func TestSafeResultsAppend(t *testing.T) {
 	t.Parallel()
 
 	s := internal.SafeResults{}
-	s.Add(nil)
+	s.Append(nil)
 
 	if !cmp.Equal(s.Res, []*internal.Result{nil}) {
 		t.Error("Failed to properly add a Result in the SafeResults.")
