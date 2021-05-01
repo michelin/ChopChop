@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"os/signal"
+	"sort"
 	"syscall"
 
 	"github.com/jedib0t/go-pretty/table"
@@ -243,7 +244,8 @@ func cmdScan(c *cli.Context) error {
 	}
 	logrus.Info("Scan execution time: ", dur)
 
-	// Export the results
+	// Sort and export the results
+	sort.Stable(results)
 	err = internal.ExportResults(results, config, exportFilename)
 	if err != nil {
 		return err

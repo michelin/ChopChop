@@ -1,33 +1,21 @@
 package internal_test
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/michelin/gochopchop/internal"
 )
 
-func TestSafeResultsAppend(t *testing.T) {
-	t.Parallel()
-
-	s := internal.SafeResults{}
-	s.Append(nil)
-
-	if !cmp.Equal(s.Res, []*internal.Result{nil}) {
-		t.Error("Failed to properly add a Result in the SafeResults.")
-	}
-}
-
 // FakeScanner mocks an internal.Scanner.
 type FakeScanner struct{}
 
-func (f *FakeScanner) Run(urls []string, doneChan <-chan struct{}) ([]*internal.Result, error) {
-	var res []*internal.Result
+func (f *FakeScanner) Run(urls []string, doneChan <-chan struct{}) ([]internal.Result, error) {
+	var res []internal.Result
 	for _, url := range urls {
 		switch url {
 		case "https://www.michelin.com/":
-			res = append(res, &internal.Result{
+			res = append(res, internal.Result{
 				URL:         url,
 				Endpoint:    "/",
 				Name:        "michelin",
@@ -50,14 +38,14 @@ func TestScan(t *testing.T) {
 		Scanner             internal.Scanner
 		URLs                []string
 		DoneChan            <-chan struct{}
-		ExpectedResultSlice []*internal.Result
+		ExpectedResultSlice []internal.Result
 		ExpectedErr         error
 	}{
 		"success": {
 			Scanner:  &FakeScanner{},
 			URLs:     []string{"https://www.michelin.com/"},
 			DoneChan: nil,
-			ExpectedResultSlice: []*internal.Result{{
+			ExpectedResultSlice: []internal.Result{{
 				URL:         "https://www.michelin.com/",
 				Endpoint:    "/",
 				Name:        "michelin",
@@ -79,7 +67,7 @@ func TestScan(t *testing.T) {
 		t.Run(testname, func(t *testing.T) {
 			resp, _, err := internal.Scan(tt.Scanner, tt.URLs, tt.DoneChan)
 
-			if !reflect.DeepEqual(resp, tt.ExpectedResultSlice) {
+			if !cmp.Equal(resp, tt.ExpectedResultSlice) {
 				t.Errorf("Failed to get expected []*Result: got \"%v\" instead of \"%v\".", resp, tt.ExpectedResultSlice)
 			}
 			checkErr(err, tt.ExpectedErr, t)

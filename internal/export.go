@@ -11,7 +11,7 @@ import (
 
 // ExporterFunc is a func type exporting the results
 // to a writer.
-type ExporterFunc func([]*Result, io.WriteCloser) error
+type ExporterFunc func([]Result, io.WriteCloser) error
 
 var exportersMap = map[string]struct {
 	ExporterFunc   ExporterFunc
@@ -30,7 +30,13 @@ var exportersMap = map[string]struct {
 		},
 	},
 	"stdout": {
-		ExporterFunc: ExportTable,
+		ExporterFunc: ExportTableColor,
+		WriterProvider: func(filename string) (io.WriteCloser, error) {
+			return os.Stdout, nil
+		},
+	},
+	"stdout-no-color": {
+		ExporterFunc: ExportTableNoColor,
 		WriterProvider: func(filename string) (io.WriteCloser, error) {
 			return os.Stdout, nil
 		},
@@ -66,7 +72,7 @@ func (e ErrMaxSeverityReached) Error() string {
 	return "max severity (" + maxStr + ") reached (" + sevStr + ")"
 }
 
-func CheckSeverities(results []*Result, max Severity) error {
+func CheckSeverities(results []Result, max Severity) error {
 	_, err := max.String()
 	if err != nil {
 		return err
@@ -97,7 +103,7 @@ func (e ErrUnsupportedExporter) Error() string {
 
 // ExportResults exports the results given a config, to a filename
 // if the exporter needs it.
-func ExportResults(results []*Result, config *Config, filename string) error {
+func ExportResults(results []Result, config *Config, filename string) error {
 	// Check parameters
 	if config == nil {
 		return &ErrNilParameter{"config"}
@@ -135,7 +141,7 @@ func ExportResults(results []*Result, config *Config, filename string) error {
 	return nil
 }
 
-func ExportJSON(results []*Result, w io.WriteCloser) error {
+func ExportJSON(results []Result, w io.WriteCloser) error {
 	// Marshal results in JSON
 	jsonbytes, err := json.Marshal(results)
 	if err != nil {
@@ -150,7 +156,7 @@ func ExportJSON(results []*Result, w io.WriteCloser) error {
 	return nil
 }
 
-func ExportCSV(results []*Result, w io.WriteCloser) error {
+func ExportCSV(results []Result, w io.WriteCloser) error {
 	// Write headers
 	_, err := w.Write([]byte("url,endpoint,severity,checkName,remediation\n"))
 	if err != nil {
@@ -177,7 +183,15 @@ const (
 	colorCyan   = "\033[36m"
 )
 
-func ExportTable(results []*Result, w io.WriteCloser) error {
+func ExportTableColor(results []Result, w io.WriteCloser) error {
+	return exportTable(results, w, true)
+}
+
+func ExportTableNoColor(results []Result, w io.WriteCloser) error {
+	return exportTable(results, w, false)
+}
+
+func exportTable(results []Result, w io.WriteCloser, color bool) error {
 	t := table.NewWriter()
 	t.SetOutputMirror(w)
 	t.AppendHeader(table.Row{"URL", "Endpoint", "Severity", "Plugin", "Remediation"})
@@ -192,15 +206,14 @@ func ExportTable(results []*Result, w io.WriteCloser) error {
 		var severity string
 		switch sev {
 		case High:
-			severity += colorRed + "High"
+			severity = colorify(colorRed, "High", color)
 		case Medium:
-			severity += colorYellow + "Medium"
+			severity = colorify(colorYellow, "Medium", color)
 		case Low:
-			severity += colorGreen + "Low"
+			severity = colorify(colorGreen, "Low", color)
 		case Informational:
-			severity += colorCyan + "Informational"
+			severity = colorify(colorCyan, "Informational", color)
 		}
-		severity += colorReset
 
 		// Append the content row
 		t.AppendRow([]interface{}{
@@ -217,4 +230,15 @@ func ExportTable(results []*Result, w io.WriteCloser) error {
 	t.Render()
 
 	return nil
+}
+
+func colorify(color string, str string, colorify bool) (s string) {
+	if colorify {
+		s += color
+	}
+	s += str
+	if colorify {
+		s += colorReset
+	}
+	return
 }

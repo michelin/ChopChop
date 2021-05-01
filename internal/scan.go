@@ -7,29 +7,13 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// SafeResults stores a Result slice. It should
-// support concurrency.
-type SafeResults struct {
-	mux sync.Mutex
-	Res []*Result
-}
-
-// Append adds a Result to the existing ones. Does not
-// check for duplications.
-func (s *SafeResults) Append(res *Result) {
-	s.mux.Lock()
-	defer s.mux.Unlock()
-
-	s.Res = append(s.Res, res)
-}
-
 // Scanner defines the method a scanner must implement.
 type Scanner interface {
-	Run(urls []string, doneChan <-chan struct{}) ([]*Result, error)
+	Run(urls []string, doneChan <-chan struct{}) ([]Result, error)
 }
 
 // Scan is the entrypoint of the scan process.
-func Scan(scanner Scanner, urls []string, doneChan <-chan struct{}) ([]*Result, time.Duration, error) {
+func Scan(scanner Scanner, urls []string, doneChan <-chan struct{}) (ResultSlice, time.Duration, error) {
 	begin := time.Now()
 	res, err := scanner.Run(urls, doneChan)
 	if err != nil {
@@ -66,7 +50,7 @@ func NewCoreScanner(config *Config, signatures *Signatures) (*CoreScanner, error
 		Fetcher:           NewNetFetcher(config.HTTP.Insecure, config.HTTP.Timeout),
 		NoRedirectFetcher: NewNoRedirectNetFetcher(config.HTTP.Insecure, config.HTTP.Timeout),
 		SafeResults: &SafeResults{
-			Res: []*Result{},
+			Res: []Result{},
 			mux: sync.Mutex{},
 		},
 		Goroutines: config.Goroutines,
@@ -81,7 +65,7 @@ type workerJob struct {
 
 // RunScan scans the urls until job is completed or
 // a done signal is sent throuh the chan.
-func (scanner *CoreScanner) Run(urls []string, doneChan <-chan struct{}) ([]*Result, error) {
+func (scanner *CoreScanner) Run(urls []string, doneChan <-chan struct{}) ([]Result, error) {
 	// Split the load in channels to work on concurrently
 	workJobs := splitWork(scanner.Goroutines, urls, scanner.Signatures.Plugins)
 	workJobsChan := channelize(workJobs)
@@ -123,7 +107,7 @@ func (scanner *CoreScanner) Run(urls []string, doneChan <-chan struct{}) ([]*Res
 									return
 								}
 								if match {
-									scanner.SafeResults.Append(&Result{
+									scanner.SafeResults.Append(Result{
 										URL:         job.url,
 										Name:        check.Name,
 										Endpoint:    job.endpoint,

@@ -22,7 +22,7 @@ func TestCheckSeverities(t *testing.T) {
 	t.Parallel()
 
 	var tests = map[string]struct {
-		Results     []*internal.Result
+		Results     []internal.Result
 		MaxSev      internal.Severity
 		ExpectedErr error
 	}{
@@ -32,14 +32,14 @@ func TestCheckSeverities(t *testing.T) {
 			ExpectedErr: &internal.ErrUnsupportedSeverity{-1},
 		},
 		"invalid-severity": {
-			Results: []*internal.Result{
+			Results: []internal.Result{
 				{Severity: "invalid-severity"},
 			},
 			MaxSev:      internal.Informational,
 			ExpectedErr: &internal.ErrInvalidSeverity{"invalid-severity"},
 		},
 		"reached-severity": {
-			Results: []*internal.Result{
+			Results: []internal.Result{
 				{Severity: "High"},
 			},
 			MaxSev:      internal.Informational,
@@ -108,7 +108,7 @@ func TestExportJSON(t *testing.T) {
 	t.Parallel()
 
 	var tests = map[string]struct {
-		Results        []*internal.Result
+		Results        []internal.Result
 		Writer         WriteDataCloser
 		ExpectedOutput []byte
 		ExpectedErr    error
@@ -120,7 +120,7 @@ func TestExportJSON(t *testing.T) {
 			ExpectedErr:    nil,
 		},
 		"empty-results": {
-			Results:        []*internal.Result{},
+			Results:        []internal.Result{},
 			Writer:         &FakeWriteCloser{},
 			ExpectedOutput: []byte("[]"),
 			ExpectedErr:    nil,
@@ -132,7 +132,7 @@ func TestExportJSON(t *testing.T) {
 			ExpectedErr:    errFake,
 		},
 		"valid": {
-			Results: []*internal.Result{
+			Results: []internal.Result{
 				{
 					URL:         "https://www.michelin.com/",
 					Endpoint:    "/",
@@ -163,7 +163,7 @@ func TestExportCSV(t *testing.T) {
 	t.Parallel()
 
 	var tests = map[string]struct {
-		Results        []*internal.Result
+		Results        []internal.Result
 		Writer         WriteDataCloser
 		ExpectedOutput []byte
 		ExpectedErr    error
@@ -175,7 +175,7 @@ func TestExportCSV(t *testing.T) {
 			ExpectedErr:    nil,
 		},
 		"empty-results": {
-			Results:        []*internal.Result{},
+			Results:        []internal.Result{},
 			Writer:         &FakeWriteCloser{},
 			ExpectedOutput: []byte("url,endpoint,severity,checkName,remediation\n"),
 			ExpectedErr:    nil,
@@ -187,7 +187,7 @@ func TestExportCSV(t *testing.T) {
 			ExpectedErr:    errFake,
 		},
 		"valid": {
-			Results: []*internal.Result{
+			Results: []internal.Result{
 				{
 					URL:         "https://www.michelin.com/",
 					Endpoint:    "/",
@@ -216,17 +216,17 @@ https://www.michelin.com/,/,Low,EXAMPLE,Remediate
 	}
 }
 
-func TestExportTable(t *testing.T) {
+func TestExportTableColor(t *testing.T) {
 	t.Parallel()
 
 	var tests = map[string]struct {
-		Results        []*internal.Result
+		Results        []internal.Result
 		Writer         WriteDataCloser
 		ExpectedOutput []byte
 		ExpectedErr    error
 	}{
 		"invalid-severity": {
-			Results: []*internal.Result{
+			Results: []internal.Result{
 				{
 					Severity: "invalid-severity",
 				},
@@ -236,7 +236,7 @@ func TestExportTable(t *testing.T) {
 			ExpectedErr:    &internal.ErrInvalidSeverity{"invalid-severity"},
 		},
 		"full-table": {
-			Results: []*internal.Result{
+			Results: []internal.Result{
 				{Severity: "High"},
 				{Severity: "Medium"},
 				{Severity: "Low"},
@@ -250,7 +250,7 @@ func TestExportTable(t *testing.T) {
 
 	for testname, tt := range tests {
 		t.Run(testname, func(t *testing.T) {
-			err := internal.ExportTable(tt.Results, tt.Writer)
+			err := internal.ExportTableColor(tt.Results, tt.Writer)
 
 			if !reflect.DeepEqual(tt.Writer.Data(), tt.ExpectedOutput) {
 				t.Errorf("Failed to get expected output bytes: got \"%s\" instead of \"%s\".", tt.Writer.Data(), tt.ExpectedOutput)
