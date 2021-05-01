@@ -1,2 +1,7 @@
+# IDE
 /.idea/**
 /.vscode/**
+
+# RobotFramework
+**/__pycache__/**
+/robot/out/**

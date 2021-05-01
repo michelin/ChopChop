@@ -11,7 +11,7 @@ jobs:
         with:
           access_token: ${{ github.token }}
 
-  tests:
+  unit-tests:
     strategy:
       matrix:
         go-version: [1.x, 1.16.x]
@@ -92,10 +92,33 @@ jobs:
         with:
           file_or_dir: chopchop.yml
           config_file: .github/.yamllint.yml
+  
+  functional-tests:
+    runs-on: ubuntu-latest
+    needs: [unit-tests, chopchop-endpoint, go-lint, yaml-lint]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-go@v2
+      with:
+        go-version: 1.16.x
+
+    - name: Install RobotFramework
+      run: pip install robotframework
+
+    - name: Run RobotFramework tests
+      run: |
+        cd robot
+        ./run.sh
+    
+    - name: Upload Robot outputs
+      uses: actions/upload-artifact@v2
+      with:
+        name: robot-output
+        path: robot/out/*
 
   build-and-publish:
     runs-on: ubuntu-latest
-    needs: [tests, chopchop-endpoint, go-lint, yaml-lint]
+    needs: [functional-tests]
     if: ${{ github.event_name == 'push' }}
     steps:
     - name: Install Go
