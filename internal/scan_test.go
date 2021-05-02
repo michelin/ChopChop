@@ -38,14 +38,14 @@ func TestScan(t *testing.T) {
 		Scanner             internal.Scanner
 		URLs                []string
 		DoneChan            <-chan struct{}
-		ExpectedResultSlice []internal.Result
+		ExpectedResultSlice internal.ResultSlice
 		ExpectedErr         error
 	}{
 		"success": {
 			Scanner:  &FakeScanner{},
 			URLs:     []string{"https://www.michelin.com/"},
 			DoneChan: nil,
-			ExpectedResultSlice: []internal.Result{{
+			ExpectedResultSlice: internal.ResultSlice{{
 				URL:         "https://www.michelin.com/",
 				Endpoint:    "/",
 				Name:        "michelin",
@@ -68,7 +68,7 @@ func TestScan(t *testing.T) {
 			resp, _, err := internal.Scan(tt.Scanner, tt.URLs, tt.DoneChan)
 
 			if !cmp.Equal(resp, tt.ExpectedResultSlice) {
-				t.Errorf("Failed to get expected []*Result: got \"%v\" instead of \"%v\".", resp, tt.ExpectedResultSlice)
+				t.Errorf("Failed to get expected ResultSlice: got \"%v\" instead of \"%v\".", resp, tt.ExpectedResultSlice)
 			}
 			checkErr(err, tt.ExpectedErr, t)
 		})
