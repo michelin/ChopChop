@@ -85,7 +85,7 @@ func (scanner *CoreScanner) Run(urls []string, doneChan <-chan struct{}) ([]Resu
 
 				case job := <-wj:
 					// Fetch the HTTP response from url
-					resp, err := scanner.Fetch(job.url, job.plugin.FollowRedirects)
+					resp, err := scanner.Fetch(job.url+job.endpoint, job.plugin.FollowRedirects)
 					if err != nil {
 						logrus.Error(err)
 						break
