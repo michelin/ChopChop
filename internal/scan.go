@@ -60,7 +60,7 @@ func NewCoreScanner(config *Config, signatures *Signatures) (*CoreScanner, error
 type workerJob struct {
 	url      string
 	endpoint string
-	plugin   Plugin
+	plugin   *Plugin
 }
 
 // RunScan scans the urls until job is completed or
@@ -286,14 +286,15 @@ func splitWork(pieces int, urls []string, plugins []Plugin) [][]workerJob {
 	indexInCurrWG := 0    // Index in the current work group
 	lenCurrWg := l_filled // Length of the current work group
 	currWG := &wg[0]      // Place iterator at first work group
+	lp := len(plugins)
 	for _, url := range urls {
-		for _, plugin := range plugins {
-			for _, endp := range plugin.Endpoints {
+		for i := 0; i < lp; i++ {
+			for _, endp := range plugins[i].Endpoints {
 				// Set the work group endpoint
 				(*currWG)[indexInCurrWG] = workerJob{
 					url:      url,
 					endpoint: endp,
-					plugin:   plugin,
+					plugin:   &plugins[i],
 				}
 				indexInCurrWG++
 
