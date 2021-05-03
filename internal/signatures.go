@@ -23,7 +23,6 @@ type Signatures struct {
 // Plugin means an entry to test for during scan.
 type Plugin struct {
 	Endpoints       []string `yaml:"endpoints"`
-	QueryString     string   `yaml:"query_string"`
 	Checks          []Check  `yaml:"checks"`
 	FollowRedirects bool     `yaml:"follow_redirects"`
 }
