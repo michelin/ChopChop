@@ -13,11 +13,8 @@ import (
 // Signatures represents the plugins/rules from the
 // .yaml configuration file. It's the root of a config
 // file.
-//
-// TODO change insecure to bool type
 type Signatures struct {
-	Insecure string   `yaml:"insecure"`
-	Plugins  []Plugin `yaml:"plugins"`
+	Plugins []Plugin `yaml:"plugins"`
 }
 
 // Plugin means an entry to test for during scan.

@@ -1,4 +1,3 @@
-insecure: false
 plugins:
   - endpoints:
       - "/status.shtml"
