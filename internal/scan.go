@@ -25,7 +25,8 @@ func Scan(scanner Scanner, urls []string, doneChan <-chan struct{}) (ResultSlice
 
 // Scanner wraps the Signatures and the fetchers.
 //
-// XXX Two fetchers are needed because we can't use the same http client to follow redirects
+// Two fetchers are needed because we can't use the same
+// http client to follow redirects and not to.
 type CoreScanner struct {
 	Signatures        *Signatures
 	Fetcher           Fetcher
