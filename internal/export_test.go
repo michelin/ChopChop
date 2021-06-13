@@ -103,7 +103,6 @@ func (f *FailingWriteCloser) Data() []byte {
 	return nil
 }
 
-// TODO improve to test for a Marshal error
 func TestExportJSON(t *testing.T) {
 	t.Parallel()
 
