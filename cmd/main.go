@@ -8,7 +8,6 @@ import (
 	"sort"
 	"syscall"
 
-	"github.com/jedib0t/go-pretty/table"
 	"github.com/michelin/gochopchop/internal"
 	"github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
@@ -56,7 +55,7 @@ Flags:
 `
 )
 
-func newFlags(flags []cli.Flag) []cli.Flag {
+func flagsMdw(flags []cli.Flag) []cli.Flag {
 	// Build shared flags
 	f := []cli.Flag{
 		&cli.IntFlag{
@@ -75,6 +74,22 @@ func newFlags(flags []cli.Flag) []cli.Flag {
 	return append(flags, f...)
 }
 
+func cliMdw(f func(*cli.Context) error) func(*cli.Context) error {
+	return func(c *cli.Context) error {
+		// Setup logs
+		logrus.SetFormatter(&logrus.JSONFormatter{})
+		logrus.SetOutput(os.Stdout)
+		lvl, err := logrus.ParseLevel(c.String("verbosity"))
+		if err != nil {
+			return err
+		}
+		logrus.SetLevel(lvl)
+
+		// Call the wrapped cli func
+		return f(c)
+	}
+}
+
 func main() {
 	app := &cli.App{
 		Name:  "ChopChop",
@@ -83,8 +98,8 @@ func main() {
 			{
 				Name:   "plugins",
 				Usage:  "list checks of configuration file",
-				Action: cmdPlugins,
-				Flags: newFlags([]cli.Flag{
+				Action: cliMdw(cmdPlugins),
+				Flags: flagsMdw([]cli.Flag{
 					&cli.StringFlag{
 						Name:    "severity",
 						Aliases: []string{"s"},
@@ -101,8 +116,8 @@ func main() {
 			}, {
 				Name:   "scan",
 				Usage:  "scan endpoints to check if services/files/folders are exposed",
-				Action: cmdScan,
-				Flags: newFlags([]cli.Flag{
+				Action: cliMdw(cmdScan),
+				Flags: flagsMdw([]cli.Flag{
 					&cli.StringSliceFlag{
 						Name:    "export",
 						Aliases: []string{"e"},
@@ -187,12 +202,6 @@ func main() {
 }
 
 func cmdScan(c *cli.Context) error {
-	// Setup verbosity
-	// XXX improve this
-	if err := setupLogs(os.Stdout, c.String("verbosity")); err != nil {
-		return err
-	}
-
 	// Build the config
 	insecure := c.Bool("insecure")
 	exprt := c.StringSlice("export")
@@ -255,12 +264,6 @@ func cmdScan(c *cli.Context) error {
 }
 
 func cmdPlugins(c *cli.Context) error {
-	// Setup verbosity
-	// XXX improve this
-	if err := setupLogs(os.Stdout, c.String("verbosity")); err != nil {
-		return err
-	}
-
 	// Parse signatures
 	signatures := c.String("signatures")
 
@@ -282,32 +285,8 @@ func cmdPlugins(c *cli.Context) error {
 	}
 	sevStr, _ := sev.String()
 
-	// TODO find what it does and do it properly (in internal ?)
-	cpt := 0
-	t := table.NewWriter()
-	t.SetOutputMirror(os.Stdout)
-	t.AppendHeader(table.Row{"URL", "Plugin Name", "Severity", "Description"})
-	for _, plugin := range sign.Plugins {
-		for _, check := range plugin.Checks {
-			if sevStr == check.Severity {
-				t.AppendRow([]interface{}{plugin.Endpoints, check.Name, check.Severity, check.Description})
-				cpt++
-			}
-		}
-	}
-	t.AppendFooter(table.Row{"", "", "Total Checks", cpt})
-	t.Render()
+	// Print signatures in stdout
+	internal.PrintSignatures(sign, sevStr, os.Stdout)
 
-	return nil
-}
-
-func setupLogs(out io.Writer, level string) error {
-	logrus.SetFormatter(&logrus.JSONFormatter{})
-	logrus.SetOutput(out)
-	lvl, err := logrus.ParseLevel(level)
-	if err != nil {
-		return err
-	}
-	logrus.SetLevel(lvl)
 	return nil
 }

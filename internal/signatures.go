@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/jedib0t/go-pretty/table"
 	"gopkg.in/yaml.v2"
 )
 
@@ -228,4 +229,22 @@ func ParseSignatures(r io.Reader) (*Signatures, error) {
 	}
 
 	return &sign, nil
+}
+
+// PrintSignatures prints the sign with the save severity as the sevStr.
+func PrintSignatures(sign *Signatures, sevStr string, w io.Writer) {
+	cpt := 0
+	t := table.NewWriter()
+	t.SetOutputMirror(w)
+	t.AppendHeader(table.Row{"Endpoint", "Check Name", "Severity", "Description"})
+	for _, plugin := range sign.Plugins {
+		for _, check := range plugin.Checks {
+			if sevStr == check.Severity {
+				t.AppendRow([]interface{}{plugin.Endpoints, check.Name, check.Severity, check.Description})
+				cpt++
+			}
+		}
+	}
+	t.AppendFooter(table.Row{"", "", "Total Checks", cpt})
+	t.Render()
 }

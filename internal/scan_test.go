@@ -1,6 +1,7 @@
 package internal_test
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -110,6 +111,29 @@ func TestNewCoreScanner(t *testing.T) {
 			if (scan == nil) != (tt.ExpectedCoreScanner == nil) {
 				t.Errorf("Failed to get a non-nil CoreScanner: got \"%v\" instead of \"%v\".", scan, tt.ExpectedCoreScanner)
 			}
+			checkErr(err, tt.ExpectedErr, t)
+		})
+	}
+}
+
+func TestCodeScannerFetch(t *testing.T) {
+	t.Parallel()
+
+	var tests = map[string]struct {
+		CoreScanner     internal.CoreScanner
+		URL             string
+		FollowRedirects bool
+		ExpectedResp    *internal.HTTPResponse
+		ExpectedErr     error
+	}{}
+
+	for testname, tt := range tests {
+		t.Run(testname, func(t *testing.T) {
+			resp, err := tt.CoreScanner.Fetch(tt.URL, tt.FollowRedirects)
+			if !reflect.DeepEqual(resp, tt.ExpectedResp) {
+				t.Errorf("Failed to get expected HTTPResponse: got \"%v\" instead of \"%v\".", resp, tt.ExpectedResp)
+			}
+
 			checkErr(err, tt.ExpectedErr, t)
 		})
 	}

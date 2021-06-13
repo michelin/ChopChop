@@ -341,3 +341,113 @@ plugins:
 		})
 	}
 }
+
+type WriteData interface {
+	io.Writer
+	Data() []byte
+}
+
+type FakeWriter struct {
+	data []byte
+}
+
+func (f *FakeWriter) Write(data []byte) (int, error) {
+	f.data = append(f.data, data...)
+	return len(data), nil
+}
+
+func (f *FakeWriter) Data() []byte {
+	return f.data
+}
+
+func NewFakeWriter(data string) *FakeWriter {
+	return &FakeWriter{[]byte(data)}
+}
+
+var _ = (io.Writer)(&FakeWriter{})
+var _ = (WriteData)(&FakeWriter{})
+
+func TestPrintSignatures(t *testing.T) {
+	t.Parallel()
+
+	var tests = map[string]struct {
+		Writer         WriteData
+		Sign           *internal.Signatures
+		Sev            string
+		ExpectedOutput []byte
+	}{
+		"empty-sign": {
+			Writer: NewFakeWriter(""),
+			Sign:   &internal.Signatures{},
+			Sev:    "",
+			ExpectedOutput: []byte(`+----------+------------+--------------+-------------+
+| ENDPOINT | CHECK NAME |     SEVERITY | DESCRIPTION |
++----------+------------+--------------+-------------+
++----------+------------+--------------+-------------+
+|          |            | TOTAL CHECKS |           0 |
++----------+------------+--------------+-------------+
+`),
+		},
+		"sign-no-matching-severity": {
+			Writer: NewFakeWriter(""),
+			Sign: &internal.Signatures{
+				Plugins: []internal.Plugin{
+					{
+						Endpoints: []string{"/endpoint1", "/endpoint2"},
+						Checks: []internal.Check{
+							{
+								Name:     "check-1",
+								Severity: "known-severity",
+							},
+						},
+						FollowRedirects: false,
+					},
+				},
+			},
+			Sev: "unknown-severity",
+			ExpectedOutput: []byte(`+----------+------------+--------------+-------------+
+| ENDPOINT | CHECK NAME |     SEVERITY | DESCRIPTION |
++----------+------------+--------------+-------------+
++----------+------------+--------------+-------------+
+|          |            | TOTAL CHECKS |           0 |
++----------+------------+--------------+-------------+
+`),
+		},
+		"sign-matching-severity": {
+			Writer: NewFakeWriter(""),
+			Sign: &internal.Signatures{
+				Plugins: []internal.Plugin{
+					{
+						Endpoints: []string{"/endpoint1", "/endpoint2"},
+						Checks: []internal.Check{
+							{
+								Name:     "check-1",
+								Severity: "known-severity",
+							},
+						},
+						FollowRedirects: false,
+					},
+				},
+			},
+			Sev: "known-severity",
+			ExpectedOutput: []byte(`+-------------------------+------------+----------------+-------------+
+| ENDPOINT                | CHECK NAME | SEVERITY       | DESCRIPTION |
++-------------------------+------------+----------------+-------------+
+| [/endpoint1 /endpoint2] | check-1    | known-severity |             |
++-------------------------+------------+----------------+-------------+
+|                         |            | TOTAL CHECKS   | 1           |
++-------------------------+------------+----------------+-------------+
+`),
+		},
+	}
+
+	for testname, tt := range tests {
+		t.Run(testname, func(t *testing.T) {
+			internal.PrintSignatures(tt.Sign, tt.Sev, tt.Writer)
+
+			if !reflect.DeepEqual(tt.Writer.Data(), tt.ExpectedOutput) {
+				t.Errorf("Failed to get expected output bytes: got \"%v\" instead of \"%v\".", tt.Writer.Data(), tt.ExpectedOutput)
+			}
+		})
+	}
+}
