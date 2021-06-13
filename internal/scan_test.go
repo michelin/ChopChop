@@ -116,7 +116,7 @@ func TestNewCoreScanner(t *testing.T) {
 	}
 }
 
-func TestCodeScannerFetch(t *testing.T) {
+func TestCoreScannerFetch(t *testing.T) {
 	t.Parallel()
 
 	var tests = map[string]struct {
@@ -125,11 +125,45 @@ func TestCodeScannerFetch(t *testing.T) {
 		FollowRedirects bool
 		ExpectedResp    *internal.HTTPResponse
 		ExpectedErr     error
-	}{}
+	}{
+		"no-redirect": {
+			CoreScanner: internal.CoreScanner{
+				NoRedirectFetcher: FakeFetcher{},
+			},
+			URL:             "https://www.michelin.com/",
+			FollowRedirects: false,
+			ExpectedResp:    michelinHTTPResponse,
+			ExpectedErr:     nil,
+		},
+		"nil-no-redirect": {
+			CoreScanner:     internal.CoreScanner{},
+			URL:             "https://www.michelin.com/",
+			FollowRedirects: false,
+			ExpectedResp:    nil,
+			ExpectedErr:     &internal.ErrNilFetcher{"NoRedirectFetcher"},
+		},
+		"redirect": {
+			CoreScanner: internal.CoreScanner{
+				Fetcher: FakeFetcher{},
+			},
+			URL:             "https://www.michelin.com/",
+			FollowRedirects: true,
+			ExpectedResp:    michelinHTTPResponse,
+			ExpectedErr:     nil,
+		},
+		"nil-redirect": {
+			CoreScanner:     internal.CoreScanner{},
+			URL:             "https://www.michelin.com/",
+			FollowRedirects: true,
+			ExpectedResp:    nil,
+			ExpectedErr:     &internal.ErrNilFetcher{"Fetcher"},
+		},
+	}
 
 	for testname, tt := range tests {
 		t.Run(testname, func(t *testing.T) {
 			resp, err := tt.CoreScanner.Fetch(tt.URL, tt.FollowRedirects)
+
 			if !reflect.DeepEqual(resp, tt.ExpectedResp) {
 				t.Errorf("Failed to get expected HTTPResponse: got \"%v\" instead of \"%v\".", resp, tt.ExpectedResp)
 			}

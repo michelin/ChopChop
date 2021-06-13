@@ -132,11 +132,30 @@ func (scanner *CoreScanner) Run(urls []string, doneChan <-chan struct{}) ([]Resu
 	return scanner.SafeResults.Res, nil
 }
 
+// ErrNilFetcher is an error meaning a CoreScanner fetcher
+// is nil.
+type ErrNilFetcher struct {
+	FetcherName string
+}
+
+func (e ErrNilFetcher) Error() string {
+	return e.FetcherName + " is nil"
+}
+
 // Fetch fetches content from an URL from its fetchers
 // with or without redirection.
 func (s CoreScanner) Fetch(url string, followRedirects bool) (*HTTPResponse, error) {
+	// Redirect
 	if followRedirects {
+		if s.Fetcher == nil {
+			return nil, &ErrNilFetcher{"Fetcher"}
+		}
 		return Fetch(s.Fetcher, url)
+	}
+
+	// No-redirect
+	if s.NoRedirectFetcher == nil {
+		return nil, &ErrNilFetcher{"NoRedirectFetcher"}
 	}
 	return Fetch(s.NoRedirectFetcher, url)
 }

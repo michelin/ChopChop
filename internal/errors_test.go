@@ -105,6 +105,14 @@ func checkErr(err, expErr error, t *testing.T) {
 			t.Error("Failed to get expected ErrFailedOperationOnField.Field: got \"" + castedErr.Field + "\" instead of \"" + castedExpErr.Field + "\".")
 		}
 
+	case *internal.ErrNilFetcher:
+		castedErr := err.(*internal.ErrNilFetcher)
+		castedExpErr := expErr.(*internal.ErrNilFetcher)
+
+		if castedErr.FetcherName != castedExpErr.FetcherName {
+			t.Error("Failed to get expected ErrNilFetcher.Name: got \"" + castedErr.FetcherName + "\" instead of \"" + castedExpErr.FetcherName + "\".")
+		}
+
 	case nil, *yaml.TypeError:
 		// It's fine there
 	default:
