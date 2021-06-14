@@ -101,6 +101,8 @@ The Golang rewrite took place a couple of months ago but there's so much to do, 
 [ ] Improve caching (Docker build & CI)
 [ ] Implement a request gateway to avoid brute-forcing websites
 [ ] Re-implement `query_string` for the HTTP GET method
+[ ] Improve "severity reached" cases (currently ChopChop crashes if matches a plugin)
+[ ] Fix default status_code (200 if not specified)
 
 ## Testing
 
