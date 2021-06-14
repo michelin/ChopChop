@@ -94,15 +94,15 @@ docker run -v $(pwd):/app gochopchop scan -c /app/chopchop.yml https://example.c
 ## What's next
 
 The Golang rewrite took place a couple of months ago but there's so much to do, still. Here are some features we are planning to integrate :
-[ ] Improve logging
-[ ] HTTP & SOCKS5 proxies
-[ ] Plugin method (GET, POST, ...)
-[ ] Plugin Cookie
-[ ] Improve caching (Docker build & CI)
-[ ] Implement a request gateway to avoid brute-forcing websites
-[ ] Re-implement `query_string` for the HTTP GET method
-[ ] Improve "severity reached" cases (currently ChopChop crashes if matches a plugin)
-[ ] Fix default status_code (200 if not specified)
+ - [ ] Improve logging
+ - [ ] HTTP & SOCKS5 proxies
+ - [ ] Plugin method (GET, POST, ...)
+ - [ ] Plugin Cookie
+ - [ ] Improve caching (Docker build & CI)
+ - [ ] Implement a request gateway to avoid brute-forcing websites
+ - [ ] Re-implement `query_string` for the HTTP GET method
+ - [ ] Improve "severity reached" cases (currently ChopChop crashes if matches a plugin)
+ - [ ] Fix default status_code (200 if not specified)
 
 ## Testing
 
