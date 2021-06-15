@@ -147,55 +147,49 @@ Note: Redirectors like `>` for post processing can be used.
 - Ability to scan and disable SSL verification
 
 ```bash
-$ ./gochopchop scan https://foobar.com --insecure
+./gochopchop scan --insecure https://foobar.com
 ```
 
 - Ability to scan with a custom configuration file (including custom plugins)
 
 ```bash
-$ ./gochopchop scan https://foobar.com --insecure --signature test_config.yml
-```
-
-- Ability to list all the plugins or by severity : `plugins` or  `plugins --severity High`
-
-```bash
-$ ./gochopchop plugins --severity High
+./gochopchop scan --insecure --signature test_config.yml https://foobar.com
 ```
 
 - Ability to specify number of concurrent threads (in Go those are goroutines): `--threads 4` for 4 workers
 
 ```bash
-$ ./gochopchop plugins --threads 4
+./gochopchop scan --threads 4 https://foobar.com
 ```
 
-- Ability to specify specific signatures to be checked 
+- Ability to specify specific signatures to be checked, with a debug log level
 
 ```bash
-./gochopchop scan https://foobar.com --timeout 1 --verbosity --export=csv --export=json --export-filename boo --plugin-filters=Git,Zimbra,Jenkins
-```
-
-- Ability to list all the plugins
-
-```bash
-$ ./gochopchop plugins
-```
-
-- List High severity plugins
-
-```bash
-$ ./gochopchop plugins --severity High
+./gochopchop scan --timeout=1 --verbosity=debug --export=csv --export=json --export-filename=boo --plugin-filters=Git,Zimbra,Jenkins https://foobar.com
 ```
 
 - Set a list or URLs located in a file
 
 ```bash
-$ ./gochopchop scan --url-file url_file.txt
+./gochopchop scan --url-file url_file.txt
 ```
 
 - Export GoChopChop results in CSV and JSON format
 
 ```bash
-$ ./gochopchop scan https://foobar.com  --export=csv --export=json --export-filename results
+./gochopchop scan https://foobar.com  --export csv --export json --export-filename results
+```
+
+- Ability to list all the plugins
+
+```bash
+./gochopchop plugins
+```
+
+- Ability to list all the plugins or by severity : `plugins` or  `plugins --severity High`
+
+```bash
+./gochopchop plugins --severity High
 ```
 
 ## Creating a new check
