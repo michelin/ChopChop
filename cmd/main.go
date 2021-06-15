@@ -84,6 +84,7 @@ func cliMdw(f func(*cli.Context) error) func(*cli.Context) error {
 			return err
 		}
 		logrus.SetLevel(lvl)
+		logrus.Debug("verbosity:", lvl)
 
 		// Call the wrapped cli func
 		return f(c)
@@ -214,6 +215,17 @@ func cmdScan(c *cli.Context) error {
 	threads := c.Int("threads")
 	args := c.Args()
 
+	logrus.Debug("insecure:", insecure)
+	logrus.Debug("export:", exprt)
+	logrus.Debug("plugin-filters:", pluginFilters)
+	logrus.Debug("export-filename:", exportFilename)
+	logrus.Debug("max-severity:", maxSeverity)
+	logrus.Debug("severity-filter:", severityFilter)
+	logrus.Debug("url-file:", urlFile)
+	logrus.Debug("timeout:", timeout)
+	logrus.Debug("threads:", threads)
+	logrus.Debug("args:", args)
+
 	var urlFileReader io.Reader
 	if urlFile != "" {
 		var err error
@@ -266,6 +278,8 @@ func cmdScan(c *cli.Context) error {
 func cmdPlugins(c *cli.Context) error {
 	// Parse signatures
 	signatures := c.String("signatures")
+
+	logrus.Debug("signatures:", signatures)
 
 	signFile, err := internal.ReaderFromFile(signatures)
 	if err != nil {
