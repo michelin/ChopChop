@@ -1,4 +1,6 @@
-<p align="center"><img src="/docs/img/chopchop_logo.png" width="180" height="150"/></p>
+<div align="center">
+  <img src="/docs/img/chopchop_logo.png" width="180" height="150"/>
+</div>
 
 [![Build Status](https://github.com/michelin/ChopChop/workflows/Build%20ChopChop/badge.svg)](https://github.com/michelin/ChopChop/actions)
 [![License](https://img.shields.io/badge/license-Apache-green.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -11,7 +13,9 @@
 Its goal is to scan several endpoints and identify exposition of services/files/folders through the webroot.
 Checks/Signatures are declared in a config file (by default: `chopchop.yml`), fully configurable, and especially by developers.
 
-<p align="center"><img src="/docs/img/demo.gif?raw=true"/></p>
+<div align="center">
+  <img src="/docs/img/demo.gif?raw=true"/>
+</div>
 
 > "Chop chop" is a phrase rooted in Cantonese. "Chop chop" means "hurry" and suggests that something should be done now and **without delay**.
 
@@ -33,10 +37,8 @@ Checks/Signatures are declared in a config file (by default: `chopchop.yml`), fu
 
 We tried to make the build process painless and hopefully, it should be as easy as: 
 
-
 ```bash
-$ go mod download
-$ go build .
+go build -o gochopchop cmd/main.go
 ```
 
 There should be a resulting `gochopchop` binary in the folder.
@@ -46,7 +48,7 @@ There should be a resulting `gochopchop` binary in the folder.
 Thanks to [Github Container Registry](https://github.blog/2020-09-01-introducing-github-container-registry/), we are able to provide you some freshly-build Docker images!
 
 ```
-docker run ghcr.io/michelin/gochopchop scan https://foobar.com -v debug
+docker run ghcr.io/michelin/gochopchop scan -v debug https://example.com
 ```
 
 But if you prefer, you can also build it locally, see below: 
@@ -59,62 +61,83 @@ docker build -t gochopchop .
 
 ## Usage
 
-We are continuously trying to make `goChopChop` as easy as possible. Scanning a host with this utility is as simple as : 
+We are continuously trying to make `gochopchop` as easy as possible. Scanning a host with this utility is as simple as: 
 
 ```bash
-$ ./gochopchop scan https://foobar.com
+./gochopchop scan https://example.com
 ```
+
+Notice you can specify multiple URLs.
 
 ### Using Docker
 
 ```bash
-docker run gochopchop scan https://foobar.com
+docker run gochopchop scan https://example.com
+```
+
+Notice by default the Docker image has the configuration file at
+`/etc/chopchop.yml`, so you may add `-c /etc/chopchop.yml` to your
+command. If so, run the following command.
+
+```bash
+docker run gochopchop scan -c /etc/chopchop.yml https://example.com
 ```
 
 #### Custom configuration file
 
+Of course you can use your own configuration files, using the following.
+
 ```bash
-docker run -v ./:/app chopchop scan -c /app/chopchop.yml https://foobar.com
+docker run -v $(pwd):/app gochopchop scan -c /app/chopchop.yml https://example.com
 ```
 
 ## What's next
 
 The Golang rewrite took place a couple of months ago but there's so much to do, still. Here are some features we are planning to integrate :
-[x] Threading for better performance
-[x] Ability to specify the number of concurrent threads
-[x] Colors and better formatting
-[x] Ability to filter checks/signatures to search for
-[x] Mock and unit tests
-[x] Github CI
-And much more!
+ - [ ] Improve logging
+ - [ ] HTTP & SOCKS5 proxies
+ - [ ] Plugin method (GET, POST, ...)
+ - [ ] Plugin Cookie
+ - [ ] Improve caching (Docker build & CI)
+ - [ ] Implement a request gateway to avoid brute-forcing websites
+ - [ ] Re-implement `query_string` for the HTTP GET method
+ - [ ] Improve "severity reached" cases (currently ChopChop crashes if matches a plugin)
+ - [ ] Fix default status_code (200 if not specified)
 
 ## Testing
 
-To quickly end-to-end test chopchop, we provided a web-server in `tests/server.go`.
-To try it, please run `go run tests/server.go` then run chopchop with the following command `./gochopchop scan http://localhost:8000 --verbosity Debug`.
-ChopChop should print "no vulnerabilities found".
+### Unit tests
 
-There are also unit test that you can launch with `go test -v ./...`.
-These tests are integrated in the github CI workflow.
+Unit tests are achieved using Go-tests. You can run them using the following.
+
+```bash
+go test ./... -cover
+```
+
+To visualize the code coverage, for developement purposes, you can also run.
+
+```bash
+go test ./... -coverprofile=cov.out -count=1 && go tool cover -html=cov.out && rm cov.out 
+```
+
+### Acceptance tests
+
+For acceptance tests, those are achieved using RobotFramework. Notice you can
+build ChopChop using another language and validate the CLI using those tests.
+Run them using the following.
+
+```bash
+cd robot
+./run.sh
+```
 
 ## Available flags
 
-You can find the available flags available for the `scan` command :
+You can find the available flags and doc for each command using `gochopchop [cmd] -h`.
 
-| Flag | Full flag | Description |
-|---|---|---|
-| `-h` | `--help` | Help wizard |
-| `-v` | `--verbosity` | Verbose level of logging |
-| `-c` | `--signature` | Path of custom signature file |
-| `-k` | `--insecure` | Disable SSL Verification |
-| `-u` | `--url-file` | Path to a specified file containing urls to test |
-| `-b` | `--max-severity` | Block the CI pipeline if severity is over or equal specified flag |
-| `-e` | `--export` | Export type of the output (csv and/or json) |
-|| `--export-filename` | Specify the filename for the export file(s) |
-| `-t` | `--timeout` | Timeout for the HTTP requests |
-|| `--severity-filter` | Filter Plugins by severity |
-|| `--plugin-filter` | Filter Plugins by name of plugin |
-|| `--threads` | Number of concurrent threads | 
+Available commands are:
+ - `scan` to scan for endpoints ;
+ - `plugins` to parse and check the configuration file.
 
 ## Advanced usage
 
@@ -124,61 +147,49 @@ Note: Redirectors like `>` for post processing can be used.
 - Ability to scan and disable SSL verification
 
 ```bash
-$ ./gochopchop scan https://foobar.com --insecure
+./gochopchop scan --insecure https://foobar.com
 ```
 
 - Ability to scan with a custom configuration file (including custom plugins)
 
 ```bash
-$ ./gochopchop scan https://foobar.com --insecure --signature test_config.yml
+./gochopchop scan --insecure --signature test_config.yml https://foobar.com
 ```
 
-- Ability to list all the plugins or by severity : `plugins` or  ` plugins --severity High`
+- Ability to specify number of concurrent threads (in Go those are goroutines): `--threads 4` for 4 workers
 
 ```bash
-$ ./gochopchop plugins --severity High
+./gochopchop scan --threads 4 https://foobar.com
 ```
 
-- Ability to specify number of concurrent threads : `--threads 4` for 4 workers
+- Ability to specify specific signatures to be checked, with a debug log level
 
 ```bash
-$ ./gochopchop plugins --threads 4
-```
-
-- Ability to block the CI pipeline by severity level (equal or over specified severity) : `--max-severity Medium`
-
-```bash
-$ ./gochopchop scan https://foobar.com --max-severity Medium
-```
-
-- Ability to specify specific signatures to be checked 
-
-```bash
-./gochopchop scan https://foobar.com --timeout 1 --verbosity --export=csv,json --export-filename boo --plugin-filters=Git,Zimbra,Jenkins
-```
-
-- Ability to list all the plugins
-
-```bash
-$ ./gochopchop plugins
-```
-
-- List High severity plugins
-
-```bash
-$ ./gochopchop plugins --severity High
+./gochopchop scan --timeout=1 --verbosity=debug --export=csv --export=json --export-filename=boo --plugin-filters=Git,Zimbra,Jenkins https://foobar.com
 ```
 
 - Set a list or URLs located in a file
 
 ```bash
-$ ./gochopchop scan --url-file url_file.txt
+./gochopchop scan --url-file url_file.txt
 ```
 
 - Export GoChopChop results in CSV and JSON format
 
 ```bash
-$ ./gochopchop scan https://foobar.com  --export=csv,json --export-filename results
+./gochopchop scan https://foobar.com  --export csv --export json --export-filename results
+```
+
+- Ability to list all the plugins
+
+```bash
+./gochopchop plugins
+```
+
+- Ability to list all the plugins or by severity : `plugins` or  `plugins --severity High`
+
+```bash
+./gochopchop plugins --severity High
 ```
 
 ## Creating a new check
@@ -186,17 +197,20 @@ $ ./gochopchop scan https://foobar.com  --export=csv,json --export-filename resu
 Writing a new check is as simple as : 
 
 ```yaml
-  - endpoint: "/.git/config"
+  - endpoints:
+      - "/.git/config"
     checks:
       - name: Git exposed
         match:
           - "[branch"
         remediation: Do not deploy .git folder on production servers
         description: Verifies that the GIT repository is accessible from the site
-        severity: "High"
+        severity: High
 ```
 
-An endpoint (eg. ```/.git/config```) is mapped to multiple checks which avoids sending X requests for X checks. Multiple checks can be done through a single HTTP request.
+An endpoint (e.g. `/.git/config`) is mapped to multiple checks which avoids
+sending X requests for X checks. Multiple checks are achieved through a
+single HTTP request.
 Each check needs those fields:
 
 | Attribute | Type | Description | Optional ? | Example | 
@@ -210,21 +224,19 @@ Each check needs those fields:
 | no_headers | List of string | List of headers there should NOT be in the HTTP response | Yes | N/A |
 | match | List of string| List the strings there should be in the HTTP response  | Yes |  "[branch" |
 | no_match | List of string | List the strings there should NOT be in the HTTP response | Yes | N/A |
-| query_string | GET parameters that have to be passed to the endpoint | String | Yes | `query_string: "id=FOO-chopchoptest"` |
 
 ## External Libraries
 
-| Library Name | Link | License | 
-|---|---|---|
-| Viper | https://github.com/spf13/viper | MIT License |
-| Go-pretty |  https://github.com/jedib0t/go-pretty| MIT License |
-| Cobra | https://github.com/spf13/cobra| Apache License 2.0 |
-| strfmt |https://github.com/go-openapi/strfmt | Apache License 2.0 |
-| Go-homedir | https://github.com/mitchellh/go-homedir| MIT License |
-| pkg-errors | https://github.com/pkg/errors| BSD 2 (Simplified License)|
-| Go-runewidth | https://github.com/mattn/go-runewidth | MIT License |
-
-Please, refer to the `third-party.txt` file for further information.
+| Library Name | Link                                  | License              | 
+|--------------|---------------------------------------|----------------------|
+| go-md2man    | https://github.com/cpuguy83/go-md2man | MIT License          | 
+| strfmt       | https://github.com/go-openapi/strfmt  | Apache License 2.0   |
+| go-cmp       | https://github.com/google/go-cmp      | BSD-3-Clause License |
+| go-pretty    | https://github.com/jedib0t/go-pretty  | MIT License          |
+| go-runewidth | https://github.com/mattn/go-runewidth | MIT License          |
+| logrus       | https://github.com/sirupsen/logrus    | MIT License          |
+| cli          | https://github.com/urfave/cli/v2      | MIT License          |
+| yaml         | https://github.com/go-yaml/yaml       | Apache License 2.0   |
 
 ## Talks
 

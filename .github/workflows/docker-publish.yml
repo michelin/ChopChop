@@ -10,53 +10,23 @@ on:
     tags:
       - v*
 
-  # Run tests for any PRs.
-  pull_request:
-
 env:
   IMAGE_NAME: gochopchop
 
 jobs:
-  # Run tests.
-  # See also https://docs.docker.com/docker-hub/builds/automated-testing/
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Run tests
-        run: |
-          if [ -f docker-compose.test.yml ]; then
-            docker-compose --file docker-compose.test.yml build
-            docker-compose --file docker-compose.test.yml run sut
-          else
-            docker build . --file Dockerfile
-          fi
-
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
   push:
-    # Ensure test job passes before pushing image.
-    needs: test
-
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
-
     steps:
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.14.x
-      - uses: actions/checkout@v2
-      - name: Unit Tests
-        run: go test ./...
-      - name: Build image
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME
-
       - name: Log into GitHub Container Registry
-      # TODO: Create a PAT with `read:packages` and `write:packages` scopes and save it as an Actions secret `CR_PAT`
-        run: echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
+      # The CR_PAT secret is a PAT with `read:packages` and `write:packages` scopes
+        run: echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - uses: actions/checkout@v2
+
+      - name: Build image
+        run: docker build -t $IMAGE_NAME .
 
       - name: Push image to GitHub Container Registry
         run: |
