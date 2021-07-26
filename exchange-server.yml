@@ -1,0 +1,397 @@
+insecure: false
+plugins:
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2019 CU 10
+        match:
+          - '15.2.922'
+        remediation: Verify to latest SU is installed
+        description: Exchange 2019 CU 10
+        status_code: 200
+        severity: "Informational"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2019 CU 9
+        match:
+          - '15.2.858'
+        remediation: Verify to latest SU is installed
+        description: Exchange 2019 CU 9
+        status_code: 200
+        severity: "Informational"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2019 CU 8 > vulnerable
+        match:
+          - '15.2.792'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2019 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2019 CU 7 > vulnerable
+        match:
+          - '15.2.721'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2019 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2019 CU 6 > vulnerable
+        match:
+          - '15.2.659'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2019 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2019 CU 5 > vulnerable
+        match:
+          - '15.2.595'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2019 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2019 CU 4 > vulnerable
+        match:
+          - '15.2.529'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2019 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2019 CU 3 > vulnerable
+        match:
+          - '15.2.464'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2019 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2019 CU 2 > vulnerable
+        match:
+          - '15.2.397'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2019 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2019 CU 1 > vulnerable
+        match:
+          - '15.2.330'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2019 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2019 RTM > vulnerable
+        match:
+          - '15.2.221'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2019 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2019 Preview > vulnerable
+        match:
+          - '15.2.196'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2019 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 CU 21
+        match:
+          - '15.1.2308'
+        remediation: Verify to latest SU is installed
+        description: Exchange 2016 CU 21
+        status_code: 200
+        severity: "Informational"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 CU 20
+        match:
+          - '15.1.2242'
+        remediation: Verify to latest SU is installed
+        description: Exchange 2016 CU 20
+        status_code: 200
+        severity: "Informational"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 CU 19 > vulnerable
+        match:
+          - '15.1.2176'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2016 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 CU 18 > vulnerable
+        match:
+          - '15.1.2106'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2016 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 CU 17 > vulnerable
+        match:
+          - '15.1.2044'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2016 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 CU 16 > vulnerable
+        match:
+          - '15.1.1979'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2016 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 CU 15 > vulnerable
+        match:
+          - '15.1.1913'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2016 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 CU 14 > vulnerable
+        match:
+          - '15.1.1847'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2016 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 CU 13 > vulnerable
+        match:
+          - '15.1.1779'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2016 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 CU 12 > vulnerable
+        match:
+          - '15.1.1713'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2016 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 CU 11 > vulnerable
+        match:
+          - '15.1.1591'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2016 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 CU 10 > vulnerable
+        match:
+          - '15.1.1531'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2016 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 CU 9 > vulnerable
+        match:
+          - '15.1.1466'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2016 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 CU 8 > vulnerable
+        match:
+          - '15.1.1415'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2016 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 CU 7 > vulnerable
+        match:
+          - '15.1.1261'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2016 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 CU 6 > vulnerable
+        match:
+          - '15.1.1034'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2016 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 CU 5 > vulnerable
+        match:
+          - '15.1.845'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2016 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 CU 4 > vulnerable
+        match:
+          - '15.1.669'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2016 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 CU 3 > vulnerable
+        match:
+          - '15.1.544'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2016 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 CU 2 > vulnerable
+        match:
+          - '15.1.466'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2016 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 CU 1 > vulnerable
+        match:
+          - '15.1.396'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2016 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2016 RTM / Preview> vulnerable
+        match:
+          - '15.1.225'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2016 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2013 CU 23
+        match:
+          - '15.0.1497'
+        remediation: Verify to latest SU is installed
+        description: Exchange 2013 CU 23
+        status_code: 200
+        severity: "Informational"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2013 vulnerable version
+        match:
+          - '15.0'
+        no_match :
+          - '15.0.1497'
+        remediation: Upgrade Exchange in latest CU version
+        description: Exchange 2013 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2010 SP3 vulnerable version
+        match:
+          - '14.3'
+        remediation: Upgrade Exchange in supported version
+        description: Exchange 2010 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange 2010 vulnerable version
+        match:
+          - '14.'
+        no_match :
+          - '14.3'
+        remediation: Upgrade Exchange in supported version
+        description: Exchange 2010 vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
+  - endpoint: "/owa/auth/logon.aspx"
+    checks:
+      - name : Exchange oldests vulnerable version
+        no_match :
+          - '14.'
+          - '15.'
+        remediation: Upgrade Exchange in supported version
+        description: Exchange oldests vulnerable version detected
+        status_code: 200
+        severity: "High"
+        tested: true
