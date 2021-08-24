@@ -11,12 +11,19 @@ plugins:
         severity: "Medium"
   - endpoint: "/"
     checks:
+      - name: Kemp LoadMaster
+        headers:
+          - "Location:/lm_auth_proxy?DoLMLogin?"
+        remediation: Make sure that Kemp LoadMaster is up to date
+        description: Kemp LoadMaster is present
+        status_code: 302
+        severity: "Informational"
       - name : GLPI vulnerable version
         match:
           - '<title>GLPI - Authentification</title>'
           - 'title="Powered by Teclib and contributors" class="copyright">GLPI Copyright'
         no_match :
-          - 'src="/public/lib/base.min.js?v=9.5.3"'
+          - 'src="/public/lib/base.min.js?v=9.5.5"'
         remediation: Upgrade GLPI in latest version
         description: GLPI vulnerable version detected
         status_code: 200
