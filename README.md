@@ -241,3 +241,4 @@ Please, refer to the `LICENSE` file for further information.
 - Paul A. 
 - David R. (For the Python version)
 - Stanislas M. (For the Golang version)
+- [isontheline](https://github.com/isontheline?tab=sponsoring)
