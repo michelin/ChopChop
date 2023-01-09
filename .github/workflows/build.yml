@@ -15,10 +15,13 @@ jobs:
       run: go test ./...
     - name: Install gox
       run: go get github.com/mitchellh/gox
+      if: startsWith(github.ref, 'refs/tags/')
     - name: Build using gox
       run: gox -ldflags "-X main.Version=$BUILD_VERSION -X main.BuildDate=$BUILD_DATE" -output "dist/ChopChop_{{.OS}}_{{.Arch}}"
+      if: startsWith(github.ref, 'refs/tags/')
     - name: Upload ChopChop builds
       uses: actions/upload-artifact@v2
+      if: startsWith(github.ref, 'refs/tags/')
       with:
         name: chopchop-artifacts
         path: dist/*
