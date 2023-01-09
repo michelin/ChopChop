@@ -5,6 +5,7 @@ on: [push]
 jobs:
   lintAllTheThings:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
     - uses: actions/checkout@v1
     - name: yaml-lint
@@ -14,6 +15,7 @@ jobs:
         config_file: .yamllint.yml  
   lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
      - uses: actions/checkout@v1
      - run: |
