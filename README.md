@@ -42,13 +42,11 @@ There should be a resulting `gochopchop` binary in the folder.
 
 ### Using Docker
 
-Thanks to [Github Container Registry](https://github.blog/2020-09-01-introducing-github-container-registry/), we are able to provide you some freshly-build Docker images!
-
 ```
 docker run isontheline/gochopchop scan https://foobar.com -v debug
 ```
 
-But if you prefer, you can also build it locally, see below: 
+If you prefer, you can also build it locally, see below: 
 
 #### Build locally
 
@@ -58,7 +56,7 @@ docker build -t gochopchop .
 
 ## Usage
 
-We are continuously trying to make `goChopChop` as easy as possible. Scanning a host with this utility is as simple as : 
+We are continuously trying to make `ChopChop` as easy as possible. Scanning a host with this utility is as simple as : 
 
 ```bash
 $ ./gochopchop scan https://foobar.com
