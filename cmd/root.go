@@ -18,7 +18,7 @@ func init() {
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "chopchop",
-	Short: "tool for dynamic application security testing on web applications",
+	Short: "Tool for dynamic application security testing on web applications",
 	Long: `
  ________                 _________ .__                  _________ .__                    ._.
  /  _____/  ____           \_   ___ \|  |__   ____ ______ \_   ___ \|  |__   ____ ______   | |
@@ -26,7 +26,7 @@ var rootCmd = &cobra.Command{
 \    \_\  (  <_> ) /_____/ \     \___|   Y  (  <_> )  |_> >     \___|   Y  (  <_> )  |_> >  \|
  \______  /\____/           \______  /___|  /\____/|   __/ \______  /___|  /\____/|   __/   __
         \/                         \/     \/       |__|           \/     \/       |__|      \/
-Link: https://github.com/michelin/ChopChop`,
+Link: https://github.com/isontheline/ChopChop`,
 	SilenceUsage: true,
 }
 
