@@ -43,7 +43,7 @@ There should be a resulting `gochopchop` binary in the folder.
 ### Using Docker
 
 ```
-docker run isontheline/gochopchop scan https://foobar.com -v debug
+docker run isontheline/gochopchop scan https://example.net -v debug
 ```
 
 If you prefer, you can also build it locally, see below: 
@@ -59,19 +59,19 @@ docker build -t gochopchop .
 We are continuously trying to make `ChopChop` as easy as possible. Scanning a host with this utility is as simple as : 
 
 ```bash
-$ ./gochopchop scan https://foobar.com
+$ ./gochopchop scan https://example.net
 ```
 
 ### Using Docker
 
 ```bash
-docker run gochopchop scan https://foobar.com
+docker run gochopchop scan https://example.net
 ```
 
 #### Custom configuration file
 
 ```bash
-docker run -v ./:/app chopchop scan -c /app/chopchop.yml https://foobar.com
+docker run -v ./:/app chopchop scan -c /app/chopchop.yml https://example.net
 ```
 
 ## Testing
@@ -91,7 +91,7 @@ You can find the available flags available for the `scan` command :
 |---|---|---|
 | `-h` | `--help` | Help wizard |
 | `-v` | `--verbosity` | Verbose level of logging |
-| `-c` | `--signature` | Path of custom signature file |
+| `-c` | `--signatures` | Path of custom signature file |
 | `-k` | `--insecure` | Disable SSL Verification |
 | `-u` | `--url-file` | Path to a specified file containing urls to test |
 | `-b` | `--max-severity` | Block the CI pipeline if severity is over or equal specified flag |
@@ -110,13 +110,13 @@ Note: Redirectors like `>` for post processing can be used.
 - Ability to scan and disable SSL verification
 
 ```bash
-$ ./gochopchop scan https://foobar.com --insecure
+$ ./gochopchop scan https://example.net --insecure
 ```
 
 - Ability to scan with a custom configuration file (including custom plugins)
 
 ```bash
-$ ./gochopchop scan https://foobar.com --insecure --signature test_config.yml
+$ ./gochopchop scan https://example.net --insecure --signatures test_config.yml
 ```
 
 - Ability to list all the plugins or by severity : `plugins` or  ` plugins --severity High`
@@ -134,13 +134,13 @@ $ ./gochopchop plugins --threads 4
 - Ability to block the CI pipeline by severity level (equal or over specified severity) : `--max-severity Medium`
 
 ```bash
-$ ./gochopchop scan https://foobar.com --max-severity Medium
+$ ./gochopchop scan https://example.net --max-severity Medium
 ```
 
 - Ability to specify specific signatures to be checked 
 
 ```bash
-./gochopchop scan https://foobar.com --timeout 1 --verbosity --export=csv,json --export-filename boo --plugin-filters=Git,Zimbra,Jenkins
+./gochopchop scan https://example.net --timeout 1 --verbosity --export=csv,json --export-filename boo --plugin-filters=Git,Zimbra,Jenkins
 ```
 
 - Ability to list all the plugins
@@ -164,7 +164,7 @@ $ ./gochopchop scan --url-file url_file.txt
 - Export GoChopChop results in CSV and JSON format
 
 ```bash
-$ ./gochopchop scan https://foobar.com  --export=csv,json --export-filename results
+$ ./gochopchop scan https://example.net  --export=csv,json --export-filename results
 ```
 
 ## Creating a new check

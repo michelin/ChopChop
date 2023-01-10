@@ -16,7 +16,7 @@ var signatureFlagShorthand = "c"
 var signatureDefaultFilename = "chopchop.yml"
 
 func addSignaturesFlag(cmd *cobra.Command) error {
-	cmd.Flags().StringP(signatureFlagName, signatureFlagShorthand, signatureDefaultFilename, "path to signature file") // --signature ou -c
+	cmd.Flags().StringP(signatureFlagName, signatureFlagShorthand, signatureDefaultFilename, "path to signature file") // --signatures ou -c
 	return nil
 }
 
