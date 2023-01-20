@@ -23,12 +23,13 @@ func init() {
 	}
 	addSignaturesFlag(scanCmd)
 
-	scanCmd.Flags().BoolP("insecure", "k", false, "Check SSL certificate")                                                                                    // --insecure ou -n
-	scanCmd.Flags().StringP("url-file", "u", "", "path to a specified file containing urls to test")                                                          // --uri-file ou -f
-	scanCmd.Flags().StringP("max-severity", "b", "", "block the CI pipeline if severity is over or equal specified flag")                                     // --max-severity ou -m
-	scanCmd.Flags().StringSliceP("export", "e", []string{}, "export of the output (csv and json)")                                                            //--export ou --e
+	scanCmd.Flags().BoolP("insecure", "k", false, "Check SSL certificate")                                                                                    // --insecure OR -n
+	scanCmd.Flags().StringP("url-file", "u", "", "path to a specified file containing urls to test")                                                          // --uri-file OR -f
+	scanCmd.Flags().StringP("max-severity", "b", "", "block the CI pipeline if severity is over or equal specified flag")                                     // --max-severity OR -m
+	scanCmd.Flags().StringSliceP("export", "e", []string{}, "export of the output (csv and json)")                                                            //--export OR --e
 	scanCmd.Flags().StringP("export-filename", "", "", "filename for export files")                                                                           // --export-filename
-	scanCmd.Flags().IntP("timeout", "t", 10, "Timeout for the HTTP requests (default: 10s)")                                                                  // --timeout ou -ts
+	scanCmd.Flags().IntP("timeout", "t", 10, "Timeout for the HTTP requests (default: 10s)")   																  // --timeout OR -ts
+	scanCmd.Flags().StringP("user-agent", "a", "ChopChop", "user agent to be set for the HTTP requests (default: ChopChop)")                                  // --user-agent OR -a
 	scanCmd.Flags().StringP("severity-filter", "", "", "Filter by severity (engine will check for same severity checks)")                                     // --severity-filter
 	scanCmd.Flags().StringSliceP("plugin-filters", "", []string{}, "Filter by the name of the plugin (engine will only check for plugin with the same name)") // --plugin-filter
 	rootCmd.AddCommand(scanCmd)
@@ -47,8 +48,8 @@ func runScan(cmd *cobra.Command, args []string) error {
 
 	begin := time.Now()
 
-	fetcher := httpget.NewFetcher(config.HTTP.Insecure, config.HTTP.Timeout)
-	noRedirectFetcher := httpget.NewNoRedirectFetcher(config.HTTP.Insecure, config.HTTP.Timeout)
+	fetcher := httpget.NewFetcher(config)
+	noRedirectFetcher := httpget.NewNoRedirectFetcher(config)
 
 	scanner := core.NewScanner(fetcher, noRedirectFetcher, signatures, config.Threads)
 
@@ -187,6 +188,11 @@ func parseConfig(cmd *cobra.Command, args []string) (*core.Config, error) {
 		return nil, fmt.Errorf("Invalid value for timeout: %v", err)
 	}
 
+	userAgent, err := cmd.Flags().GetString("user-agent")
+	if err != nil {
+		return nil, fmt.Errorf("Invalid value for user-agent: %v", err)
+	}
+
 	threads, err := rootCmd.Flags().GetInt("threads")
 	if err != nil {
 		return nil, fmt.Errorf("invalid value for threads: %w", err)
@@ -200,6 +206,7 @@ func parseConfig(cmd *cobra.Command, args []string) (*core.Config, error) {
 		HTTP: core.HTTPConfig{
 			Insecure: insecure,
 			Timeout:  timeout,
+			UserAgent: userAgent,
 		},
 		MaxSeverity:    maxSeverity,
 		ExportFormats:  exportFormats,

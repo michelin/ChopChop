@@ -15,4 +15,5 @@ type Config struct {
 type HTTPConfig struct {
 	Insecure bool
 	Timeout  int
+	UserAgent string
 }

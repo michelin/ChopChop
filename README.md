@@ -98,6 +98,7 @@ You can find the available flags available for the `scan` command :
 | `-e` | `--export` | Export type of the output (csv and/or json) |
 || `--export-filename` | Specify the filename for the export file(s) |
 | `-t` | `--timeout` | Timeout for the HTTP requests |
+| `-a` | `--user-agent` | User Agent to be set for the HTTP requests |
 || `--severity-filter` | Filter Plugins by severity |
 || `--plugin-filter` | Filter Plugins by name of plugin |
 || `--threads` | Number of concurrent threads | 
