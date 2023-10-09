@@ -18,10 +18,10 @@ func ExportCSV(filename string, out []core.Output) error {
 	exportFilename := fmt.Sprintf("%s.csv", filename)
 
 	f, err := os.OpenFile(exportFilename, os.O_CREATE|os.O_WRONLY, 0755)
-	defer f.Close()
 	if err != nil {
 		return err
 	}
+	defer f.Close()
 
 	err = exportCSV(f, out)
 	if err != nil {
@@ -52,10 +52,10 @@ func ExportJSON(filename string, output []core.Output) error {
 	exportFilename := fmt.Sprintf("%s.json", filename)
 
 	f, err := os.OpenFile(exportFilename, os.O_CREATE|os.O_WRONLY, 0755)
-	defer f.Close()
 	if err != nil {
 		return err
 	}
+	defer f.Close()
 
 	err = exportJSON(f, output)
 	if err != nil {
